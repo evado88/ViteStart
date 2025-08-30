@@ -1,6 +1,7 @@
 import React from "react";
+import { Link } from "react-router-dom";
 
-export const Sidebar = ({ name, title }) => {
+export const Sidebar = ({ names, title }) => {
   return (
     /* start sidebar menu */
     <div className="sidebar-container">
@@ -38,8 +39,8 @@ export const Sidebar = ({ name, title }) => {
                     <img alt="image" src="./images/dp.jpg" />
                   </div>
                   <div className="sidebar-user-details">
-                    <div className="user-name">Sneha Patel</div>
-                    <div className="user-role">Administrator</div>
+                    <div className="user-name">{names}</div>
+                    <div className="user-role">{title}</div>
                   </div>
                 </div>
               </li>
@@ -69,29 +70,20 @@ export const Sidebar = ({ name, title }) => {
                 </a>
                 <ul className="sub-menu">
                   <li className="nav-item">
-                    <a
-                      href="https://www.einfosoft.com/templates/admin/smart/source/light/index.html"
-                      className="nav-link"
-                    >
-                      <span className="title">Dashboard 1</span>
-                    </a>
+                    <Link to="/dashboard" className="nav-link">
+                      <span className="title">Dashboard</span>
+                    </Link>
                   </li>
                   <li className="nav-item">
-                    <a
-                      href="https://www.einfosoft.com/templates/admin/smart/source/light/dashboard2.html"
-                      className="nav-link"
-                    >
-                      <span className="title">Dashboard 2</span>
-                    </a>
+                    <Link to="/about" className="nav-link">
+                      <span className="title">About</span>
+                    </Link>
                   </li>
                   <li className="nav-item active">
-                    <a
-                      href="https://www.einfosoft.com/templates/admin/smart/source/light/dashboard3.html"
-                      className="nav-link"
-                    >
-                      <span className="title">Dashboard 3</span>
+                    <Link to="/contact" className="nav-link">
+                      <span className="title">Contact</span>
                       <span className="selected"></span>
-                    </a>
+                    </Link>
                   </li>
                 </ul>
               </li>

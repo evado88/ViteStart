@@ -3,6 +3,9 @@ import React from "react";
 
 export const Header = ({ names, title }) => {
 
+  names = names == undefined ? 'Peter': names;
+
+
   return (
       /* start header */
       <div className="page-header navbar navbar-fixed-top">
@@ -378,7 +381,7 @@ export const Header = ({ names, title }) => {
                     src="./images/dp.jpg"
                   />
                   <span className="username username-hide-on-mobile">
-                    Sneha
+                    {names}
                   </span></a
                 >
                 <ul className="dropdown-menu dropdown-menu-default">
