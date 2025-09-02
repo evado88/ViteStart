@@ -5,14 +5,31 @@ import { Card } from "../components/card";
 import { Row } from "../components/row";
 import { Col } from "../components/column";
 import { NotificationList } from "../components/notificationList";
+import Button from "devextreme-react/button";
+import Form from "devextreme-react/form";
 
 const Dashboard = () => {
   const [count, setCount] = useState(4666);
+  const [notes, setNotes] = useState(
+    'Sandra is a CPA and has been our controller since 2008. She loves to interact with staff so if you`ve not met her, be certain to say hi.\r\n\r\nSandra has 2 daughters both of whom are accomplished gymnasts.'
+  );
+  const employee = {
+    ID: 7,
+    FirstName: "Sandra",
+    LastName: "Johnson",
+    Prefix: "Mrs.",
+    Position: "Controller",
+    Picture: "images/employees/06.png",
+    BirthDate: new Date("1974/11/15"),
+    HireDate: new Date("2005/05/11"),
+    Notes: notes,
+    Address: "4600 N Virginia Rd.",
+  };
 
   return (
     <div className="page-content" style={{ minHeight: "862px" }}>
       <Titlebar
-        title={"My Dashboard"}
+        title={"My DashboardXXXX"}
         section={"Administration"}
         icon={"home"}
       ></Titlebar>
@@ -57,12 +74,20 @@ const Dashboard = () => {
       <Row>
         <Col sz={12} sm={12} lg={6}>
           <Card title={"Card 1"}>
-            <h4>Hello</h4>
+            <Button text="Click me" onClick={() => alert("Hello world!")} />
           </Card>
         </Col>
         <Col sz={12} sm={12} lg={6}>
           <Card title={"Card 2"}>
-            <h4>Hello</h4>
+            <Form
+              id={"form"}
+              defaultFormData={employee}
+              onFieldDataChanged={(e) =>
+                e.dataField === "Notes" && setNotes(e.value)
+              }
+              labelLocation={"top"}
+              colCountByScreen={colCountByScreen}
+            />
           </Card>
         </Col>
       </Row>
@@ -80,4 +105,12 @@ const Dashboard = () => {
     </div>
   );
 };
+
+const colCountByScreen = {
+  xs: 1,
+  sm: 2,
+  md: 3,
+  lg: 4
+};
+
 export default Dashboard;

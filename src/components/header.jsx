@@ -42,7 +42,7 @@ export const Header = ({ names, title }) => {
                 name="query"
               />
               <span className="input-group-btn">
-                <a href="javascript:;" className="btn submit">
+                <a href="#" className="btn submit">
                   <i className="icon-magnifier"></i>
                 </a>
               </span>
@@ -160,7 +160,7 @@ export const Header = ({ names, title }) => {
                         style={{"overflow":"hidden","width":"auto"}}
                       >
                         <li>
-                          <a href="javascript:;">
+                          <a href="#">
                             <span className="time">just now</span>
                             <span className="details">
                               <span
@@ -173,7 +173,7 @@ export const Header = ({ names, title }) => {
                         </li>
 
                         <li>
-                          <a href="javascript:;">
+                          <a href="#">
                             <span className="time">7 mins</span>
                             <span className="details">
                               <span
@@ -195,7 +195,7 @@ export const Header = ({ names, title }) => {
                       ></div>
                     </div>
                     <div className="dropdown-menu-footer">
-                      <a href="javascript:void(0)"> All notifications </a>
+                      <a href="#"> All notifications </a>
                     </div>
                   </li>
                 </ul>

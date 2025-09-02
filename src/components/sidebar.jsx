@@ -7,16 +7,20 @@ export const Sidebar = ({ names, title }) => {
   const [menuItems, setMenuItems] = useState(navigation);
   const location = useLocation();
 
+  const isChildActive = (navItem) => {
+    const mItem = navItem.items.find((menu) => menu.path == location.pathname);
+
+    return mItem != undefined;
+  };
+
   const getNavClass = (navItem) => {
-    if (navItem.isOpen) {
-      return navItem.isActive ? "nav-item open" : "nav-item open";
-    } else {
-      return "nav-item";
-    }
+    return navItem.isOpen || isChildActive(navItem)
+      ? "nav-item open"
+      : "nav-item";
   };
 
   const getSubDispay = (navItem) => {
-    return navItem.isOpen ? "block" : "none";
+    return navItem.isOpen || isChildActive(navItem) ? "block" : "none";
   };
 
   const getItemClass = (navItem) => {
@@ -24,7 +28,7 @@ export const Sidebar = ({ names, title }) => {
   };
 
   const getArrowClass = (navItem) => {
-    return navItem.isOpen ? "arrow open" : "arrow";
+    return navItem.isOpen || isChildActive(navItem) ? "arrow open" : "arrow";
   };
 
   return (
@@ -98,24 +102,7 @@ export const Sidebar = ({ names, title }) => {
                       key={navitem.key}
                       onClick={() => {
                         const list = menuItems.map((itm) => {
-                          //check if item is already open
-                          if (itm.isOpen) {
-                            //open
-                            //check if same item has been clicked
-                            if (itm.key == navitem.key) {
-                              //same item, close it!
-                              itm.isOpen = false;
-                              itm.isActive = false;
-                            } else {
-                              //not open
-                              itm.isOpen = itm.key == navitem.key;
-                              itm.isActive = itm.key == navitem.key;
-                            }
-                          } else {
-                            //not open
-                            itm.isOpen = itm.key == navitem.key;
-                            itm.isActive = itm.key == navitem.key;
-                          }
+                          itm.isOpen = itm.key == navitem.key;
 
                           return itm;
                         });
