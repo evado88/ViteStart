@@ -2,8 +2,8 @@ export const navigation = [
   {
     key: "home",
     text: "Home",
+    icon: 'fa fa-home',
     path: "/",
-    icon: "home",
     isOpen: false,
     isActive: false,
     items: [],
@@ -11,7 +11,7 @@ export const navigation = [
   {
     key: "administration",
     text: "Administration",
-    icon: "folder",
+    icon: 'fa fa-cubes',
     isOpen: false,
     isActive: false,
     items: [
@@ -36,7 +36,7 @@ export const navigation = [
   {
     key: "main",
     text: "Twyshe Main App",
-    icon: "product",
+    icon: 'fa fa-gear',
     isOpen: false,
     isActive: false,
     items: [
@@ -61,7 +61,7 @@ export const navigation = [
   {
     key: "messenger",
     text: "Twyshe Messenger",
-    icon: "message",
+    icon: "fa fa-send",
     isOpen: false,
     isActive: false,
     items: [
