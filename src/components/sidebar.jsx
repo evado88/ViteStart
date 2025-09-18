@@ -1,35 +1,57 @@
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { Link, NavLink, useLocation } from "react-router-dom";
 
 import { navigation } from "../navigation/app-navigation";
 
+function ExpandableGroup({ navitem }) {
+  const [isOpen, setIsOpen] = useState(false);
+  const contentRef = useRef(null);
+
+  const toggle = () => setIsOpen(!isOpen);
+
+  return (
+    <li
+      className={`nav-item ${isOpen ? "open" : ""}`}
+      key={navitem.key}
+      onClick={toggle}
+    >
+      <Link to={navitem.path} className="nav-link nav-toggle">
+        {" "}
+        <i className={navitem.icon}></i>
+        <span className="title">{navitem.text}</span>
+        <span className="selected"></span>
+        <span className={`arrow ${isOpen ? "open" : ""}`}></span>
+      </Link>
+      <ul
+        ref={contentRef}
+        className={`sub-menu nav-content ${isOpen ? "expanded" : ""}`}
+        style={{
+          height: isOpen ? contentRef.current?.scrollHeight : 0,
+          display: "block",
+        }}
+      >
+        {navitem.items.map((item) => (
+          <li
+            className={`nav-item ${
+              item.path == location.pathname ? "active" : ""
+            }`}
+            key={item.key}
+          >
+            <Link to={item.path} className="nav-link ">
+              {" "}
+              <span className="title">{item.text}</span>
+              <span className="selected"></span>
+            </Link>
+          </li>
+        ))}
+      </ul>
+    </li>
+  );
+}
+
 export const Sidebar = ({ names, title }) => {
   const [menuItems, setMenuItems] = useState(navigation);
   const location = useLocation();
-
-  const isChildActive = (navItem) => {
-    const mItem = navItem.items.find((menu) => menu.path == location.pathname);
-
-    return mItem != undefined;
-  };
-
-  const getNavClass = (navItem) => {
-    return navItem.isOpen || isChildActive(navItem)
-      ? "nav-item open"
-      : "nav-item";
-  };
-
-  const getSubDispay = (navItem) => {
-    return navItem.isOpen || isChildActive(navItem) ? "block" : "none";
-  };
-
-  const getItemClass = (navItem) => {
-    return navItem.path == location.pathname ? "nav-item active" : "nav-item";
-  };
-
-  const getArrowClass = (navItem) => {
-    return navItem.isOpen || isChildActive(navItem) ? "arrow open" : "arrow";
-  };
 
   return (
     /* start sidebar menu */
@@ -65,7 +87,12 @@ export const Sidebar = ({ names, title }) => {
               {menuItems.map((navitem) => {
                 if (navitem.items.length == 0) {
                   return (
-                    <li className={getItemClass(navitem)} key={navitem.key}>
+                    <li
+                      className={
+                        navitem.path == location.pathname ? "active" : ""
+                      }
+                      key={navitem.key}
+                    >
                       <Link to={navitem.path} className="nav-link">
                         <i className={navitem.icon}></i>
                         <span className="title">{navitem.text}</span>
@@ -73,43 +100,7 @@ export const Sidebar = ({ names, title }) => {
                     </li>
                   );
                 } else {
-                  return (
-                    <li
-                      className={getNavClass(navitem)}
-                      key={navitem.key}
-                      onClick={() => {
-                        const list = menuItems.map((itm) => {
-                          itm.isOpen = itm.key == navitem.key;
-
-                          return itm;
-                        });
-
-                        setMenuItems(list);
-                      }}
-                    >
-                      <Link to={navitem.path} className="nav-link nav-toggle">
-                        {" "}
-                        <i className={navitem.icon}></i>
-                        <span className="title">{navitem.text}</span>
-                        <span className="selected"></span>
-                        <span className={getArrowClass(navitem)}></span>
-                      </Link>
-                      <ul
-                        className="sub-menu"
-                        style={{ display: getSubDispay(navitem) }}
-                      >
-                        {navitem.items.map((item) => (
-                          <li className={getItemClass(item)} key={item.key}>
-                            <Link to={item.path} className="nav-link ">
-                              {" "}
-                              <span className="title">{item.text}</span>
-                              <span className="selected"></span>
-                            </Link>
-                          </li>
-                        ))}
-                      </ul>
-                    </li>
-                  );
+                  return <ExpandableGroup navitem={navitem}></ExpandableGroup>;
                 }
               })}
             </ul>
