@@ -23,9 +23,6 @@ const About = () => {
 
   useEffect(() => {
     setLoading(true);
-
-    console.log(`Starting to load`);
-
     // invalid url will trigger an 404 error
     axios
       .get("https://www.api-zm.online/zamtelkpi/department/list")
