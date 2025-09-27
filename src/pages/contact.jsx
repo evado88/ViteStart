@@ -13,12 +13,17 @@ import { LoadPanel } from "devextreme-react/load-panel";
 import Toolbar, { Item } from "devextreme-react/toolbar";
 import { Validator, RequiredRule } from "devextreme-react/validator";
 import DateBox from "devextreme-react/date-box";
+import { useTheme } from "../context/ThemeContext";
+import { useAuth } from "../context/AuthContext";
 
 const Contact = () => {
+  const { theme, toggleTheme } = useTheme();
+  const { user, login, logout } = useAuth();
+
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);
 
-  const [name, setName] = useState("");
+  const [name, setName] = useState("Evans");
   const [description, setDescription] = useState("");
 
   const [pespectiveList, setPespectiveList] = useState([]);
@@ -36,7 +41,7 @@ const Contact = () => {
   return (
     <div className="page-content" style={{ minHeight: "862px" }}>
       <Titlebar
-        title={"Contact"}
+        title={theme}
         section={"Administration"}
         icon={"home"}
       ></Titlebar>
@@ -55,9 +60,8 @@ const Contact = () => {
                   <div className="dx-field-value">
                     <TextBox
                       validationMessagePosition="left"
-                      onValueChanged={(e) => setName(e.value)}
                       inputAttr={{ "aria-label": "Name" }}
-                      value={name}
+                      value={"name"}
                       disabled={error}
                     >
                       <Validator>
@@ -153,14 +157,15 @@ const Contact = () => {
                   text="Save"
                   type="danger"
                   disabled={error}
-                  useSubmitBehavior={true}
+                  useSubmitBehavior={false}
+                  onClick={toggleTheme}
                 />
               </div>
             </form>
           </Card>
         </Col>
         <Col sz={12} sm={12} lg={8}>
-          <Card title={"Card 2"}>
+          <Card title={user == null ? "No User" : user.name}>
             <div className="form">
               <div className="dx-fieldset">
                 <div className="dx-fieldset-header">Simple Field Set</div>
@@ -191,6 +196,19 @@ const Contact = () => {
                     inputAttr={cityLabel}
                     className="dx-field-value"
                     defaultValue="San Diego"
+                    value={name}
+                    onValueChanged={(e) => setName(e.value)}
+                  />
+                </div>
+                <div className="dx-field">
+                  <Button
+                    width="100%"
+                    id="button"
+                    text={user == null ? "Login" : "logout"}
+                    type="danger"
+                    disabled={error}
+                    useSubmitBehavior={false}
+                    onClick={user == null ? () => login(name) : logout}
                   />
                 </div>
               </div>

@@ -3,6 +3,7 @@ import { Titlebar } from "../components/titlebar";
 import { Card } from "../components/card";
 import { Row } from "../components/row";
 import { Col } from "../components/column";
+import Button from "devextreme-react/button";
 import DataGrid, {
   Column,
   Pager,
@@ -14,8 +15,13 @@ import DataGrid, {
 } from "devextreme-react/data-grid";
 
 import axios from "axios";
+import { useTheme } from "../context/ThemeContext";
+import { useAuth } from "../context/AuthContext";
 
 const About = () => {
+  const { theme, toggleTheme } = useTheme();
+  const { user, login, logout } = useAuth();
+
   const [count, setCount] = useState(4666);
   const [data, setData] = useState([]);
   const [loadingText, setLoadingText] = useState("Loading data...");
@@ -47,7 +53,7 @@ const About = () => {
       {/* chart start */}
       <Row>
         <Col sz={12} sm={12} lg={12}>
-          <Card title={"Card 1"}>
+          <Card title={theme}>
             <DataGrid
               className={"dx-card wide-card"}
               dataSource={data}
@@ -118,7 +124,23 @@ const About = () => {
         </Col>
         <Col sz={12} sm={12} lg={6}>
           <Card title={"Card 2"}>
+            <h4>{user == null ? '(No user)' : user.name}</h4>
+          </Card>
+        </Col>
+        <Col sz={12} sm={12} lg={6}>
+          <Card title={"Card 2"}>
             <h4>Hello</h4>
+            <div className="dx-fieldset">
+              <br></br>
+              {user == null && <Button
+                width="100%"
+                id="button"
+                text={'Login Evans'}
+                type="danger"
+                useSubmitBehavior={false}
+                onClick={() => login('Evans')}
+              />}
+            </div>
           </Card>
         </Col>
       </Row>

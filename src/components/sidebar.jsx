@@ -3,11 +3,17 @@ import { Link, NavLink, useLocation } from "react-router-dom";
 
 import { navigation } from "../navigation/app-navigation";
 
-function ExpandableGroup({ openSections, toggleSection, navitem }) {
+function ExpandableGroup({
+  openSections,
+  toggleSection,
+  navitem,
+  collapseMainSidebar,
+}) {
   const contentRef = useRef(null);
   const location = useLocation();
 
   const handleLinkClick = (event) => {
+    collapseMainSidebar();
     event.stopPropagation(); // Prevent event from bubbling to parent
   };
 
@@ -62,14 +68,10 @@ function ExpandableGroup({ openSections, toggleSection, navitem }) {
   );
 }
 
-export const Sidebar = ({ names, title }) => {
+export const Sidebar = ({ names, title, isOpen, closeSidebar }) => {
   const [menuItems, setMenuItems] = useState(navigation);
   const [openSections, setOpenSections] = useState([]);
   const location = useLocation();
-
-  useEffect(() => {
-    console.log(new Date(), " Sider init");
-  }, []);
 
   const toggle = (id) => {
     if (openSections.includes(id)) {
@@ -81,10 +83,23 @@ export const Sidebar = ({ names, title }) => {
     }
   };
 
+  const clearSidebar = () => {
+    //only reset the sidebar on mobile platforms
+    //isopen will be set when the toggle is visible and a user clicks it
+    if (isOpen) {
+      setOpenSections([]);
+      closeSidebar();
+    }
+  };
+
   return (
     /* start sidebar menu */
     <div className="sidebar-container">
-      <div className="sidemenu-container navbar-collapse collapse fixed-menu">
+      <div
+        className={`sidemenu-container navbar-collapse collapse fixed-menu ${
+          isOpen ? "show" : ""
+        }`}
+      >
         <div id="remove-scroll" className="left-sidemenu">
           <div
             className="slimScrollDiv"
@@ -92,7 +107,6 @@ export const Sidebar = ({ names, title }) => {
               position: "relative",
               overflow: "hidden",
               width: "auto",
-              height: "874px",
             }}
           >
             <ul
@@ -104,7 +118,6 @@ export const Sidebar = ({ names, title }) => {
                 paddingTop: "20px",
                 overflow: "hidden",
                 width: "auto",
-                height: "874px",
               }}
             >
               <li className="sidebar-toggler-wrapper hide" key={"toggle"}>
@@ -112,6 +125,12 @@ export const Sidebar = ({ names, title }) => {
                   <span></span>
                 </div>
               </li>
+              {isOpen && <li className="sidebar-user-panel">
+                <div className="sidebar-user">
+                  <div className="sidebar-user-picture"></div>
+                  <div className="sidebar-user-details"></div>
+                </div>
+              </li>}
               {menuItems.map((navitem) => {
                 if (navitem.items.length == 0) {
                   return (
@@ -121,7 +140,11 @@ export const Sidebar = ({ names, title }) => {
                       }
                       key={navitem.key}
                     >
-                      <Link to={navitem.path} className="nav-link">
+                      <Link
+                        to={navitem.path}
+                        className="nav-link"
+                        onClick={clearSidebar}
+                      >
                         <i className={navitem.icon}></i>
                         <span className="title">{navitem.text}</span>
                       </Link>
@@ -134,6 +157,7 @@ export const Sidebar = ({ names, title }) => {
                       key={navitem.key}
                       openSections={openSections}
                       toggleSection={toggle}
+                      collapseMainSidebar={clearSidebar}
                     ></ExpandableGroup>
                   );
                 }

@@ -3408,7 +3408,7 @@ form.search-form-opened .btn.submit {
   .sub-menu {
   list-style: none;
   display: none;
-  padding: 0 0 15px 0;
+  padding: 0 0 0 0;
   margin: 0;
   background-color: #1e293c;
 }
