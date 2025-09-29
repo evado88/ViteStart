@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useAuth } from "../context/AuthContext";
+import { Link, NavLink, useLocation } from "react-router-dom";
 
 export const Header = ({ toggleSidebar }) => {
   const { user, logout } = useAuth();
@@ -20,12 +21,12 @@ export const Header = ({ toggleSidebar }) => {
       <div className="page-header-inner">
         {/* logo start */}
         <div className="page-logo">
-          <a href="https://www.einfosoft.com/templates/admin/smart/source/light/index.html">
+          <Link to={'/'}>
             <span className="logo-icon material-icons fa-rotate-45">
               school
             </span>
-            <span className="logo-default">Smart</span>
-          </a>
+            <span className="logo-default">SACCO</span>
+          </Link>
         </div>
         {/* logo end */}
         <ul className="nav navbar-nav navbar-left in">

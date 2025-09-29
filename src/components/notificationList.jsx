@@ -8,10 +8,10 @@ export const NotificationList = (items) => {
       style={{ width: "auto" }}
     >
       <a href="#" className="single-mail">
-        <span className="icon bg-primary">
+        <span className="icon bg-danger">
           <i className="fa fa-user-o"></i>
         </span>
-        <span className="text-purple">Abhay Jani</span> Added you as friend
+        Penalty fee K500 (Mssisng meeting) has been added to your account
         <span className="notificationtime">
           <small>Just Now</small>
         </span>
@@ -20,18 +20,18 @@ export const NotificationList = (items) => {
         <span className="icon blue-bgcolor">
           <i className="fa fa-envelope-o"></i>
         </span>
-        <span className="text-purple">John Doe</span> send you a mail
+        <span className="text-purple">John Doe</span> has sent you a POP for ZMW5,000
         <span className="notificationtime">
-          <small>Just Now</small>
+          <small>5 Days Ago</small>
         </span>
       </a>
       <a href="#" className="single-mail">
         <span className="icon bg-success">
           <i className="fa fa-check-square-o"></i>
         </span>
-        Success Message
+        Loan ZMW 10,000 approved
         <span className="notificationtime">
-          <small> 2 Days Ago</small>
+          <small> 5 Days Ago</small>
         </span>
       </a>
 

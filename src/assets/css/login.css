@@ -111,10 +111,14 @@ h2 {
 }
 
 .signup-form,
+.signin-form {
+  width: 70%;
+  overflow: hidden;
+}
+
 .signup-image,
-.signin-form,
 .signin-image {
-  width: 50%;
+  width: 30%;
   overflow: hidden;
 }
 
@@ -182,7 +186,7 @@ figure {
 .signup-form {
   margin-left: 75px;
   margin-right: 75px;
-  padding-left: 34px;
+  padding-left: 14px;
 }
 
 .register-form {

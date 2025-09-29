@@ -27,8 +27,8 @@ function App() {
             </PrivateRoute>
           }
         >
-          <Route path="/" element={<HomePage></HomePage>} />
-          <Route path="/dashboard" element={<DashboardPage></DashboardPage>} />
+          <Route path="/" element={<DashboardPage></DashboardPage>} />
+          <Route path="/home" element={<HomePage></HomePage>} />
           <Route path="/about" element={<AboutPage></AboutPage>} />
           <Route path="/contact" element={<ContactPage></ContactPage>} />
           <Route path="*" element={<NotFoundPage></NotFoundPage>} />

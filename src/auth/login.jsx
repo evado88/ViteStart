@@ -7,6 +7,7 @@ import ValidationSummary from "devextreme-react/validation-summary";
 import { LoadIndicator } from "devextreme-react/load-indicator";
 import { useAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
+import { Link, NavLink, useLocation } from "react-router-dom";
 
 const Login = () => {
   const { user, login } = useAuth();
@@ -20,7 +21,7 @@ const Login = () => {
   useEffect(() => {
     // Redirect if already logged in
     if (user) {
-      navigate("/home");
+      navigate("/");
     }
   }, [user, navigate]);
 
@@ -41,22 +42,25 @@ const Login = () => {
         <div className="signin-content">
           <div className="signin-image">
             <figure>
-              <img src="./images/signin.jpg" alt="sing up image"></img>
+              <img src="./images/key.png" alt="sing up image"></img>
             </figure>
-            <a href="sign_up.html" className="signup-image-link">
+            <Link to={"/signup"} className="signup-image-link">
               Create an account
-            </a>
+            </Link>
           </div>
           <div className="signin-form">
-            <h2 className="form-title">Login</h2>
+            <h2 className="form-title">SACCO</h2>
             <form
               className="register-form"
               id="login-form"
               onSubmit={onFormSubmit}
             >
-              <div className="form-group">
-                <div>
+              <div className="dx-fieldset">
+                <div className="dx-fieldset-header">Login</div>
+                <div className="dx-field">
+                  <div className="dx-field-label">Username</div>
                   <TextBox
+                    className="dx-field-value"
                     validationMessagePosition="left"
                     inputAttr={{ "aria-label": "Userame" }}
                     placeholder="Username"
@@ -64,15 +68,16 @@ const Login = () => {
                     value={username}
                     onValueChange={(text) => setUsername(text)}
                   >
+                    {" "}
                     <Validator>
                       <RequiredRule message="Username is required" />
                     </Validator>
                   </TextBox>
                 </div>
-              </div>
-              <div className="form-group">
-                <div>
+                <div className="dx-field">
+                  <div className="dx-field-label">Password</div>
                   <TextBox
+                    className="dx-field-value"
                     validationMessagePosition="left"
                     inputAttr={{ "aria-label": "Password" }}
                     placeholder="Password"
@@ -81,6 +86,7 @@ const Login = () => {
                     value={password}
                     onValueChange={(text) => setPassword(text)}
                   >
+                    {" "}
                     <Validator>
                       <RequiredRule message="Password is required" />
                     </Validator>
