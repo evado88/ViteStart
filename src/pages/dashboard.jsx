@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Ticker } from "../components/ticker";
-import { Titlebar } from "../components/titlebar";
+import { Titlebar } from "../components/titlebar.js";
 import { Card } from "../components/card";
 import { Row } from "../components/row";
 import { Col } from "../components/column";

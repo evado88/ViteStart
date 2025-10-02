@@ -17,7 +17,7 @@ const Login = () => {
   const [loading, setLoading] = useState(false);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-
+  
   useEffect(() => {
     // Redirect if already logged in
     if (user) {
@@ -34,7 +34,7 @@ const Login = () => {
       setLoading(false);
 
       login(username);
-    }, 3000);
+    }, 1000);
   };
   return (
     <section className="sign-in">
@@ -64,7 +64,7 @@ const Login = () => {
                     validationMessagePosition="left"
                     inputAttr={{ "aria-label": "Userame" }}
                     placeholder="Username"
-                    disabled={error}
+                    disabled={loading}
                     value={username}
                     onValueChange={(text) => setUsername(text)}
                   >
@@ -81,7 +81,7 @@ const Login = () => {
                     validationMessagePosition="left"
                     inputAttr={{ "aria-label": "Password" }}
                     placeholder="Password"
-                    disabled={error}
+                    disabled={loading}
                     mode="password"
                     value={password}
                     onValueChange={(text) => setPassword(text)}
@@ -99,9 +99,8 @@ const Login = () => {
               <div className="form-group form-button">
                 <Button
                   width="100%"
-                  id="button"
                   text="Login"
-                  type="default"
+                  type={loading ? "normal" : "default"}
                   disabled={loading}
                   useSubmitBehavior={true}
                 >

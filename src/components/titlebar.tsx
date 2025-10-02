@@ -1,6 +1,14 @@
+import { url } from "inspector";
 import React from "react";
+import { Link, Route } from "react-router-dom";
 
-export const Titlebar = ({ title, section, icon }) => {
+interface TitlebarArgs {
+  title: string;
+  section: string;
+  icon: string;
+  url: string;
+}
+export const Titlebar = ({ title, section, icon, url }: TitlebarArgs) => {
   return (
     /* start title */
     <div className="page-bar">
@@ -11,12 +19,11 @@ export const Titlebar = ({ title, section, icon }) => {
         <ol className="breadcrumb page-breadcrumb pull-right">
           <li>
             <i className={`fa fa-${icon}`}></i>&nbsp;
-            <a
+            <Link to={url}
               className="parent-item"
-              href="https://www.einfosoft.com/templates/admin/smart/source/light/index.html"
             >
               {section}
-            </a>
+            </Link>
             &nbsp;<i className="fa fa-angle-right"></i>
           </li>
           <li className="active">{title}</li>

@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import { Link, NavLink, useLocation } from "react-router-dom";
-
 import { navigation } from "../navigation/app-navigation";
+import { useAuth } from "../context/AuthContext";
 
 function ExpandableGroup({
   openSections,
@@ -69,9 +69,19 @@ function ExpandableGroup({
 }
 
 export const Sidebar = ({ names, title, isOpen, closeSidebar }) => {
-  const [menuItems, setMenuItems] = useState(navigation);
+  const { user, logout } = useAuth();
+  const [menuItems, setMenuItems] = useState([]);
   const [openSections, setOpenSections] = useState([]);
   const location = useLocation();
+
+  useEffect(() => {
+    const userMenu = navigation.filter((mitem) =>
+      mitem.roles.includes(user.role)
+    );
+
+    setMenuItems(userMenu);
+    
+  }, [user]);
 
   const toggle = (id) => {
     if (openSections.includes(id)) {
@@ -125,12 +135,14 @@ export const Sidebar = ({ names, title, isOpen, closeSidebar }) => {
                   <span></span>
                 </div>
               </li>
-              {isOpen && <li className="sidebar-user-panel">
-                <div className="sidebar-user">
-                  <div className="sidebar-user-picture"></div>
-                  <div className="sidebar-user-details"></div>
-                </div>
-              </li>}
+              {isOpen && (
+                <li className="sidebar-user-panel">
+                  <div className="sidebar-user">
+                    <div className="sidebar-user-picture"></div>
+                    <div className="sidebar-user-details"></div>
+                  </div>
+                </li>
+              )}
               {menuItems.map((navitem) => {
                 if (navitem.items.length == 0) {
                   return (

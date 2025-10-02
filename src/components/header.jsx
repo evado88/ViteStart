@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useAuth } from "../context/AuthContext";
 import { Link, NavLink, useLocation } from "react-router-dom";
+import AppInfo from "../classes/app-info";
 
 export const Header = ({ toggleSidebar }) => {
   const { user, logout } = useAuth();
@@ -21,11 +22,11 @@ export const Header = ({ toggleSidebar }) => {
       <div className="page-header-inner">
         {/* logo start */}
         <div className="page-logo">
-          <Link to={'/'}>
+          <Link to={'#'}>
             <span className="logo-icon material-icons fa-rotate-45">
               school
             </span>
-            <span className="logo-default">SACCO</span>
+            <span className="logo-default">{AppInfo.appCode}</span>
           </Link>
         </div>
         {/* logo end */}

@@ -5,7 +5,7 @@ const ShoppingContext = createContext();
 export function ShoppingProvider({ children }) {
   const [items, setItems] = useState([]);
 
-  const addItem = (itm) => setItems([...items, [itm]]);
+  const addItem = (itm) => setItems([...items, itm]);
 
   return (
     <ShoppingContext.Provider value={{ items, addItem }}>

@@ -6,11 +6,15 @@ const AuthContext = createContext();
 // 2. Create provider
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
+  const [isLoadingAuth, setIsLoadingAuth] = useState(true);
 
   const login = (username) => {
-    const loggedUser = { name: username };
+    const loggedUser = {
+      name: username,
+      role: `${username}`.toLowerCase() === "admin" ? 2 : 1,
+    };
     localStorage.setItem("user", JSON.stringify(loggedUser));
-    setUser({ name: username });
+    setUser(loggedUser);
   };
 
   // Load user from localStorage on refresh
@@ -19,6 +23,7 @@ export function AuthProvider({ children }) {
     if (storedUser) {
       setUser(JSON.parse(storedUser));
     }
+    setIsLoadingAuth(false)
   }, []);
 
   const logout = () => {
@@ -27,7 +32,7 @@ export function AuthProvider({ children }) {
   };
 
   return (
-    <AuthContext.Provider value={{ user, login, logout }}>
+    <AuthContext.Provider value={{isLoadingAuth, user, login, logout }}>
       {children}
     </AuthContext.Provider>
   );

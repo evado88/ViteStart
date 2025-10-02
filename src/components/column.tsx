@@ -1,6 +1,15 @@
 import React from "react";
 
-export const Col = ({ lg, md, sm, xl, sz, children }) => {
+interface ColArgs {
+  lg?: number, 
+  md?: number, 
+  sm?: number, 
+  xl?: number, 
+  sz?: number, 
+  children?: any
+}
+
+export const Col = ({ lg, md, sm, xl, sz, children }: ColArgs) => {
   const smc = sm == undefined ? "" : `col-sm-${sm} `;
   const mdc = md == undefined ? "" : `col-md-${md} `;
   const lgc = lg == undefined ? "" : `col-lg-${lg} `;

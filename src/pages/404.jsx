@@ -16,6 +16,7 @@ import DateBox from "devextreme-react/date-box";
 import { useTheme } from "../context/ThemeContext";
 import { useAuth } from "../context/AuthContext";
 import { useShopping } from "../context/ShoppingBasketContext";
+import { TestComponent } from '../components/TestComponent'
 
 const NotFound = () => {
   const { theme, toggleTheme } = useTheme();
@@ -67,6 +68,7 @@ const NotFound = () => {
                 <ValidationSummary id="summary" />
                 <br></br>
                 <Button
+              
                   width="100%"
                   id="button"
                   text="Save"
@@ -83,6 +85,13 @@ const NotFound = () => {
             <ul>
               {items.map((i) => <li>{i}</li>)}
             </ul>
+            <TestComponent linkClikced={(e) => {
+              e.preventDefault();
+         
+            
+              console.log('Link clicked!', e);
+
+            }}></TestComponent>
           </Card>
         </Col>
       </Row>

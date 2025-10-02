@@ -10,9 +10,19 @@ import {
   DashboardPage,
   ContactPage,
   AboutPage,
+  //Error
   NotFoundPage,
+  //Auth
   LoginPage,
   SignupPage,
+  //dictionairies
+  StatusesPage,
+  TransactionSourcesPage,
+  TransactionTypesPage,
+  //Users
+  UsersPendingPage,
+  //My
+  PostMonthPage
 } from "./pages";
 import { BrowserRouter } from "react-router-dom";
 
@@ -31,6 +41,15 @@ function App() {
           <Route path="/home" element={<HomePage></HomePage>} />
           <Route path="/about" element={<AboutPage></AboutPage>} />
           <Route path="/contact" element={<ContactPage></ContactPage>} />
+          {/* Dictionaries */}
+          <Route path="/admin/dictionairies/statuses" element={<StatusesPage></StatusesPage>} />
+          <Route path="/admin/dictionairies/transaction-sources" element={<TransactionSourcesPage></TransactionSourcesPage>} />
+          <Route path="/admin/dictionairies/transaction-types" element={<TransactionTypesPage></TransactionTypesPage>} />
+          {/* Users */}
+          <Route path="/admin/users/pending" element={<UsersPendingPage/>} />
+          {/* My */}
+          <Route path="/my/monthly-posting" element={<PostMonthPage/>} />
+          {/* Error */}   
           <Route path="*" element={<NotFoundPage></NotFoundPage>} />
         </Route>
         <Route element={<AuthLayout />}>
