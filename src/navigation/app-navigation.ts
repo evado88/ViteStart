@@ -19,9 +19,26 @@ export const navigation: MenuItem[] = [
     key: "monthly-posting",
     text: "Monthly Posting",
     icon: "fa fa-calendar",
-    path: "/my/monthly-posting",
+    path: "",
     roles: [1],
-    items: [],
+    items: [
+      {
+        key: "post-savings",
+        text: "New Monthly Posting",
+        icon: "",
+        path: "/my/monthly-posting",
+        roles: [1],
+        items: [],
+      },
+      {
+        key: "savings",
+        text: "Monthly Postings",
+        icon: "",
+        path: "/my/monthly-postings",
+        roles: [1],
+        items: [],
+      },
+    ],
   },
   {
     key: "savings",

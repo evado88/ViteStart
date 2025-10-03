@@ -22,7 +22,8 @@ import {
   //Users
   UsersPendingPage,
   //My
-  PostMonthPage
+  MonthlyPostingPage,
+  MonthlyPostingsPage
 } from "./pages";
 import { BrowserRouter } from "react-router-dom";
 
@@ -48,7 +49,8 @@ function App() {
           {/* Users */}
           <Route path="/admin/users/pending" element={<UsersPendingPage/>} />
           {/* My */}
-          <Route path="/my/monthly-posting" element={<PostMonthPage/>} />
+          <Route path="/my/monthly-posting" element={<MonthlyPostingPage/>} />
+          <Route path="/my/monthly-postings" element={<MonthlyPostingsPage/>} />
           {/* Error */}   
           <Route path="*" element={<NotFoundPage></NotFoundPage>} />
         </Route>

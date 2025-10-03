@@ -14,4 +14,5 @@ export { default as TransactionSourcesPage} from './admin/dictionairies/transact
 //users
 export { default as UsersPendingPage} from './admin/users/users_pending'
 //My
-export { default as PostMonthPage} from './my/post_month'
+export { default as MonthlyPostingPage} from './my/month_posting'
+export { default as MonthlyPostingsPage} from './my/month_postings'

@@ -6,6 +6,7 @@ import {
   RequiredRule,
   EmailRule,
   AsyncRule,
+  CompareRule
 } from "devextreme-react/validator";
 import ValidationSummary from "devextreme-react/validation-summary";
 import { LoadIndicator } from "devextreme-react/load-indicator";
