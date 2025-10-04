@@ -17,11 +17,9 @@ import DataGrid, {
 import axios from "axios";
 import { useTheme } from "../context/ThemeContext";
 import { useAuth } from "../context/AuthContext";
-import { useShopping } from "../context/ShoppingBasketContext";
 
 const About = () => {
   const { theme, toggleTheme } = useTheme();
-  const { items, addItem } = useShopping();
   const { user, login, logout } = useAuth();
 
   const [count, setCount] = useState(4666);
@@ -127,11 +125,6 @@ const About = () => {
         <Col sz={12} sm={12} lg={6}>
           <Card title={"Card 2"}>
             <h4>{user == null ? "(No user)" : user.name}</h4>
-            <ul>
-              {items.map((i) => (
-                <li>{i}</li>
-              ))}
-            </ul>
           </Card>
         </Col>
         <Col sz={12} sm={12} lg={6}>
@@ -146,7 +139,6 @@ const About = () => {
                   text={"Login Evans"}
                   type="danger"
                   useSubmitBehavior={false}
-                  onClick={() => login("Evans")}
                 />
               )}
             </div>

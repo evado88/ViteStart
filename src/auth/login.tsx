@@ -8,6 +8,8 @@ import { LoadIndicator } from "devextreme-react/load-indicator";
 import { useAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 import { Link, NavLink, useLocation } from "react-router-dom";
+import axios, { AxiosError } from "axios";
+import Assist from "../classes/assist";
 
 const Login = () => {
   const { user, login } = useAuth();
@@ -17,7 +19,7 @@ const Login = () => {
   const [loading, setLoading] = useState(false);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  
+
   useEffect(() => {
     // Redirect if already logged in
     if (user) {
@@ -25,15 +27,40 @@ const Login = () => {
     }
   }, [user, navigate]);
 
-  const onFormSubmit = async (e) => {
+  const onFormSubmit = async (e: React.FormEvent) => {
     setLoading(true);
 
     e.preventDefault();
 
+    const formData = new FormData();
+
+    formData.append("username", username);
+    formData.append("password", password);
+
     setTimeout(() => {
       setLoading(false);
 
-      login(username);
+      axios
+        .post("http://127.0.0.1:8700/auth/login", formData)
+        .then((response) => {
+          console.log("Form submitted successfully:", response.data);
+          login(response.data.access_token);
+        })
+        .catch((error: AxiosError) => {
+          console.error("Error submitting form:", error);
+
+          if (error.response?.status == 401) {
+            Assist.showMessage(
+              "The specified username or password is incorrect", 'error'
+            );
+          }else{
+                  Assist.showMessage(
+              "Unable to login. Please try again"
+            );
+          }
+        });
+
+     
     }, 1000);
   };
   return (

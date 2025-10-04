@@ -1,4 +1,5 @@
 import { createContext, useState, useContext, useEffect } from "react";
+import Assist from "../classes/assist";
 
 // 1. Create context
 const AuthContext = createContext();
@@ -10,29 +11,43 @@ export function AuthProvider({ children }) {
 
   const login = (username) => {
     const loggedUser = {
-      name: username,
+      name: `${username}`.substring(0, 5),
       role: `${username}`.toLowerCase() === "admin" ? 2 : 1,
     };
     localStorage.setItem("user", JSON.stringify(loggedUser));
-    setUser(loggedUser);
+    localStorage.setItem("token", JSON.stringify(username));
+    const details = Assist.getTokenDetails(username);
+    console.log("a-detail", details, "stored user", username);
+
+    setUser(details);
   };
 
   // Load user from localStorage on refresh
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
+    const token = localStorage.getItem("token");
+    const details = Assist.getTokenDetails(token);
+    console.log("b-detail", details, "stored user", storedUser);
+
     if (storedUser) {
-      setUser(JSON.parse(storedUser));
+      const now = Date.now() / 1000;
+      if (details.exp < now) {
+        setUser(null);
+      } else {
+        setUser(details);
+      }
     }
-    setIsLoadingAuth(false)
+    setIsLoadingAuth(false);
   }, []);
 
   const logout = () => {
     localStorage.removeItem("user");
+    localStorage.removeItem("token");
     setUser(null);
   };
 
   return (
-    <AuthContext.Provider value={{isLoadingAuth, user, login, logout }}>
+    <AuthContext.Provider value={{ isLoadingAuth, user, login, logout }}>
       {children}
     </AuthContext.Provider>
   );

@@ -69,7 +69,7 @@ function ExpandableGroup({
 }
 
 export const Sidebar = ({ names, title, isOpen, closeSidebar }) => {
-  const { user, logout } = useAuth();
+  const { user } = useAuth();
   const [menuItems, setMenuItems] = useState([]);
   const [openSections, setOpenSections] = useState([]);
   const location = useLocation();

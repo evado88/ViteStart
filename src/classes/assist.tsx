@@ -2,6 +2,7 @@ import AppInfo from "./app-info.js";
 import notify from "devextreme/ui/notify";
 import axios from "axios";
 import TaskResult from "./task-result.js";
+import { jwtDecode } from "jwt-decode";
 
 class Assist {
   static firebaseConfig = {
@@ -13,6 +14,38 @@ class Assist {
     messagingSenderId: "878075714362",
     appId: "1:878075714362:web:55575ac3647ff7d3cd0e03",
   };
+
+  static isTokenExpired() {
+    try {
+      const token = localStorage.getItem("token");
+
+      if (token) {
+        const decoded = jwtDecode(token);
+        if (!decoded.exp) {
+          return true; // no expiry → treat as invalid
+        } else {
+          const now = Date.now() / 1000; // current time in seconds
+         // console.log("token cheque", now, "vs", decoded.exp);
+          return decoded.exp < now;
+        }
+      } else {
+        //not found, return true
+        return true;
+      }
+    } catch (e) {
+      // invalid token
+      return true;
+    }
+  }
+
+  static getTokenDetails(token: string) {
+    try {
+      const decoded = jwtDecode(token);
+      return decoded;
+    } catch (e) {
+      return undefined; // invalid token
+    }
+  }
 
   ///Logs a message to the console
   static log(message: string, type: string = "log") {

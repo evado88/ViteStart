@@ -208,7 +208,6 @@ const Contact = () => {
                     type="danger"
                     disabled={error}
                     useSubmitBehavior={false}
-                    onClick={user == null ? () => login(name) : logout}
                   />
                 </div>
               </div>
