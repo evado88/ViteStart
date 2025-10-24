@@ -16,12 +16,18 @@ import DataGrid, {
 import Assist from "../../../classes/assist";
 import PageConfig from "../../../classes/page-config";
 
-const TransactionTypes = () => {
+const AdminMonthlyPostings = () => {
   const [data, setData] = useState([]);
   const [loadingText, setLoadingText] = useState("Loading data...");
   const [loading, setLoading] = useState(true);
 
-  const pageConfig = new PageConfig("Transaction Types", "transaction-types/", "", "Type");
+  const pageConfig = new PageConfig(
+    "All Monthly Postings",
+    "monthly-posting/list",
+    "",
+    "Monthly Posting",
+    ""
+  );
 
   useEffect(() => {
     setLoading(true);
@@ -48,7 +54,7 @@ const TransactionTypes = () => {
       <Titlebar
         title={pageConfig.Title}
         section={"Administration"}
-        icon={"home"}
+        icon={"cubes"}
         url="/"
       ></Titlebar>
       {/* end widget */}
@@ -79,37 +85,84 @@ const TransactionTypes = () => {
               <FilterRow visible={true} />
               <LoadPanel enabled={loading} />
               <ColumnChooser enabled={true} mode="select"></ColumnChooser>
-              <Column dataField="id" caption="ID" hidingPriority={4}></Column>
+              <Column dataField="id" caption="ID" hidingPriority={13}></Column>
               <Column
-                dataField="type_name"
+                dataField="date"
                 caption="Name"
-                hidingPriority={2}
+                dataType="date"
+                format={"dd MMMM yyy"}
+                hidingPriority={12}
                 cellRender={(e) => {
                   return (
-                    <a href={`#/admin-department/edit/${e.data.id}`}>
-                      {e.data.type_name}
+                    <a href={`/admin/monthly-postings/view/${e.data.id}`}>
+                      {e.text}
                     </a>
                   );
                 }}
               ></Column>
               <Column
-                dataField="description"
-                caption="Description"
-                sortOrder="asc"
-                hidingPriority={1}
+                dataField="status.status_name"
+                caption="Status"
+                hidingPriority={11}
               ></Column>
               <Column
-                dataField="created_by"
+                dataField="saving"
+                caption="Saving"
+                format={",##0.###"}
+                hidingPriority={10}
+              ></Column>
+              <Column
+                dataField="shares"
+                caption="Shares"
+                format={",##0.###"}
+                hidingPriority={9}
+              ></Column>
+              <Column
+                dataField="social"
+                caption="Social"
+                format={",##0.###"}
+                hidingPriority={8}
+              ></Column>
+              <Column
+                dataField="penalty"
+                caption="Penalty"
+                format={",##0.###"}
+                hidingPriority={7}
+              ></Column>
+              <Column
+                dataField="loan_interest"
+                caption="Interest"
+                format={",##0.###"}
+                hidingPriority={6}
+              ></Column>
+              <Column
+                dataField="loan_amount_payment"
+                caption="Loan Payment"
+                hidingPriority={5}
+              ></Column>
+              <Column
+                dataField="loan_month_repayment"
+                format={",##0.###"}
+                caption="Loan Repayment"
+                hidingPriority={4}
+              ></Column>
+              <Column
+                dataField="loan_application"
+                caption="Loan"
+                hidingPriority={3}
+              ></Column>
+              <Column
+                dataField="user.email"
                 caption="User"
                 minWidth={120}
-                hidingPriority={3}
+                hidingPriority={2}
               ></Column>
               <Column
                 dataField="created_at"
                 caption="Date"
                 dataType="date"
                 format="dd MMM yyy HH:MM"
-                hidingPriority={2}
+                hidingPriority={1}
               ></Column>
             </DataGrid>
           </Card>
@@ -119,4 +172,4 @@ const TransactionTypes = () => {
   );
 };
 
-export default TransactionTypes;
+export default AdminMonthlyPostings;

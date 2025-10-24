@@ -28,10 +28,10 @@ const TransactionSources = () => {
 
     Assist.loadData(pageConfig.Title, pageConfig.Url)
       .then((res: any) => {
-        setData(res.Result);
+        setData(res);
         setLoading(false);
 
-        if (res.Result.length === 0) {
+        if (res.length === 0) {
           setLoadingText("No Data");
         } else {
           setLoadingText("");

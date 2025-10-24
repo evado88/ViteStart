@@ -16,13 +16,12 @@ import DataGrid, {
 import Assist from "../../../classes/assist";
 import PageConfig from "../../../classes/page-config";
 
-const TransactionTypes = () => {
+const AttendanceTypes = () => {
   const [data, setData] = useState([]);
   const [loadingText, setLoadingText] = useState("Loading data...");
   const [loading, setLoading] = useState(true);
 
-  const pageConfig = new PageConfig("Transaction Types", "transaction-types/", "", "Type");
-
+  const pageConfig = new PageConfig("Attendance Types", "attendance-types/", "", "Stage","");
   useEffect(() => {
     setLoading(true);
 
@@ -119,4 +118,4 @@ const TransactionTypes = () => {
   );
 };
 
-export default TransactionTypes;
+export default AttendanceTypes;

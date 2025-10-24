@@ -38,30 +38,27 @@ const Login = () => {
     formData.append("password", password);
 
     setTimeout(() => {
-      setLoading(false);
-
       axios
         .post("http://127.0.0.1:8700/auth/login", formData)
         .then((response) => {
+          setLoading(false);
           console.log("Form submitted successfully:", response.data);
           login(response.data.access_token);
         })
         .catch((error: AxiosError) => {
+          setLoading(false);
           console.error("Error submitting form:", error);
 
           if (error.response?.status == 401) {
             Assist.showMessage(
-              "The specified username or password is incorrect", 'error'
+              "The specified username or password is incorrect",
+              "error"
             );
-          }else{
-                  Assist.showMessage(
-              "Unable to login. Please try again"
-            );
+          } else {
+            Assist.showMessage("Unable to login. Please try again", "error");
           }
         });
-
-     
-    }, 1000);
+    }, Assist.developmentDelay);
   };
   return (
     <section className="sign-in">

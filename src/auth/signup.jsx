@@ -272,7 +272,7 @@ const Signup = () => {
         const existingUsernames = ["admin", "user123", "jane@company.co.zm"];
         const isUsernameTaken = existingUsernames.includes(params.value);
         resolve(!isUsernameTaken); // Resolve with true if valid, false if invalid
-      }, 1000); // Simulate a 1-second delay for the server call
+      },  Assist.developmentDelay); // Simulate a 1-second delay for the server call
     });
   }
 

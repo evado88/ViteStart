@@ -5,6 +5,8 @@ import TaskResult from "./task-result.js";
 import { jwtDecode } from "jwt-decode";
 
 class Assist {
+  static developmentDelay: number = 1000;
+
   static firebaseConfig = {
     apiKey: "AIzaSyCbH2wyJmcqTQU3gIl_raQwr0AmVuG_bhA",
     authDomain: "myzambia-5c62c.firebaseapp.com",
@@ -14,6 +16,18 @@ class Assist {
     messagingSenderId: "878075714362",
     appId: "1:878075714362:web:55575ac3647ff7d3cd0e03",
   };
+
+  // Currency formatting
+  static currencyFormatter = new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "ZMW",
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  });
+
+  static formatCurrency(value: number): string {
+    return this.currencyFormatter.format(value);
+  }
 
   static isTokenExpired() {
     try {
@@ -25,7 +39,7 @@ class Assist {
           return true; // no expiry → treat as invalid
         } else {
           const now = Date.now() / 1000; // current time in seconds
-         // console.log("token cheque", now, "vs", decoded.exp);
+          // console.log("token cheque", now, "vs", decoded.exp);
           return decoded.exp < now;
         }
       } else {
@@ -45,6 +59,11 @@ class Assist {
     } catch (e) {
       return undefined; // invalid token
     }
+  }
+
+  static updateDateDay(dateStr: string, newDay: number) {
+    const newDateStr = dateStr.slice(0, 8) + String(newDay).padStart(2, "0");
+    return newDateStr;
   }
 
   ///Logs a message to the console
@@ -75,7 +94,12 @@ class Assist {
     );
   }
 
-  ///Deletes data from the specified url
+  /**
+   * Load data from the specified URL
+   * @param title
+   * @param url
+   * @returns
+   */
   static async loadData(title: string, url: string) {
     Assist.log(
       `Starting to load ${title} from server using url ${AppInfo.apiUrl}${url}`,
@@ -86,39 +110,109 @@ class Assist {
       axios
         .get(`${AppInfo.apiUrl}${url}`)
         .then((response) => {
-          Assist.log(`Response has completed for loading ${title} from server`);
+          Assist.log(
+            `Response completed for loading ${title} from server with status ${response.status}`
+          );
 
           if (response.status !== 200) {
-            Assist.log(
-              `Unable to process response for loading ${title} from server: ${JSON.stringify(
-                response
-              )}`
-            );
-
-            reject(
-              new TaskResult(
-                false,
-                "Unable to process server response from server",
-                null
-              )
-            );
+            reject(`Unable to load ${title}. Error code ${response.status}`);
           } else {
-            resolve(new TaskResult(true, "", response.data));
+            resolve(response.data);
           }
         })
-        .catch((error) => {
+        .catch((err) => {
           Assist.log(
             `An error occured when loading ${title} from server: ${JSON.stringify(
-              error
+              err
             )}`
           );
-          reject(
-            new TaskResult(
-              false,
-              `An error occured when loading ${title} from server`,
-              null
-            )
+
+          //user friendly message
+          let message = `Unable to load ${title} `;
+
+          //check for response
+          if (err.response != null) {
+            //check if error 404
+            if ((err.response.status = 404)) {
+              //add detail
+              message += `: ${err.response.data.detail}`;
+            }
+          } else {
+            //no response object
+            message += ": Please try again";
+          }
+          reject(message);
+        });
+    });
+  }
+
+  /**
+   * Post or puts the data at the specified url
+   * @param title
+   * @param url
+   * @param postData
+   * @param id
+   * @returns Promise
+   */
+  static async postPutData(
+    title: string,
+    url: string,
+    postData: any,
+    id: Number
+  ) {
+    const method = id == 0 ? "post" : "put";
+    const verb = id == 0 ? "post" : "put";
+
+    Assist.log(
+      `Starting to delete ${title} with id {key} from server using url ${
+        AppInfo.apiUrl + url
+      }`,
+      "log"
+    );
+
+    return new Promise(function (myResolve, myReject) {
+      axios({
+        method: method,
+        url: `${AppInfo.apiUrl}${url}`,
+        data: postData,
+      })
+        .then((response) => {
+          Assist.log(
+            `Response completed when performing ${method} for ${title} from server with status ${response.status}`
           );
+
+          if (response.status !== 200) {
+            myReject(
+              `Unable to ${verb} ${title}. Error code ${response.status}`
+            );
+          } else {
+            myResolve(response.data);
+          }
+        })
+        .catch((err) => {
+          Assist.log(
+            `An error occured when performing ${method} for ${title} from server`
+          );
+
+          //user friendly message
+          let message = `Unable to ${verb} ${title} `;
+
+          //check for response
+          if (err.response != null) {
+            //check if error is present
+            if (Array.isArray(err.response.data.detail)) {
+              const field = err.response.data.detail[0].loc[1];
+              message += `: ${err.response.data.detail[0].msg} ${field}`;
+            } else {
+              //add detail
+              message += `: ${err.response.data.detail}`;
+            }
+          } else {
+            //no response object
+            message += ": Please try again";
+          }
+
+          myReject(message);
         });
     });
   }

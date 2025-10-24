@@ -1,0 +1,1081 @@
+import React, { useState, useEffect } from "react";
+import { Titlebar } from "../../components/titlebar";
+import { Card } from "../../components/card";
+import { Row } from "../../components/row";
+import { Col } from "../../components/column";
+import {
+  Validator,
+  RequiredRule,
+  CustomRule,
+} from "devextreme-react/validator";
+import TextArea from "devextreme-react/text-area";
+import { NumberBox } from "devextreme-react/number-box";
+import Button from "devextreme-react/button";
+import ValidationSummary from "devextreme-react/validation-summary";
+import { LoadPanel } from "devextreme-react/load-panel";
+import DateBox from "devextreme-react/date-box";
+import { useAuth } from "../../context/AuthContext";
+import PageConfig from "../../classes/page-config";
+import Assist from "../../classes/assist";
+import { LoadIndicator } from "devextreme-react/load-indicator";
+import { useNavigate } from "react-router-dom";
+import DataGrid, {
+  Column,
+  Pager,
+  Paging,
+  Summary,
+  GroupItem,
+  TotalItem,
+} from "devextreme-react/data-grid";
+import { MemberHeader } from "../../components/memberHeader";
+import { confirm } from "devextreme/ui/dialog";
+const PostMonthly = () => {
+  //user
+  const { user } = useAuth();
+  const navigate = useNavigate();
+
+  //posting
+  const [postingDate, setPostingDate] = useState("2025-05-18");
+  //for production
+  /*
+  const [postingDate, setPostingDate] = useState(() => {
+    const today = new Date();
+    const mysqlDate = today.toISOString().split("T")[0]; // "YYYY-MM-DD"
+    return mysqlDate;
+  });*/
+
+  const [postingSavings, setPostingSavings] = useState<number | null>(500);
+  const [postingShares, setPostingShares] = useState<number | null>(1000);
+  const [postingSocial, setPostingSocial] = useState<number | null>(300);
+  const [postingPenalty, setPostingPenalty] = useState<number | null>(200);
+
+  //interest payment - minimum 10% if not yet paid on loan
+  const [postingLoanInterestPayment, setPostingLoanInterestPayment] = useState<
+    number | null
+  >(600);
+
+  //loan payment - usual payment every month or 10% first month
+  const [postingLoanMonthPayment, setPostingLoanMonthPayment] = useState<
+    number | null
+  >(1800);
+
+  //new loan loan application
+  const [postingLoanApplication, setPostingLoanApplication] = useState<
+    number | null
+  >(0);
+
+  //additiona
+  const [postingComments, setPostingComments] = useState("No comments");
+
+  //service
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(false);
+  const [saving, setSaving] = useState(false);
+
+  //configuration
+  //posting
+  const [latePostingStartDate, setLatePostingStartDate] = useState("");
+  const [latePostingStartDay, setLatePostingStartDay] = useState(1);
+
+  const [savingsMultiple, setSavingsMultiple] = useState<number | null>(null);
+  const [sharesMultiple, setSharesMultiple] = useState<number | null>(null);
+  const [socialMin, setSocialMin] = useState<number | null>(null);
+
+  //interest payment - minimum 10% if not yet paid on loan
+  const [loanInterestPercent, setLoanInterestPercent] = useState<number | null>(
+    null
+  );
+
+  //loan payment -  minimum 10% if not yet paid on loan
+  const [loanPaymentPercent, setLoanPaymentPercent] = useState<number | null>(
+    null
+  );
+
+  //new loan loan application
+  const [loanSavingsRatio, setLoanSavingsRatio] = useState<number | null>(null);
+
+  //additiona
+  const [latePostingFee, setLatePostingFee] = useState<number | null>(null);
+  const [missedMeetingFee, setMissedMeetingFee] = useState<number | null>(null);
+  const [lateMeetingFee, setLateMeetingFee] = useState<number | null>(null);
+
+  const [currentLoan, setCurrentLoan] = useState<any | null>(null);
+  const [loanPayments, setLoanPayments] = useState<number>(0);
+  const [loanBalance, setLoanBalance] = useState<number>(0);
+  const [allowLoanAmountChange, setAllowLoanAmountChange] =
+    useState<boolean>(true);
+
+  const [loanData, setLoanData] = useState<any[] | null>([]);
+  const [penaltyData, setPenaltyData] = useState<any[] | null>([]);
+
+  const [totalSavingsAmount, setTotalSavingsAmount] = useState<number | null>(
+    0
+  );
+
+  const [stage, setStage] = useState(1);
+
+  const [summryData, setSummaryData] = useState<any[] | null>([]);
+
+  const pageConfig = new PageConfig(
+    "Monthly Posting",
+    "monthly-posting/create",
+    "",
+    "User",
+    `monthly-posting/param/${user.userid}`
+  );
+
+  useEffect(() => {
+    setLoading(true);
+
+    setTimeout(() => {
+      Assist.loadData("Monthly Posting Param", pageConfig.updateUrl)
+        .then((data) => {
+          setLoading(false);
+          updateVaues(data);
+          setError(false);
+        })
+        .catch((message) => {
+          setLoading(false);
+          setError(true);
+          Assist.showMessage(message, "error");
+        });
+    }, Assist.developmentDelay);
+  }, []);
+
+  useEffect(() => {
+    updateSummary();
+  }, [
+    postingSavings,
+    postingShares,
+    postingSocial,
+    postingPenalty,
+    postingLoanInterestPayment,
+    postingLoanMonthPayment,
+    postingLoanApplication,
+    postingDate,
+    latePostingStartDate,
+  ]);
+
+  const updateVaues = (data: any) => {
+    setLatePostingStartDate(
+      Assist.updateDateDay(postingDate, data.latePostingStartDay)
+    );
+
+    setLatePostingStartDay(data.latePostingStartDay);
+
+    setSavingsMultiple(data.config.saving_multiple);
+    setSharesMultiple(data.config.shares_multiple);
+    setSocialMin(data.config.social_min);
+
+    setLoanInterestPercent(data.config.loan_interest_rate);
+    setLoanPaymentPercent(data.config.loan_repayment_rate);
+    setLoanSavingsRatio(data.config.loan_saving_ratio);
+
+    setLatePostingFee(data.config.late_posting_rate);
+    setLateMeetingFee(data.config.late_meeting_rate);
+    setMissedMeetingFee(data.config.missed_meeting_rate);
+
+    setTotalSavingsAmount(data.totalSavings);
+
+    //load penlaties
+    setPenaltyData(data.penalties);
+
+    //use calculated penalty
+    setPostingPenalty(data.totalPenaltiesAmount);
+
+    //check loans
+    if (data.loan) {
+      const balance = data.loan.amount - data.totalLoanPaymentsAmount;
+
+      setLoanBalance(balance);
+
+      const loan = {
+        ...data.loan,
+        totalLoanPaymentsAmount: data.totalLoanPaymentsAmount,
+        totalLoanPaymentsNo: data.totalLoanPaymentsNo,
+        balanceAmount: balance,
+      };
+
+      //load loans
+      const loans: any[] = [loan];
+
+      setLoanData(loans);
+      setLoanPayments(data.totalLoanPaymentsNo);
+      setCurrentLoan(data.loan);
+
+      //calculate amount for interest
+      //check if user has loan and has not payment before
+      if (data.loan != null && data.totalLoanPaymentsNo == 0) {
+        //no payment
+        const interestAmount =
+          data.loan.amount * data.loan.interest_rate * 0.01;
+
+        setPostingLoanInterestPayment(interestAmount);
+      }
+
+      //calculate amount for loan payment
+      //check if user has loan
+      if (data.loan != null) {
+        //check if user has made payment before
+        if (data.totalLoanPaymentsNo == 0) {
+          //no payment. Must pay assigned percent
+          const loanRepaymentAmount =
+            data.loan.amount * data.config.loan_repayment_rate * 0.01;
+          setPostingLoanMonthPayment(loanRepaymentAmount);
+
+          //setAllowLoanAmountChange(false);
+        } else {
+          //has paid, can pay any amount
+          setPostingLoanMonthPayment(null);
+        }
+      }
+    }
+  };
+
+  const onFormSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (stage == 1) {
+      setStage(2);
+      return;
+    }
+
+    if (stage == 2) {
+      let result = confirm(
+        "Are you sure you want to submit this monthly posting?",
+        "Confirm submission"
+      );
+      result.then((dialogResult) => {
+        if (dialogResult) {
+          submitPosting();
+        }
+      });
+    }
+  };
+
+  const submitPosting = () => {
+    setSaving(true);
+
+    const periodDate = new Date(postingDate);
+    const periodId = `${periodDate.getFullYear()}${periodDate.getMonth() + 1}`;
+
+    const postData = {
+      user_id: user.userid,
+      period_id: periodId,
+      date: postingDate,
+      saving: postingSavings,
+      shares: postingShares,
+      social: postingSocial,
+      penalty: postingPenalty,
+      loan_interest: postingLoanInterestPayment,
+      loan_month_repayment: postingLoanMonthPayment,
+      loan_application: postingLoanApplication,
+      status_id: 2,
+      approval_levels: 2,
+      comments: postingComments,
+      stage_id: 1,
+    };
+
+    setTimeout(() => {
+      Assist.postPutData(pageConfig.Title, pageConfig.Url, postData, 0)
+        .then((data) => {
+          setSaving(false);
+
+          Assist.showMessage(
+            "You have successfully submitted the monthly posting!",
+            "success"
+          );
+
+          navigate(`/my/monthly-posting/list`);
+        })
+        .catch((message) => {
+          setSaving(false);
+
+          Assist.showMessage(message, "error");
+        });
+    }, Assist.developmentDelay);
+  };
+
+  const allowLoanInterestPayment = () => {
+    //check if there is a loan and no payment has been made
+    if (currentLoan != null && loanPayments == 0) {
+      return true;
+    } else {
+      return false;
+    }
+  };
+
+  const allowLoanPayment = () => {
+    //check if there is a loan
+    return currentLoan != null;
+  };
+
+  const allowLoanApplication = () => {
+    //check if there is a loan
+    if (currentLoan == null) {
+      return true;
+    } else {
+      return postingLoanMonthPayment! >= loanBalance;
+    }
+  };
+
+  const loanInterestLabel = () => {
+    if (currentLoan != null && loanPayments == 0) {
+      //loan available
+      return `${currentLoan.interest_rate}% Loan Interest`;
+    } else {
+      //no loan available
+      return "Loan Interest";
+    }
+  };
+
+  const loanInterestValue = () => {
+    if (currentLoan != null) {
+      //loan available
+      return "You have already paid interest on current loan";
+    } else {
+      //no loan available
+      return "You do not have an active loan";
+    }
+  };
+
+  const loanPaymentLabel = () => {
+    if (currentLoan != null) {
+      //loan available
+      if (loanPayments == 0) {
+        return `${loanPaymentPercent}% Loan Repayment`;
+      } else {
+        return `Loan Repayment`;
+      }
+    } else {
+      //no loan available
+      return "Loan Repayment";
+    }
+  };
+
+  const islatePosting = () => {
+    const isLate = postingDate >= latePostingStartDate;
+    return isLate;
+  };
+
+  const updateSummary = () => {
+    const summaryItems = [];
+
+    //savings
+    summaryItems.push({
+      id: 1,
+      name: "Savings",
+      type: "Contribution",
+      amount: postingSavings!,
+    });
+
+    //shares
+    summaryItems.push({
+      id: 2,
+      name: "Shares",
+      type: "Contribution",
+      amount: postingShares!,
+    });
+
+    //social
+    summaryItems.push({
+      id: 3,
+      name: "Social",
+      type: "Contribution",
+      amount: postingSocial!,
+    });
+
+    //savings
+    summaryItems.push({
+      id: 4,
+      name: "Penalty",
+      type: "Contribution",
+      amount: postingPenalty!,
+    });
+
+    //penalty
+    if (islatePosting()) {
+      summaryItems.push({
+        id: 13,
+        name: "Late Posting Fee",
+        type: "Contribution",
+        amount: latePostingFee!,
+      });
+    }
+
+    //loan interest
+    if (islatePosting()) {
+      summaryItems.push({
+        id: 13,
+        name: "Loan Interest",
+        type: "Contribution",
+        amount: postingLoanInterestPayment!,
+      });
+    }
+
+    //loan repayment
+    if (islatePosting()) {
+      summaryItems.push({
+        id: 13,
+        name: "Loan Repaymeent",
+        type: "Contribution",
+        amount: postingLoanMonthPayment!,
+      });
+    }
+
+    //loan repayment
+    if (islatePosting()) {
+      summaryItems.push({
+        id: 13,
+        name: "Loan Application",
+        type: "Earning",
+        amount: allowLoanApplication() ? postingLoanApplication! * -1 : 0,
+      });
+    }
+
+    setSummaryData(summaryItems);
+  };
+
+  return (
+    <div id="pageRoot" className="page-content">
+      <LoadPanel
+        shadingColor="rgba(0,0,0,0.4)"
+        position={{ of: "#pageRoot" }}
+        visible={loading}
+        showIndicator={true}
+        shading={true}
+        showPane={true}
+        hideOnOutsideClick={false}
+      />
+      <Titlebar
+        title={pageConfig.Title}
+        section={"Administration"}
+        icon={"home"}
+        url="#"
+      ></Titlebar>
+      {/* end widget */}
+
+      {/* chart start */}
+      <Row>
+        <Col sz={12} sm={12} lg={12}>
+          <Card title="Properties" showHeader={false}>
+            <MemberHeader title={user.name} description="Monthly Posting" />
+            <h4 className="font-bold text-success">ZMW {totalSavingsAmount}</h4>
+          </Card>
+        </Col>
+      </Row>
+      <Row>
+        <Col sz={12} sm={12} lg={7}>
+          <Card title="Properties" showHeader={true}>
+            {stage == 1 && (
+              <form id="formMain" onSubmit={onFormSubmit}>
+                <div className="form">
+                  <div className="dx-fieldset">
+                    <div className="dx-fieldset-header">Period</div>
+                    <div className="dx-field">
+                      <div className="dx-field-label">Current</div>
+                      <DateBox
+                        className="dx-field-value"
+                        placeholder="Period"
+                        displayFormat={"dd MMM yyy"}
+                        value={postingDate}
+                        onValueChanged={(c) => console.log(c)}
+                        onValueChange={(text) => {
+                          setPostingDate(text);
+                          setLatePostingStartDate(
+                            Assist.updateDateDay(text, latePostingStartDay)
+                          );
+                        }}
+                      />
+                    </div>
+                    <div className="dx-field">
+                      <div className="dx-field-label">Late Posting Start</div>
+                      <DateBox
+                        className="dx-field-value"
+                        placeholder="Period"
+                        displayFormat={"dd MMM yyy"}
+                        value={latePostingStartDate!}
+                        readOnly={true}
+                      />
+                    </div>
+                    <div className="dx-field">
+                      <div className="dx-field-label">Posting Status</div>
+                      <div className="dx-field-value-static">
+                        <strong
+                          className={`text-${
+                            islatePosting() ? "danger" : "success"
+                          }`}
+                        >
+                          {islatePosting() ? "Late" : "Early"} Posting
+                        </strong>
+                      </div>
+                    </div>
+                    {islatePosting() && (
+                      <div className="dx-field">
+                        <div className="dx-field-label">Late Posting Fee</div>
+                        <div className="dx-field-value-static">
+                          <strong className="text-danger">
+                            {Assist.formatCurrency(latePostingFee!)}
+                          </strong>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                  <div className="dx-fieldset">
+                    <div className="dx-fieldset-header">
+                      Savings & Contrbutions
+                    </div>
+                    <div className="dx-field">
+                      <div className="dx-field-label">Savings</div>
+                      <NumberBox
+                        className="dx-field-value"
+                        value={postingSavings!}
+                        placeholder="Savings"
+                        disabled={error || saving || saving}
+                        onValueChange={(value) => setPostingSavings(value)}
+                      >
+                        <Validator>
+                          <RequiredRule message="Savings amount required" />
+                          <CustomRule
+                            validationCallback={(e) =>
+                              Number(e.value) % savingsMultiple! == 0
+                            }
+                            message={`Savings amount must be in mutiples of ${savingsMultiple}`}
+                          />
+                        </Validator>
+                      </NumberBox>
+                    </div>
+                    <div className="dx-field">
+                      <div className="dx-field-label">Shares</div>
+                      <NumberBox
+                        className="dx-field-value"
+                        value={postingShares!}
+                        placeholder="Shares"
+                        disabled={error || saving || saving}
+                        onValueChange={(value) => setPostingShares(value)}
+                        min={0.0}
+                      >
+                        <Validator>
+                          <RequiredRule message="Shares amount required" />
+                          <CustomRule
+                            validationCallback={(e) =>
+                              Number(e.value) % sharesMultiple! == 0
+                            }
+                            message={`Share amount must be in mutiples of ${sharesMultiple}`}
+                          />
+                        </Validator>
+                      </NumberBox>
+                    </div>
+                    <div className="dx-field">
+                      <div className="dx-field-label">Social Fund</div>
+                      <NumberBox
+                        className="dx-field-value"
+                        value={postingSocial!}
+                        placeholder="Social Fund"
+                        disabled={error || saving || saving}
+                        onValueChange={(value) => setPostingSocial(value)}
+                        min={0.0}
+                      >
+                        <Validator>
+                          <RequiredRule message="Social fund amount required" />
+                          <CustomRule
+                            validationCallback={(e) =>
+                              Number(e.value) >= socialMin!
+                            }
+                            message={`Social amount must be greater or equal to ${socialMin}`}
+                          />
+                        </Validator>
+                      </NumberBox>
+                    </div>
+                    <div className="dx-field">
+                      <div className="dx-field-label">Penalty</div>
+                      <NumberBox
+                        className="dx-field-value"
+                        value={postingPenalty!}
+                        placeholder="Penalty"
+                        disabled={true}
+                        min={0.0}
+                      >
+                        <Validator>
+                          <RequiredRule message="Penalty amount required" />
+                        </Validator>
+                      </NumberBox>
+                    </div>
+                  </div>
+                  <div className="dx-fieldset">
+                    <div className="dx-fieldset-header">Interest</div>
+                    <div className="dx-field">
+                      <div className="dx-field-label">
+                        {loanInterestLabel()}
+                      </div>
+                      {allowLoanInterestPayment() && (
+                        <NumberBox
+                          className="dx-field-value"
+                          value={postingLoanInterestPayment!}
+                          placeholder={loanInterestLabel()}
+                          disabled={
+                            error ||
+                            saving ||
+                            saving ||
+                            allowLoanInterestPayment()
+                          }
+                          onValueChange={(value) =>
+                            setPostingLoanInterestPayment(value)
+                          }
+                        >
+                          <Validator>
+                            <RequiredRule
+                              message={`${currentLoan.interest_rate}% Loan interest amount required`}
+                            />
+                          </Validator>
+                        </NumberBox>
+                      )}
+                      {!allowLoanInterestPayment() && (
+                        <div className="dx-field-value-static">
+                          <strong>{loanInterestValue()}</strong>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                  <div className="dx-fieldset">
+                    <div className="dx-fieldset-header">Loan Repayment</div>
+                    {allowLoanPayment() && (
+                      <div className="dx-field">
+                        <div className="dx-field-label">Loan Balance</div>
+                        <div className="dx-field-value-static">
+                          <strong className="text-danger">
+                            {Assist.formatCurrency(loanBalance)}
+                          </strong>
+                        </div>
+                      </div>
+                    )}
+                    <div className="dx-field">
+                      <div className="dx-field-label">{loanPaymentLabel()}</div>
+                      {allowLoanPayment() && (
+                        <NumberBox
+                          className="dx-field-value"
+                          value={postingLoanMonthPayment!}
+                          max={loanBalance}
+                          placeholder={loanPaymentLabel()}
+                          disabled={
+                            error || saving || saving || !allowLoanAmountChange
+                          }
+                          onValueChange={(value) =>
+                            setPostingLoanMonthPayment(value)
+                          }
+                        >
+                          <Validator>
+                            <RequiredRule
+                              message={`${loanPaymentLabel()} amount requred`}
+                            />
+                          </Validator>
+                        </NumberBox>
+                      )}
+                      {!allowLoanPayment() && (
+                        <div className="dx-field-value-static">
+                          <strong>No active loan</strong>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                  <div className="dx-fieldset">
+                    <div className="dx-fieldset-header">Loan Application</div>
+                    <div className="dx-field">
+                      <div className="dx-field-label">
+                        Max Loan Amount ({loanSavingsRatio} Savings)
+                      </div>
+                      <div className="dx-field-value-static">
+                        <strong className="text-success">
+                          ZMW {totalSavingsAmount! * loanSavingsRatio!}
+                        </strong>
+                      </div>
+                    </div>
+                    <div className="dx-field">
+                      <div className="dx-field-label">Loan Amount</div>
+                      {allowLoanApplication() && (
+                        <NumberBox
+                          className="dx-field-value"
+                          value={postingLoanApplication!}
+                          placeholder="Loan Amount"
+                          disabled={error || saving || saving}
+                          onValueChange={(value) =>
+                            setPostingLoanApplication(value)
+                          }
+                          min={0.0}
+                        >
+                          <Validator>
+                            <RequiredRule message="Loan amount required" />
+                            <CustomRule
+                              validationCallback={(e) =>
+                                Number(e.value) <=
+                                totalSavingsAmount! * loanSavingsRatio!
+                              }
+                              message={`Loan amount must be ≤ ${loanSavingsRatio} savings`}
+                            />
+                          </Validator>
+                        </NumberBox>
+                      )}
+                      {!allowLoanApplication() && (
+                        <div className="dx-field-value-static">
+                          <strong className="text-danger">
+                            You already have an active loan
+                          </strong>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                  <div className="dx-fieldset">
+                    <div className="dx-fieldset-header">
+                      Comments & feedback
+                    </div>
+                    <div className="dx-field">
+                      <div className="dx-field-label">Comments</div>
+                      <TextArea
+                        className="dx-field-value"
+                        placeholder="Comemnts"
+                        disabled={error || saving || saving}
+                        height={80}
+                        value={postingComments}
+                        onValueChange={(value) => setPostingComments(value)}
+                      >
+                        <Validator>
+                          <RequiredRule message="Comments required" />
+                        </Validator>
+                      </TextArea>
+                    </div>
+                    <div className="dx-field">
+                      <div className="dx-field-label">
+                        <ValidationSummary id="summaryMain" />
+                      </div>
+                    </div>
+                  </div>
+                  {stage == 1 && (
+                    <div className="dx-field">
+                      <div className="dx-field-label"></div>
+                      <Button
+                        width="100%"
+                        type={"default"}
+                        disabled={loading || error || saving}
+                        useSubmitBehavior={true}
+                      >
+                        <span className="dx-button-text">Next</span>
+                      </Button>
+                    </div>
+                  )}
+                </div>
+              </form>
+            )}
+            {stage == 2 && (
+              <div className="form">
+                <div className="dx-fieldset">
+                  <div className="dx-fieldset-header">Period</div>
+                  <div className="dx-field">
+                    <div className="dx-field-label">Period</div>
+                    <div className="dx-field-value-static">
+                      <strong>{postingDate}</strong>
+                    </div>
+                  </div>
+                </div>
+                <div className="dx-fieldset">
+                  <div className="dx-fieldset-header">
+                    Savings & Contrbutions
+                  </div>
+                  <div className="dx-field">
+                    <div className="dx-field-label">Savings</div>
+                    <div className="dx-field-value-static">
+                      <strong>{Assist.formatCurrency(postingSavings!)}</strong>
+                    </div>
+                  </div>
+                  <div className="dx-field">
+                    <div className="dx-field-label">Shares</div>
+                    <div className="dx-field-value-static">
+                      <strong>{Assist.formatCurrency(postingShares!)}</strong>
+                    </div>
+                  </div>
+                  <div className="dx-field">
+                    <div className="dx-field-label">Social Fund</div>
+                    <div className="dx-field-value-static">
+                      <strong>{Assist.formatCurrency(postingSocial!)}</strong>
+                    </div>
+                  </div>
+                  <div className="dx-field">
+                    <div className="dx-field-label">Penalty</div>
+                    <div className="dx-field-value-static">
+                      <strong>{Assist.formatCurrency(postingPenalty!)}</strong>
+                    </div>
+                  </div>
+                </div>
+                <div className="dx-fieldset">
+                  /<div className="dx-fieldset-header">Interest</div>
+                  <div className="dx-field">
+                    <div className="dx-field-label">{loanInterestLabel()}</div>
+                    <div className="dx-field-value-static">
+                      <strong>
+                        {Assist.formatCurrency(postingLoanInterestPayment!)}
+                      </strong>
+                    </div>
+                  </div>
+                </div>
+                <div className="dx-fieldset">
+                  <div className="dx-fieldset-header">Loan Repayment</div>
+                  {allowLoanPayment() && (
+                    <div className="dx-field">
+                      <div className="dx-field-label">Loan Balance</div>
+                      <div className="dx-field-value-static">
+                        <strong className="text-danger">
+                          {Assist.formatCurrency(loanBalance)}
+                        </strong>
+                      </div>
+                    </div>
+                  )}
+                  <div className="dx-field-value-static">
+                    <strong className="text-danger">
+                      {Assist.formatCurrency(postingLoanMonthPayment!)}
+                    </strong>
+                  </div>
+                </div>
+                <div className="dx-fieldset">
+                  <div className="dx-fieldset-header">Loan Application</div>
+                  <div className="dx-field">
+                    <div className="dx-field-label">
+                      Max Loan Amount ({loanSavingsRatio} Savings)
+                    </div>
+                    <div className="dx-field-value-static">
+                      <strong className="text-success">
+                        ZMW {totalSavingsAmount! * loanSavingsRatio!}
+                      </strong>
+                    </div>
+                  </div>
+                  <div className="dx-field">
+                    <div className="dx-field-label">Loan Amount</div>
+                    <div className="dx-field-value-static">
+                      <strong>
+                        {Assist.formatCurrency(postingLoanApplication!)}
+                      </strong>
+                    </div>
+                  </div>
+                </div>
+                <div className="dx-fieldset">
+                  <div className="dx-fieldset-header">Comments & feedback</div>
+                  <div className="dx-field">
+                    <div className="dx-field-label">Comemnts</div>
+                    <div className="dx-field-value-static">
+                      <strong>{postingComments}</strong>
+                    </div>
+                  </div>
+                </div>
+                {stage == 2 && (
+                  <div className="dx-field">
+                    <div className="dx-field-label"></div>
+                    <Button
+                      width="100%"
+                      type={saving ? "normal" : "success"}
+                      disabled={loading || error || saving}
+                      useSubmitBehavior={true}
+                    >
+                      <LoadIndicator
+                        className="button-indicator"
+                        visible={saving}
+                      />
+                      <span className="dx-button-text">Submit for Review</span>
+                    </Button>
+                  </div>
+                )}
+              </div>
+            )}
+          </Card>
+        </Col>
+        <Col sz={12} sm={12} lg={5}>
+          <Card title="Loans & Penalties" showHeader={true}>
+            <div className="dx-fieldset">
+              <div className="dx-fieldset-header">Loans</div>
+              <div className="dx-field">
+                <DataGrid
+                  className={"dx-card wide-card"}
+                  dataSource={loanData}
+                  keyExpr={"id"}
+                  noDataText={"You have no active loans"}
+                  showBorders={false}
+                  focusedRowEnabled={false}
+                  defaultFocusedRowIndex={0}
+                  columnAutoWidth={true}
+                  columnHidingEnabled={true}
+                >
+                  <Paging defaultPageSize={10} />
+                  <Pager showPageSizeSelector={true} showInfo={true} />
+                  <Column
+                    dataField="id"
+                    caption="ID"
+                    visible={false}
+                    hidingPriority={8}
+                  ></Column>
+                  <Column
+                    dataField="date"
+                    caption="Date"
+                    dataType="date"
+                    format={"dd MMM yyy"}
+                    hidingPriority={7}
+                    visible={true}
+                  ></Column>
+                  <Column
+                    dataField="amount"
+                    caption="Amount ZMW"
+                    format={",##0.###"}
+                    hidingPriority={6}
+                  ></Column>
+                  <Column
+                    dataField="balanceAmount"
+                    caption="Balance ZMW"
+                    format={",##0.###"}
+                    hidingPriority={5}
+                  ></Column>
+                  <Column
+                    dataField="interest_rate"
+                    caption="Interest (%)"
+                    format={",##0.###"}
+                    hidingPriority={4}
+                  ></Column>
+                  <Column
+                    dataField="term_months"
+                    caption="Term"
+                    hidingPriority={3}
+                  ></Column>
+                  <Column
+                    dataField="totalLoanPaymentsAmount"
+                    caption="Total Paid (ZMW)"
+                    format={",##0.###"}
+                    hidingPriority={2}
+                  ></Column>
+                  <Column
+                    dataField="totalLoanPaymentsNo"
+                    caption="No Payments"
+                    hidingPriority={1}
+                  ></Column>
+                </DataGrid>
+              </div>
+              <div className="dx-fieldset-header">Penalties</div>
+              <div className="dx-field">
+                <DataGrid
+                  className={"dx-card wide-card"}
+                  dataSource={penaltyData}
+                  keyExpr={"id"}
+                  noDataText={"You have no active penalties"}
+                  showBorders={false}
+                  focusedRowEnabled={false}
+                  defaultFocusedRowIndex={0}
+                  columnAutoWidth={true}
+                  columnHidingEnabled={true}
+                >
+                  <Paging defaultPageSize={10} />
+                  <Pager showPageSizeSelector={true} showInfo={true} />
+                  <Column
+                    dataField="id"
+                    caption="ID"
+                    visible={false}
+                    hidingPriority={7}
+                  ></Column>
+                  <Column
+                    dataField="date"
+                    caption="Date"
+                    dataType="date"
+                    format={"dd MMM yyy"}
+                    hidingPriority={6}
+                  ></Column>
+                  <Column
+                    dataField="type.type_name"
+                    caption="Type"
+                    groupIndex={0}
+                    format={",##0.###"}
+                    hidingPriority={4}
+                  ></Column>
+                  <Column
+                    dataField="amount"
+                    caption="Amount ZMW"
+                    format={",##0.###"}
+                    hidingPriority={5}
+                  ></Column>
+                  <Column
+                    dataField="ptype.type_name"
+                    caption="Type"
+                    format={",##0.###"}
+                    hidingPriority={4}
+                  ></Column>
+                  <Summary>
+                    <GroupItem
+                      column="amount"
+                      summaryType="sum"
+                      valueFormat=",##0.##"
+                      displayFormat="Total ZMW: {0}"
+                      showInGroupFooter={true}
+                    />
+                  </Summary>
+                </DataGrid>
+              </div>
+            </div>
+          </Card>
+          <Card title="Posting Summary" showHeader={true}>
+            <div className="dx-fieldset">
+              <div className="dx-fieldset-header">Contribution & Loans</div>
+              <div className="dx-field">
+                <DataGrid
+                  className={"dx-card wide-card"}
+                  dataSource={summryData}
+                  keyExpr={"id"}
+                  noDataText={"No contributions and loans"}
+                  showBorders={false}
+                  focusedRowEnabled={false}
+                  defaultFocusedRowIndex={0}
+                  columnAutoWidth={true}
+                  columnHidingEnabled={true}
+                >
+                  <Paging defaultPageSize={10} />
+                  <Pager showPageSizeSelector={true} showInfo={true} />
+                  <Column
+                    dataField="id"
+                    caption="ID"
+                    visible={false}
+                    hidingPriority={7}
+                  ></Column>
+                  <Column
+                    dataField="type"
+                    caption="Type"
+                    groupIndex={0}
+                    format={",##0.###"}
+                    hidingPriority={4}
+                  ></Column>
+                  <Column
+                    dataField="name"
+                    caption="Name"
+                    hidingPriority={4}
+                  ></Column>
+                  <Column
+                    dataField="amount"
+                    caption="Amount ZMW"
+                    format={",##0.###"}
+                    hidingPriority={5}
+                  ></Column>
+                  <Summary>
+                    <GroupItem
+                      column="amount"
+                      summaryType="sum"
+                      valueFormat=",##0.##"
+                      displayFormat="Total ZMW: {0}"
+                      showInGroupFooter={true}
+                    />
+                    <TotalItem
+                      column="amount"
+                      summaryType="sum"
+                      displayFormat="Total Deposit Amount ZMW: {0}"
+                    />
+                  </Summary>
+                </DataGrid>
+              </div>
+            </div>
+          </Card>
+        </Col>
+      </Row>
+    </div>
+  );
+};
+
+export default PostMonthly;

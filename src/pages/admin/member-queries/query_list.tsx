@@ -16,12 +16,18 @@ import DataGrid, {
 import Assist from "../../../classes/assist";
 import PageConfig from "../../../classes/page-config";
 
-const TransactionTypes = () => {
+const AdminMemberQueries = () => {
   const [data, setData] = useState([]);
   const [loadingText, setLoadingText] = useState("Loading data...");
   const [loading, setLoading] = useState(true);
 
-  const pageConfig = new PageConfig("Transaction Types", "transaction-types/", "", "Type");
+  const pageConfig = new PageConfig(
+    "Member Queries",
+    "member-queries/list",
+    "",
+    "Member Query",
+    ""
+  );
 
   useEffect(() => {
     setLoading(true);
@@ -48,7 +54,7 @@ const TransactionTypes = () => {
       <Titlebar
         title={pageConfig.Title}
         section={"Administration"}
-        icon={"home"}
+        icon={"cubes"}
         url="/"
       ></Titlebar>
       {/* end widget */}
@@ -79,37 +85,43 @@ const TransactionTypes = () => {
               <FilterRow visible={true} />
               <LoadPanel enabled={loading} />
               <ColumnChooser enabled={true} mode="select"></ColumnChooser>
-              <Column dataField="id" caption="ID" hidingPriority={4}></Column>
+              <Column dataField="id" caption="ID" hidingPriority={6}></Column>
               <Column
-                dataField="type_name"
-                caption="Name"
-                hidingPriority={2}
+                dataField="title"
+                caption="Title"
+                dataType="date"
+                format={"dd MMMM yyy"}
+                hidingPriority={5}
                 cellRender={(e) => {
                   return (
-                    <a href={`#/admin-department/edit/${e.data.id}`}>
-                      {e.data.type_name}
+                    <a href={`/admin/announcements/edit/${e.data.id}`}>
+                      {e.text}
                     </a>
                   );
                 }}
               ></Column>
               <Column
-                dataField="description"
-                caption="Description"
-                sortOrder="asc"
-                hidingPriority={1}
+                dataField="status.status_name"
+                caption="Status"
+                hidingPriority={4}
               ></Column>
               <Column
-                dataField="created_by"
+                dataField="stage.stage_name"
+                caption="Stage"
+                hidingPriority={3}
+              ></Column>
+              <Column
+                dataField="user.email"
                 caption="User"
                 minWidth={120}
-                hidingPriority={3}
+                hidingPriority={2}
               ></Column>
               <Column
                 dataField="created_at"
                 caption="Date"
                 dataType="date"
                 format="dd MMM yyy HH:MM"
-                hidingPriority={2}
+                hidingPriority={1}
               ></Column>
             </DataGrid>
           </Card>
@@ -119,4 +131,4 @@ const TransactionTypes = () => {
   );
 };
 
-export default TransactionTypes;
+export default AdminMemberQueries;

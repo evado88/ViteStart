@@ -15,13 +15,11 @@ import { Validator, RequiredRule } from "devextreme-react/validator";
 import DateBox from "devextreme-react/date-box";
 import { useTheme } from "../context/ThemeContext";
 import { useAuth } from "../context/AuthContext";
-import { useShopping } from "../context/ShoppingBasketContext";
 import { TestComponent } from '../components/TestComponent'
 
 const NotFound = () => {
   const { theme, toggleTheme } = useTheme();
   const { user, login, logout } = useAuth();
-  const { items, addItem} = useShopping();
 
   const [name, setName] = useState("Evans");
 
@@ -82,9 +80,6 @@ const NotFound = () => {
         </Col>
         <Col sz={12} sm={12} lg={6}>
           <Card title={"Card 2"}>
-            <ul>
-              {items.map((i) => <li>{i}</li>)}
-            </ul>
             <TestComponent linkClikced={(e) => {
               e.preventDefault();
          

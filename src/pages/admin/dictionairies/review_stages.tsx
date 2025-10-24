@@ -16,13 +16,12 @@ import DataGrid, {
 import Assist from "../../../classes/assist";
 import PageConfig from "../../../classes/page-config";
 
-const TransactionTypes = () => {
+const ReviewStages = () => {
   const [data, setData] = useState([]);
   const [loadingText, setLoadingText] = useState("Loading data...");
   const [loading, setLoading] = useState(true);
 
-  const pageConfig = new PageConfig("Transaction Types", "transaction-types/", "", "Type");
-
+  const pageConfig = new PageConfig("Review Stages", "review-stages/", "", "Stage");
   useEffect(() => {
     setLoading(true);
 
@@ -81,13 +80,13 @@ const TransactionTypes = () => {
               <ColumnChooser enabled={true} mode="select"></ColumnChooser>
               <Column dataField="id" caption="ID" hidingPriority={4}></Column>
               <Column
-                dataField="type_name"
+                dataField="stage_name"
                 caption="Name"
                 hidingPriority={2}
                 cellRender={(e) => {
                   return (
                     <a href={`#/admin-department/edit/${e.data.id}`}>
-                      {e.data.type_name}
+                      {e.data.stage_name}
                     </a>
                   );
                 }}
@@ -119,4 +118,4 @@ const TransactionTypes = () => {
   );
 };
 
-export default TransactionTypes;
+export default ReviewStages;
