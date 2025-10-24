@@ -9,6 +9,8 @@ export { default as LoginPage } from '../auth/login'
 export { default as SignupPage } from '../auth/signup'
 
 //ADMIN
+//posting period
+export { default as AdminPostingPeriodsPage } from './admin/posting-periods/posting_period_list'
 
 //Dictionairies
 export { default as StatusesPage} from './admin/dictionairies/status_types'
@@ -23,6 +25,9 @@ export { default as AdminMonthlyPostingPage } from './admin/monthly-posting/mont
 //annoucement
 export { default as AdminAnnouncementsPage } from './admin/announcements/announcement_list'
 export { default as AdminAnnouncementEditPage } from './admin/announcements/announcement_edit'
+
+//meetings
+export { default as AdminMeetingsPage } from './admin/meetings/meeting_list'
 //member queries
 export { default as AdminMemberQueriesPage } from './admin/member-queries/query_list'
 //knowledge-base

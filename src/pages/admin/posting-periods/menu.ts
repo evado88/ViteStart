@@ -1,0 +1,47 @@
+ 
+ import HtmlEditor, {
+
+} from "devextreme-react/html-editor";
+import { HtmlEditorPredefinedToolbarItem } from "devextreme/ui/html_editor";
+
+ export const toolbarItems: HtmlEditorPredefinedToolbarItem[] = [
+      "undo",
+      "redo",
+      "separator",
+      "copy",
+      "cut",
+      "paste",
+      "separator",
+      "separator",
+      "bold",
+      "italic",
+      "strike",
+      "underline",
+      "separator",
+      "alignLeft",
+      "alignCenter",
+      "alignRight",
+      "alignJustify",
+      "separator",
+      "orderedList",
+      "bulletList",
+      "separator",
+      "color",
+      "background",
+      "separator",
+      "link",
+      "image",
+      "separator",
+      "clear",
+      "codeBlock",
+      "blockquote",
+      "separator",
+      "insertTable",
+      "deleteTable",
+      "insertRowAbove",
+      "insertRowBelow",
+      "deleteRow",
+      "insertColumnLeft",
+      "insertColumnRight",
+      "deleteColumn",
+    ];

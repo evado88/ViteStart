@@ -55,6 +55,9 @@ const PostMonthly = () => {
   >(600);
 
   //loan payment - usual payment every month or 10% first month
+  const [minPostingLoanMonthPayment, setMinPostingLoanMonthPayment] =
+    useState(0);
+
   const [postingLoanMonthPayment, setPostingLoanMonthPayment] = useState<
     number | null
   >(1800);
@@ -117,7 +120,7 @@ const PostMonthly = () => {
   const [summryData, setSummaryData] = useState<any[] | null>([]);
 
   const pageConfig = new PageConfig(
-    "Monthly Posting",
+    `${stage == 1 ? "New" : "Review"} Monthly Posting`,
     "monthly-posting/create",
     "",
     "User",
@@ -222,7 +225,7 @@ const PostMonthly = () => {
           const loanRepaymentAmount =
             data.loan.amount * data.config.loan_repayment_rate * 0.01;
           setPostingLoanMonthPayment(loanRepaymentAmount);
-
+          setMinPostingLoanMonthPayment(loanRepaymentAmount);
           //setAllowLoanAmountChange(false);
         } else {
           //has paid, can pay any amount
@@ -235,8 +238,18 @@ const PostMonthly = () => {
   const onFormSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
+    //simulate process
     if (stage == 1) {
-      setStage(2);
+      window.scrollTo({
+        top: 0,
+        behavior: "smooth",
+      });
+      setLoading(true);
+      setTimeout(() => {
+        setLoading(false);
+        setStage(2);
+      }, Assist.uXDelay);
+
       return;
     }
 
@@ -259,10 +272,13 @@ const PostMonthly = () => {
     const periodDate = new Date(postingDate);
     const periodId = `${periodDate.getFullYear()}${periodDate.getMonth() + 1}`;
 
+    const totalContributions = getContributions();
+    const depositTotal = totalContributions + getLoanAmount();
+
     const postData = {
       user_id: user.userid,
       period_id: periodId,
-      date: postingDate,
+      date: `${postingDate} ${Assist.getCurrentTime()}`,
       saving: postingSavings,
       shares: postingShares,
       social: postingSocial,
@@ -273,8 +289,12 @@ const PostMonthly = () => {
       status_id: 2,
       approval_levels: 2,
       comments: postingComments,
+      contribution_total: totalContributions,
+      deposit_total: depositTotal,
       stage_id: 1,
     };
+
+    console.log(JSON.stringify(postData));
 
     setTimeout(() => {
       Assist.postPutData(pageConfig.Title, pageConfig.Url, postData, 0)
@@ -358,6 +378,25 @@ const PostMonthly = () => {
     return isLate;
   };
 
+  const getContributions = () => {
+    let total =
+      postingSavings! +
+      postingShares! +
+      postingSocial! +
+      postingPenalty! +
+      postingLoanInterestPayment! +
+      postingLoanMonthPayment!;
+
+    if (islatePosting()) {
+      total += latePostingFee!;
+    }
+    return total;
+  };
+
+  const getLoanAmount = () => {
+    return allowLoanApplication() ? postingLoanApplication! * -1 : 0;
+  };
+
   const updateSummary = () => {
     const summaryItems = [];
 
@@ -404,34 +443,31 @@ const PostMonthly = () => {
     }
 
     //loan interest
-    if (islatePosting()) {
-      summaryItems.push({
-        id: 13,
-        name: "Loan Interest",
-        type: "Contribution",
-        amount: postingLoanInterestPayment!,
-      });
-    }
+
+    summaryItems.push({
+      id: 13,
+      name: "Loan Interest",
+      type: "Contribution",
+      amount: postingLoanInterestPayment!,
+    });
 
     //loan repayment
-    if (islatePosting()) {
-      summaryItems.push({
-        id: 13,
-        name: "Loan Repaymeent",
-        type: "Contribution",
-        amount: postingLoanMonthPayment!,
-      });
-    }
+
+    summaryItems.push({
+      id: 13,
+      name: "Loan Repaymeent",
+      type: "Contribution",
+      amount: postingLoanMonthPayment!,
+    });
 
     //loan repayment
-    if (islatePosting()) {
-      summaryItems.push({
-        id: 13,
-        name: "Loan Application",
-        type: "Earning",
-        amount: allowLoanApplication() ? postingLoanApplication! * -1 : 0,
-      });
-    }
+
+    summaryItems.push({
+      id: 13,
+      name: "Loan Application",
+      type: "Earning",
+      amount: getLoanAmount(),
+    });
 
     setSummaryData(summaryItems);
   };
@@ -439,7 +475,7 @@ const PostMonthly = () => {
   return (
     <div id="pageRoot" className="page-content">
       <LoadPanel
-        shadingColor="rgba(0,0,0,0.4)"
+        shadingColor="rgba(248, 242, 242, 0.9)"
         position={{ of: "#pageRoot" }}
         visible={loading}
         showIndicator={true}
@@ -458,17 +494,17 @@ const PostMonthly = () => {
       {/* chart start */}
       <Row>
         <Col sz={12} sm={12} lg={12}>
-          <Card title="Properties" showHeader={false}>
+          <Card title="Applicant" showHeader={false}>
             <MemberHeader title={user.name} description="Monthly Posting" />
             <h4 className="font-bold text-success">ZMW {totalSavingsAmount}</h4>
           </Card>
         </Col>
       </Row>
-      <Row>
-        <Col sz={12} sm={12} lg={7}>
-          <Card title="Properties" showHeader={true}>
-            {stage == 1 && (
-              <form id="formMain" onSubmit={onFormSubmit}>
+      <form id="formMain" onSubmit={onFormSubmit}>
+        <Row>
+          <Col sz={12} sm={12} lg={7}>
+            <Card title="Details" showHeader={true}>
+              {stage == 1 && (
                 <div className="form">
                   <div className="dx-fieldset">
                     <div className="dx-fieldset-header">Period</div>
@@ -668,6 +704,21 @@ const PostMonthly = () => {
                             <RequiredRule
                               message={`${loanPaymentLabel()} amount requred`}
                             />
+                            <CustomRule
+                              validationCallback={(e) => {
+                                if (loanPayments == 0) {
+                                  return (
+                                    Number(e.value) >=
+                                    minPostingLoanMonthPayment
+                                  );
+                                } else {
+                                  return true;
+                                }
+                              }}
+                              message={`Loan repayment must be >= ${Assist.formatCurrency(
+                                minPostingLoanMonthPayment
+                              )}`}
+                            />
                           </Validator>
                         </NumberBox>
                       )}
@@ -743,127 +794,339 @@ const PostMonthly = () => {
                         </Validator>
                       </TextArea>
                     </div>
+                  </div>
+                </div>
+              )}
+              {stage == 2 && (
+                <div className="form">
+                  <div className="dx-fieldset">
+                    <div className="dx-fieldset-header">Period</div>
                     <div className="dx-field">
-                      <div className="dx-field-label">
-                        <ValidationSummary id="summaryMain" />
+                      <div className="dx-field-label">Period</div>
+                      <div className="dx-field-value-static">
+                        <strong>{postingDate}</strong>
                       </div>
                     </div>
                   </div>
-                  {stage == 1 && (
+                  <div className="dx-fieldset">
+                    <div className="dx-fieldset-header">
+                      Savings & Contrbutions
+                    </div>
                     <div className="dx-field">
-                      <div className="dx-field-label"></div>
-                      <Button
-                        width="100%"
-                        type={"default"}
-                        disabled={loading || error || saving}
-                        useSubmitBehavior={true}
-                      >
-                        <span className="dx-button-text">Next</span>
-                      </Button>
-                    </div>
-                  )}
-                </div>
-              </form>
-            )}
-            {stage == 2 && (
-              <div className="form">
-                <div className="dx-fieldset">
-                  <div className="dx-fieldset-header">Period</div>
-                  <div className="dx-field">
-                    <div className="dx-field-label">Period</div>
-                    <div className="dx-field-value-static">
-                      <strong>{postingDate}</strong>
-                    </div>
-                  </div>
-                </div>
-                <div className="dx-fieldset">
-                  <div className="dx-fieldset-header">
-                    Savings & Contrbutions
-                  </div>
-                  <div className="dx-field">
-                    <div className="dx-field-label">Savings</div>
-                    <div className="dx-field-value-static">
-                      <strong>{Assist.formatCurrency(postingSavings!)}</strong>
-                    </div>
-                  </div>
-                  <div className="dx-field">
-                    <div className="dx-field-label">Shares</div>
-                    <div className="dx-field-value-static">
-                      <strong>{Assist.formatCurrency(postingShares!)}</strong>
-                    </div>
-                  </div>
-                  <div className="dx-field">
-                    <div className="dx-field-label">Social Fund</div>
-                    <div className="dx-field-value-static">
-                      <strong>{Assist.formatCurrency(postingSocial!)}</strong>
-                    </div>
-                  </div>
-                  <div className="dx-field">
-                    <div className="dx-field-label">Penalty</div>
-                    <div className="dx-field-value-static">
-                      <strong>{Assist.formatCurrency(postingPenalty!)}</strong>
-                    </div>
-                  </div>
-                </div>
-                <div className="dx-fieldset">
-                  /<div className="dx-fieldset-header">Interest</div>
-                  <div className="dx-field">
-                    <div className="dx-field-label">{loanInterestLabel()}</div>
-                    <div className="dx-field-value-static">
-                      <strong>
-                        {Assist.formatCurrency(postingLoanInterestPayment!)}
-                      </strong>
-                    </div>
-                  </div>
-                </div>
-                <div className="dx-fieldset">
-                  <div className="dx-fieldset-header">Loan Repayment</div>
-                  {allowLoanPayment() && (
-                    <div className="dx-field">
-                      <div className="dx-field-label">Loan Balance</div>
+                      <div className="dx-field-label">Savings</div>
                       <div className="dx-field-value-static">
-                        <strong className="text-danger">
-                          {Assist.formatCurrency(loanBalance)}
+                        <strong>
+                          {Assist.formatCurrency(postingSavings!)}
                         </strong>
                       </div>
                     </div>
-                  )}
+                    <div className="dx-field">
+                      <div className="dx-field-label">Shares</div>
+                      <div className="dx-field-value-static">
+                        <strong>{Assist.formatCurrency(postingShares!)}</strong>
+                      </div>
+                    </div>
+                    <div className="dx-field">
+                      <div className="dx-field-label">Social Fund</div>
+                      <div className="dx-field-value-static">
+                        <strong>{Assist.formatCurrency(postingSocial!)}</strong>
+                      </div>
+                    </div>
+                    <div className="dx-field">
+                      <div className="dx-field-label">Penalty</div>
+                      <div className="dx-field-value-static">
+                        <strong>
+                          {Assist.formatCurrency(postingPenalty!)}
+                        </strong>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="dx-fieldset">
+                    <div className="dx-fieldset-header">Interest</div>
+                    <div className="dx-field">
+                      <div className="dx-field-label">
+                        {loanInterestLabel()}
+                      </div>
+                      <div className="dx-field-value-static">
+                        <strong>
+                          {Assist.formatCurrency(postingLoanInterestPayment!)}
+                        </strong>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="dx-fieldset">
+                    <div className="dx-fieldset-header">Loan Repayment</div>
+                    {allowLoanPayment() && (
+                      <div className="dx-field">
+                        <div className="dx-field-label">Loan Balance</div>
+                        <div className="dx-field-value-static">
+                          <strong className="text-danger">
+                            {Assist.formatCurrency(loanBalance)}
+                          </strong>
+                        </div>
+                      </div>
+                    )}
+                    <div className="dx-field-value-static">
+                      <strong className="text-danger">
+                        {Assist.formatCurrency(postingLoanMonthPayment!)}
+                      </strong>
+                    </div>
+                  </div>
+                  <div className="dx-fieldset">
+                    <div className="dx-fieldset-header">Loan Application</div>
+                    <div className="dx-field">
+                      <div className="dx-field-label">
+                        Max Loan Amount ({loanSavingsRatio} Savings)
+                      </div>
+                      <div className="dx-field-value-static">
+                        <strong className="text-success">
+                          ZMW {totalSavingsAmount! * loanSavingsRatio!}
+                        </strong>
+                      </div>
+                    </div>
+                    <div className="dx-field">
+                      <div className="dx-field-label">Loan Amount</div>
+                      <div className="dx-field-value-static">
+                        <strong>
+                          {Assist.formatCurrency(postingLoanApplication!)}
+                        </strong>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="dx-fieldset">
+                    <div className="dx-fieldset-header">
+                      Comments & feedback
+                    </div>
+                    <div className="dx-field">
+                      <div className="dx-field-label">Comemnts</div>
+                      <div className="dx-field-value-static">
+                        <strong>{postingComments}</strong>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </Card>
+          </Col>
+          <Col sz={12} sm={12} lg={5}>
+            <Card title="Loans & Penalties" showHeader={true}>
+              <div className="dx-fieldset">
+                <div className="dx-fieldset-header">Loans</div>
+                <div className="dx-field">
+                  <DataGrid
+                    className={"dx-card wide-card"}
+                    dataSource={loanData}
+                    keyExpr={"id"}
+                    noDataText={"You have no active loans"}
+                    showBorders={false}
+                    focusedRowEnabled={false}
+                    defaultFocusedRowIndex={0}
+                    columnAutoWidth={true}
+                    columnHidingEnabled={true}
+                  >
+                    <Paging defaultPageSize={10} />
+                    <Pager showPageSizeSelector={true} showInfo={true} />
+                    <Column
+                      dataField="id"
+                      caption="ID"
+                      visible={false}
+                      hidingPriority={8}
+                    ></Column>
+                    <Column
+                      dataField="date"
+                      caption="Date"
+                      dataType="date"
+                      format={"dd MMM yyy"}
+                      hidingPriority={7}
+                      visible={true}
+                    ></Column>
+                    <Column
+                      dataField="amount"
+                      caption="Amount ZMW"
+                      format={",##0.###"}
+                      hidingPriority={6}
+                    ></Column>
+                    <Column
+                      dataField="balanceAmount"
+                      caption="Balance ZMW"
+                      format={",##0.###"}
+                      hidingPriority={5}
+                    ></Column>
+                    <Column
+                      dataField="interest_rate"
+                      caption="Interest (%)"
+                      format={",##0.###"}
+                      hidingPriority={4}
+                    ></Column>
+                    <Column
+                      dataField="term_months"
+                      caption="Term"
+                      hidingPriority={3}
+                    ></Column>
+                    <Column
+                      dataField="totalLoanPaymentsAmount"
+                      caption="Total Paid (ZMW)"
+                      format={",##0.###"}
+                      hidingPriority={2}
+                    ></Column>
+                    <Column
+                      dataField="totalLoanPaymentsNo"
+                      caption="No Payments"
+                      hidingPriority={1}
+                    ></Column>
+                  </DataGrid>
+                </div>
+                <div className="dx-fieldset-header">Penalties</div>
+                <div className="dx-field">
+                  <DataGrid
+                    className={"dx-card wide-card"}
+                    dataSource={penaltyData}
+                    keyExpr={"id"}
+                    noDataText={"You have no active penalties"}
+                    showBorders={false}
+                    focusedRowEnabled={false}
+                    defaultFocusedRowIndex={0}
+                    columnAutoWidth={true}
+                    columnHidingEnabled={true}
+                  >
+                    <Paging defaultPageSize={10} />
+                    <Pager showPageSizeSelector={true} showInfo={true} />
+                    <Column
+                      dataField="id"
+                      caption="ID"
+                      visible={false}
+                      hidingPriority={7}
+                    ></Column>
+                    <Column
+                      dataField="date"
+                      caption="Date"
+                      dataType="date"
+                      format={"dd MMM yyy"}
+                      hidingPriority={6}
+                    ></Column>
+                    <Column
+                      dataField="type.type_name"
+                      caption="Type"
+                      groupIndex={0}
+                      format={",##0.###"}
+                      hidingPriority={4}
+                    ></Column>
+                    <Column
+                      dataField="amount"
+                      caption="Amount ZMW"
+                      format={",##0.###"}
+                      hidingPriority={5}
+                    ></Column>
+                    <Column
+                      dataField="ptype.type_name"
+                      caption="Type"
+                      format={",##0.###"}
+                      hidingPriority={4}
+                    ></Column>
+                    <Summary>
+                      <GroupItem
+                        column="amount"
+                        summaryType="sum"
+                        valueFormat=",##0.##"
+                        displayFormat="Total ZMW: {0}"
+                        showInGroupFooter={true}
+                      />
+                    </Summary>
+                  </DataGrid>
+                </div>
+              </div>
+            </Card>
+            <Card title="Posting Summary" showHeader={true}>
+              <div className="dx-fieldset">
+                <div className="dx-fieldset-header">Contribution & Loans</div>
+                <div className="dx-field">
+                  <DataGrid
+                    className={"dx-card wide-card"}
+                    dataSource={summryData}
+                    keyExpr={"id"}
+                    noDataText={"No contributions and loans"}
+                    showBorders={false}
+                    focusedRowEnabled={false}
+                    defaultFocusedRowIndex={0}
+                    columnAutoWidth={true}
+                    columnHidingEnabled={true}
+                  >
+                    <Paging defaultPageSize={10} />
+                    <Pager showPageSizeSelector={true} showInfo={true} />
+                    <Column
+                      dataField="id"
+                      caption="ID"
+                      visible={false}
+                      hidingPriority={7}
+                    ></Column>
+                    <Column
+                      dataField="type"
+                      caption="Type"
+                      groupIndex={0}
+                      format={",##0.###"}
+                      hidingPriority={4}
+                    ></Column>
+                    <Column
+                      dataField="name"
+                      caption="Name"
+                      hidingPriority={4}
+                    ></Column>
+                    <Column
+                      dataField="amount"
+                      caption="Amount ZMW"
+                      format={",##0.###"}
+                      hidingPriority={5}
+                    ></Column>
+                    <Summary>
+                      <GroupItem
+                        column="amount"
+                        summaryType="sum"
+                        valueFormat=",##0.##"
+                        displayFormat="Total ZMW: {0}"
+                        showInGroupFooter={true}
+                      />
+                      <TotalItem
+                        column="amount"
+                        summaryType="sum"
+                        displayFormat="Total Deposit Amount ZMW: {0}"
+                      />
+                    </Summary>
+                  </DataGrid>
+                </div>
+                <div className="dx-field">
+                  <div className="dx-field-label">Deposit Amount</div>
                   <div className="dx-field-value-static">
                     <strong className="text-danger">
-                      {Assist.formatCurrency(postingLoanMonthPayment!)}
+                      {Assist.formatCurrency(getContributions())}
+                    </strong>
+                    +{" "}
+                    <strong className="text-success">
+                      {Assist.formatCurrency(getLoanAmount())}
+                    </strong>{" "}
+                    =
+                    <strong>
+                      {Assist.formatCurrency(
+                        getContributions() + getLoanAmount()
+                      )}
                     </strong>
                   </div>
                 </div>
-                <div className="dx-fieldset">
-                  <div className="dx-fieldset-header">Loan Application</div>
-                  <div className="dx-field">
-                    <div className="dx-field-label">
-                      Max Loan Amount ({loanSavingsRatio} Savings)
-                    </div>
-                    <div className="dx-field-value-static">
-                      <strong className="text-success">
-                        ZMW {totalSavingsAmount! * loanSavingsRatio!}
-                      </strong>
-                    </div>
-                  </div>
-                  <div className="dx-field">
-                    <div className="dx-field-label">Loan Amount</div>
-                    <div className="dx-field-value-static">
-                      <strong>
-                        {Assist.formatCurrency(postingLoanApplication!)}
-                      </strong>
-                    </div>
-                  </div>
+                <div className="dx-field">
+                  <ValidationSummary id="summaryMain" />
                 </div>
-                <div className="dx-fieldset">
-                  <div className="dx-fieldset-header">Comments & feedback</div>
+                {stage == 1 && (
                   <div className="dx-field">
-                    <div className="dx-field-label">Comemnts</div>
-                    <div className="dx-field-value-static">
-                      <strong>{postingComments}</strong>
-                    </div>
+                    <div className="dx-field-label"></div>
+                    <Button
+                      width="100%"
+                      type={"default"}
+                      disabled={loading || error || saving}
+                      useSubmitBehavior={true}
+                    >
+                      <span className="dx-button-text">Next</span>
+                    </Button>
                   </div>
-                </div>
+                )}
                 {stage == 2 && (
                   <div className="dx-field">
                     <div className="dx-field-label"></div>
@@ -881,199 +1144,34 @@ const PostMonthly = () => {
                     </Button>
                   </div>
                 )}
+                {stage == 2 && (
+                  <div className="dx-field">
+                    <div className="dx-field-label"></div>
+                    <Button
+                      width="100%"
+                      type={"normal"}
+                      disabled={loading || error || saving}
+                      onClick={() => {
+                        window.scrollTo({
+                          top: 0,
+                          behavior: "smooth",
+                        });
+                        setLoading(true);
+                        setTimeout(() => {
+                          setLoading(false);
+                          setStage(1);
+                        }, Assist.uXDelay);
+                      }}
+                    >
+                      <span className="dx-button-text">Go Back</span>
+                    </Button>
+                  </div>
+                )}
               </div>
-            )}
-          </Card>
-        </Col>
-        <Col sz={12} sm={12} lg={5}>
-          <Card title="Loans & Penalties" showHeader={true}>
-            <div className="dx-fieldset">
-              <div className="dx-fieldset-header">Loans</div>
-              <div className="dx-field">
-                <DataGrid
-                  className={"dx-card wide-card"}
-                  dataSource={loanData}
-                  keyExpr={"id"}
-                  noDataText={"You have no active loans"}
-                  showBorders={false}
-                  focusedRowEnabled={false}
-                  defaultFocusedRowIndex={0}
-                  columnAutoWidth={true}
-                  columnHidingEnabled={true}
-                >
-                  <Paging defaultPageSize={10} />
-                  <Pager showPageSizeSelector={true} showInfo={true} />
-                  <Column
-                    dataField="id"
-                    caption="ID"
-                    visible={false}
-                    hidingPriority={8}
-                  ></Column>
-                  <Column
-                    dataField="date"
-                    caption="Date"
-                    dataType="date"
-                    format={"dd MMM yyy"}
-                    hidingPriority={7}
-                    visible={true}
-                  ></Column>
-                  <Column
-                    dataField="amount"
-                    caption="Amount ZMW"
-                    format={",##0.###"}
-                    hidingPriority={6}
-                  ></Column>
-                  <Column
-                    dataField="balanceAmount"
-                    caption="Balance ZMW"
-                    format={",##0.###"}
-                    hidingPriority={5}
-                  ></Column>
-                  <Column
-                    dataField="interest_rate"
-                    caption="Interest (%)"
-                    format={",##0.###"}
-                    hidingPriority={4}
-                  ></Column>
-                  <Column
-                    dataField="term_months"
-                    caption="Term"
-                    hidingPriority={3}
-                  ></Column>
-                  <Column
-                    dataField="totalLoanPaymentsAmount"
-                    caption="Total Paid (ZMW)"
-                    format={",##0.###"}
-                    hidingPriority={2}
-                  ></Column>
-                  <Column
-                    dataField="totalLoanPaymentsNo"
-                    caption="No Payments"
-                    hidingPriority={1}
-                  ></Column>
-                </DataGrid>
-              </div>
-              <div className="dx-fieldset-header">Penalties</div>
-              <div className="dx-field">
-                <DataGrid
-                  className={"dx-card wide-card"}
-                  dataSource={penaltyData}
-                  keyExpr={"id"}
-                  noDataText={"You have no active penalties"}
-                  showBorders={false}
-                  focusedRowEnabled={false}
-                  defaultFocusedRowIndex={0}
-                  columnAutoWidth={true}
-                  columnHidingEnabled={true}
-                >
-                  <Paging defaultPageSize={10} />
-                  <Pager showPageSizeSelector={true} showInfo={true} />
-                  <Column
-                    dataField="id"
-                    caption="ID"
-                    visible={false}
-                    hidingPriority={7}
-                  ></Column>
-                  <Column
-                    dataField="date"
-                    caption="Date"
-                    dataType="date"
-                    format={"dd MMM yyy"}
-                    hidingPriority={6}
-                  ></Column>
-                  <Column
-                    dataField="type.type_name"
-                    caption="Type"
-                    groupIndex={0}
-                    format={",##0.###"}
-                    hidingPriority={4}
-                  ></Column>
-                  <Column
-                    dataField="amount"
-                    caption="Amount ZMW"
-                    format={",##0.###"}
-                    hidingPriority={5}
-                  ></Column>
-                  <Column
-                    dataField="ptype.type_name"
-                    caption="Type"
-                    format={",##0.###"}
-                    hidingPriority={4}
-                  ></Column>
-                  <Summary>
-                    <GroupItem
-                      column="amount"
-                      summaryType="sum"
-                      valueFormat=",##0.##"
-                      displayFormat="Total ZMW: {0}"
-                      showInGroupFooter={true}
-                    />
-                  </Summary>
-                </DataGrid>
-              </div>
-            </div>
-          </Card>
-          <Card title="Posting Summary" showHeader={true}>
-            <div className="dx-fieldset">
-              <div className="dx-fieldset-header">Contribution & Loans</div>
-              <div className="dx-field">
-                <DataGrid
-                  className={"dx-card wide-card"}
-                  dataSource={summryData}
-                  keyExpr={"id"}
-                  noDataText={"No contributions and loans"}
-                  showBorders={false}
-                  focusedRowEnabled={false}
-                  defaultFocusedRowIndex={0}
-                  columnAutoWidth={true}
-                  columnHidingEnabled={true}
-                >
-                  <Paging defaultPageSize={10} />
-                  <Pager showPageSizeSelector={true} showInfo={true} />
-                  <Column
-                    dataField="id"
-                    caption="ID"
-                    visible={false}
-                    hidingPriority={7}
-                  ></Column>
-                  <Column
-                    dataField="type"
-                    caption="Type"
-                    groupIndex={0}
-                    format={",##0.###"}
-                    hidingPriority={4}
-                  ></Column>
-                  <Column
-                    dataField="name"
-                    caption="Name"
-                    hidingPriority={4}
-                  ></Column>
-                  <Column
-                    dataField="amount"
-                    caption="Amount ZMW"
-                    format={",##0.###"}
-                    hidingPriority={5}
-                  ></Column>
-                  <Summary>
-                    <GroupItem
-                      column="amount"
-                      summaryType="sum"
-                      valueFormat=",##0.##"
-                      displayFormat="Total ZMW: {0}"
-                      showInGroupFooter={true}
-                    />
-                    <TotalItem
-                      column="amount"
-                      summaryType="sum"
-                      displayFormat="Total Deposit Amount ZMW: {0}"
-                    />
-                  </Summary>
-                </DataGrid>
-              </div>
-            </div>
-          </Card>
-        </Col>
-      </Row>
+            </Card>
+          </Col>
+        </Row>
+      </form>
     </div>
   );
 };

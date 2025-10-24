@@ -35,7 +35,9 @@ import {
   AdminKnowledgebaseCategoryEditPage,
   AdminKnowledgebaseArticleEditPage,
   MemberQueriesPage,
-  MemberQuerySubmitPage
+  MemberQuerySubmitPage,
+  AdminPostingPeriodsPage,
+  AdminMeetingsPage
 } from "./pages";
 import { BrowserRouter } from "react-router-dom";
 import AttendanceTypes from "./pages/admin/dictionairies/attendance_types";
@@ -65,17 +67,20 @@ function App() {
           <Route path="/admin/dictionairies/review-stages" element={<ReviewStages></ReviewStages>} />
           {/* monthly postings */}
           <Route path="/admin/monthly-postings/list" element={<AdminMonthlyPostingsPage/>} />
-         <Route path="/admin/monthly-postings/view/:eId" element={<AdminMonthlyPostingPage/>} />
+          <Route path="/admin/monthly-postings/view/:eId" element={<AdminMonthlyPostingPage/>} />
+          {/* posting periods */}
+          <Route path="/admin/posting-periods/list" element={<AdminPostingPeriodsPage/>} />
           {/* Users */}
           <Route path="/admin/users/pending" element={<UsersPendingPage/>} />
           {/* Configuration */}
           <Route path="/admin/config/sacco" element={<ConfigurationSACCOPage/>} />
-                   {/* member queries */}
-                   
-            {/* announcements */}
+         {/* member queries */}     
+          {/* announcements */}
           <Route path="/admin/announcements/list" element={<AdminAnnouncementsPage/>} />
           <Route path="/admin/announcements/edit/:eId" element={<AdminAnnouncementEditPage/>} />
           <Route path="/admin/announcements/add" element={<AdminAnnouncementEditPage/>} />
+          {/* meetings */}
+          <Route path="/admin/meetings/list" element={<AdminMeetingsPage/>} />
           {/* member queries */}
           <Route path="/admin/member-queries/list" element={<AdminMemberQueriesPage/>} />
           <Route path="/admin/member-queries/edit/:eId" element={<AdminMonthlyPostingPage/>} />

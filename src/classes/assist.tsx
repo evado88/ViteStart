@@ -6,7 +6,7 @@ import { jwtDecode } from "jwt-decode";
 
 class Assist {
   static developmentDelay: number = 1000;
-
+  static uXDelay: number = 500;
   static firebaseConfig = {
     apiKey: "AIzaSyCbH2wyJmcqTQU3gIl_raQwr0AmVuG_bhA",
     authDomain: "myzambia-5c62c.firebaseapp.com",
@@ -65,7 +65,15 @@ class Assist {
     const newDateStr = dateStr.slice(0, 8) + String(newDay).padStart(2, "0");
     return newDateStr;
   }
+  static getCurrentTime() {
+    const now = new Date();
+    const pad = (n: number) => n.toString().padStart(2, "0");
 
+    const mysqlTime = `${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(
+      now.getSeconds()
+    )}`;
+    return mysqlTime;
+  }
   ///Logs a message to the console
   static log(message: string, type: string = "log") {
     const current = new Date();
