@@ -29,6 +29,24 @@ class Assist {
     return this.currencyFormatter.format(value);
   }
 
+  static getPostingPeriodText(mysqlDate: string): string {
+    const date = new Date(mysqlDate);
+    const friendly = date.toLocaleString("en-US", {
+      month: "long",
+      year: "numeric",
+    });
+    return friendly;
+  }
+
+  static getDateText(mysqlDate: string): string {
+    if (mysqlDate == null) {
+      return "";
+    } else {
+      const date = new Date(mysqlDate);
+      return date.toString();
+    }
+  }
+
   static isTokenExpired() {
     try {
       const token = localStorage.getItem("token");

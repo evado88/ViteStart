@@ -18,8 +18,10 @@ import DataGrid, {
 import Assist from "../../classes/assist";
 import PageConfig from "../../classes/page-config";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../../context/AuthContext";
 
 const MonthlyPostings = () => {
+  const { user } = useAuth();
   const navigate = useNavigate();
   const [data, setData] = useState([]);
   const [loadingText, setLoadingText] = useState("Loading data...");
@@ -27,7 +29,7 @@ const MonthlyPostings = () => {
 
   const pageConfig = new PageConfig(
     "Monthly Postings",
-    "monthly-posting/list",
+    `monthly-posting/user/${user.userid}`,
     "",
     "Monthly Posting",
     ""
@@ -64,7 +66,7 @@ const MonthlyPostings = () => {
     []
   );
 
-  return ( 
+  return (
     <div className="page-content" style={{ minHeight: "862px" }}>
       <Titlebar
         title={pageConfig.Title}
@@ -93,7 +95,7 @@ const MonthlyPostings = () => {
               <Editing
                 mode="row"
                 allowUpdating={false}
-                allowDeleting={true}
+                allowDeleting={false}
                 allowAdding={false}
               />
               <Pager showPageSizeSelector={true} showInfo={true} />
@@ -124,6 +126,11 @@ const MonthlyPostings = () => {
                     </a>
                   );
                 }}
+              ></Column>
+              <Column
+                dataField="stage.stage_name"
+                caption="Stage"
+                hidingPriority={11}
               ></Column>
               <Column
                 dataField="status.status_name"

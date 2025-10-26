@@ -7,6 +7,7 @@ const AppInfo = {
   uploadUrl: "",
   fileServer: "",
   noImageUrl: "",
+  yesNoList:  ["No", "Yes"],
   htmlToolbar: {
     items: [
       "undo",

@@ -78,7 +78,7 @@ const AdminMonthlyPostings = () => {
               <Editing
                 mode="row"
                 allowUpdating={false}
-                allowDeleting={true}
+                allowDeleting={false}
                 allowAdding={false}
               />
               <Pager showPageSizeSelector={true} showInfo={true} />
@@ -91,7 +91,7 @@ const AdminMonthlyPostings = () => {
                 caption="Name"
                 dataType="date"
                 format={"dd MMMM yyy"}
-                hidingPriority={12}
+                hidingPriority={13}
                 cellRender={(e) => {
                   return (
                     <a href={`/admin/monthly-postings/view/${e.data.id}`}>
@@ -103,6 +103,11 @@ const AdminMonthlyPostings = () => {
               <Column
                 dataField="status.status_name"
                 caption="Status"
+                hidingPriority={12}
+              ></Column>
+              <Column
+                dataField="stage.stage_name"
+                caption="Stage"
                 hidingPriority={11}
               ></Column>
               <Column

@@ -87,7 +87,7 @@ const Configuration = () => {
   }, []);
 
   const updateVaues = (data: any) => {
-    setMaxPostDate(data.posting_date_max);
+    setMaxPostDate(data.late_posting_date_start);
 
     setSavingsMultiple(data.saving_multiple);
     setSharesMultiple(data.shares_multiple);
@@ -111,7 +111,7 @@ const Configuration = () => {
 
     const postData = {
       user_id: user.userid,
-      posting_date_max: maxPostDate,
+      late_posting_date_start: maxPostDate,
       saving_multiple: savingsMultiple,
       shares_multiple: sharesMultiple,
       social_min: socialMin,
@@ -354,12 +354,12 @@ const Configuration = () => {
                   </div>
                   <div className="dx-field">
                     <div className="dx-field-label">
-                      Late Meeting Attendace Fee
+                      Late Meeting Attendance Fee
                     </div>
                     <NumberBox
                       className="dx-field-value"
                       value={lateMeetingFee!}
-                      placeholder="Late Meeting Attendace Fee"
+                      placeholder="Late Meeting Attendance Fee"
                       format={",##0.###"}
                       disabled={error || saving}
                       onValueChange={(value) => setLateMeetingFee(value)}

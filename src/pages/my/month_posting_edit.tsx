@@ -36,6 +36,10 @@ const PostMonthly = () => {
 
   //posting
   const [postingDate, setPostingDate] = useState("2025-05-18");
+  const [postingDateText, setPostingDateText] = useState(() => {
+    const friendly = Assist.getPostingPeriodText("2025-05-18");
+    return friendly;
+  });
   //for production
   /*
   const [postingDate, setPostingDate] = useState(() => {
@@ -44,15 +48,15 @@ const PostMonthly = () => {
     return mysqlDate;
   });*/
 
-  const [postingSavings, setPostingSavings] = useState<number | null>(500);
-  const [postingShares, setPostingShares] = useState<number | null>(1000);
-  const [postingSocial, setPostingSocial] = useState<number | null>(300);
-  const [postingPenalty, setPostingPenalty] = useState<number | null>(200);
+  const [postingSavings, setPostingSavings] = useState<number | null>(null);
+  const [postingShares, setPostingShares] = useState<number | null>(null);
+  const [postingSocial, setPostingSocial] = useState<number | null>(null);
+  const [postingPenalty, setPostingPenalty] = useState<number | null>(0);
 
   //interest payment - minimum 10% if not yet paid on loan
   const [postingLoanInterestPayment, setPostingLoanInterestPayment] = useState<
     number | null
-  >(600);
+  >(0);
 
   //loan payment - usual payment every month or 10% first month
   const [minPostingLoanMonthPayment, setMinPostingLoanMonthPayment] =
@@ -60,7 +64,7 @@ const PostMonthly = () => {
 
   const [postingLoanMonthPayment, setPostingLoanMonthPayment] = useState<
     number | null
-  >(1800);
+  >(0);
 
   //new loan loan application
   const [postingLoanApplication, setPostingLoanApplication] = useState<
@@ -83,6 +87,7 @@ const PostMonthly = () => {
   const [savingsMultiple, setSavingsMultiple] = useState<number | null>(null);
   const [sharesMultiple, setSharesMultiple] = useState<number | null>(null);
   const [socialMin, setSocialMin] = useState<number | null>(null);
+  const [approvalLevels, setApprovalLevels] = useState<number | null>(null);
 
   //interest payment - minimum 10% if not yet paid on loan
   const [loanInterestPercent, setLoanInterestPercent] = useState<number | null>(
@@ -177,6 +182,8 @@ const PostMonthly = () => {
     setLatePostingFee(data.config.late_posting_rate);
     setLateMeetingFee(data.config.late_meeting_rate);
     setMissedMeetingFee(data.config.missed_meeting_rate);
+
+    setApprovalLevels(data.config.approval_levels);
 
     setTotalSavingsAmount(data.totalSavings);
 
@@ -287,11 +294,11 @@ const PostMonthly = () => {
       loan_month_repayment: postingLoanMonthPayment,
       loan_application: postingLoanApplication,
       status_id: 2,
-      approval_levels: 2,
+      approval_levels: approvalLevels,
       comments: postingComments,
       contribution_total: totalContributions,
       deposit_total: depositTotal,
-      stage_id: 1,
+      stage_id: 2,
     };
 
     console.log(JSON.stringify(postData));
@@ -783,7 +790,7 @@ const PostMonthly = () => {
                       <div className="dx-field-label">Comments</div>
                       <TextArea
                         className="dx-field-value"
-                        placeholder="Comemnts"
+                        placeholder="Comments"
                         disabled={error || saving || saving}
                         height={80}
                         value={postingComments}
@@ -804,7 +811,7 @@ const PostMonthly = () => {
                     <div className="dx-field">
                       <div className="dx-field-label">Period</div>
                       <div className="dx-field-value-static">
-                        <strong>{postingDate}</strong>
+                        <strong>{postingDateText}</strong>
                       </div>
                     </div>
                   </div>
@@ -898,7 +905,7 @@ const PostMonthly = () => {
                       Comments & feedback
                     </div>
                     <div className="dx-field">
-                      <div className="dx-field-label">Comemnts</div>
+                      <div className="dx-field-label">Comments</div>
                       <div className="dx-field-value-static">
                         <strong>{postingComments}</strong>
                       </div>
