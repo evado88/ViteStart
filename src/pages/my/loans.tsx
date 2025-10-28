@@ -18,10 +18,10 @@ const MonthlyPostings = () => {
   const [loading, setLoading] = useState(true);
 
   const pageConfig = new PageConfig(
-    "My Shares",
-    `transactions/user/${user.userid}/type/${Assist.TRANSACTION_SHARE}/status/${Assist.STATUS_APPROVED}`,
+    "My Loans",
+    `transactions/user/${user.userid}/type/${Assist.TRANSACTION_LOAN}/status/${Assist.STATUS_APPROVED}`,
     "",
-    "My Shares",
+    "My Loans",
     ""
   );
 
@@ -35,7 +35,7 @@ const MonthlyPostings = () => {
           setLoading(false);
 
           if (data.length === 0) {
-            setLoadingText("You have no shares");
+            setLoadingText("You have no loans");
           } else {
             setLoadingText("");
           }

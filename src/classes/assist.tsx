@@ -5,8 +5,39 @@ import TaskResult from "./task-result.js";
 import { jwtDecode } from "jwt-decode";
 
 class Assist {
-  static developmentDelay: number = 1000;
-  static uXDelay: number = 500;
+  static DEV_DELAY: number = 1000;
+  static UX_DELAY: number = 500;
+
+  static STATUS_APPROVED = 4;
+  static STATUS_REJECTED = 5;
+
+  static TRANSACTION_SAVINGS = 1;
+  static TRANSACTION_SHARE = 2;
+  static TRANSACTION_LOAN = 3;
+  static TRANSACTION_LOAN_PAYMENT = 4;
+  static TRANSACTION_INTEREST_CHARGED = 5;
+  static TRANSACTION_INTEREST_EARNED = 6;
+  static TRANSACTION_SOCIAL_FUND = 7;
+  static TRANSACTION_PENALTY_CHARGED = 8;
+  static TRANSACTION_PENALTY_EARNED = 9;
+
+  static STATE_OPEN = 1;
+  static STATE_CLOSED = 2;
+
+  static REVIEW_ACTION_REJECT = 1;
+  static REVIEW_ACTION_APPROVE = 2;
+
+  static APPROVAL_STAGE_SUBMITTED = 2;
+  static APPROVAL_STAGE_PRIMARY = 3;
+  static APPROVAL_STAGE_SECONDARY = 4;
+  static APPROVAL_STAGE_GUARANTOR = 5;
+  static APPROVAL_STAGE_POP_UPLOAD = 6;
+  static APPROVAL_STAGE_POP_APPROVAL = 7;
+  static APPROVAL_STAGE_APPROVED = 8;
+
+  static RESPONSE_NO = 1;
+  static RESPONSE_YES = 2;
+
   static firebaseConfig = {
     apiKey: "AIzaSyCbH2wyJmcqTQU3gIl_raQwr0AmVuG_bhA",
     authDomain: "myzambia-5c62c.firebaseapp.com",

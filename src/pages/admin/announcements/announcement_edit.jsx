@@ -68,7 +68,7 @@ const AnnouncementEdit = () => {
             setError(true);
             Assist.showMessage(message, "error");
           });
-      },  Assist.developmentDelay);
+      },  Assist.DEV_DELAY);
     }
   }, []);
 
@@ -118,7 +118,7 @@ const AnnouncementEdit = () => {
           setSaving(false);
           Assist.showMessage(message, "error");
         });
-    },  Assist.developmentDelay);
+    },  Assist.DEV_DELAY);
   };
 
   const toolbar = useMemo(() => {

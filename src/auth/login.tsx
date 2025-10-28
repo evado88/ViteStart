@@ -58,7 +58,7 @@ const Login = () => {
             Assist.showMessage("Unable to login. Please try again", "error");
           }
         });
-    }, Assist.developmentDelay);
+    }, Assist.DEV_DELAY);
   };
   return (
     <section className="sign-in">

@@ -147,7 +147,7 @@ const PostMonthly = () => {
           setError(true);
           Assist.showMessage(message, "error");
         });
-    }, Assist.developmentDelay);
+    }, Assist.DEV_DELAY);
   }, []);
 
   useEffect(() => {
@@ -255,7 +255,7 @@ const PostMonthly = () => {
       setTimeout(() => {
         setLoading(false);
         setStage(2);
-      }, Assist.uXDelay);
+      }, Assist.UX_DELAY);
 
       return;
     }
@@ -320,7 +320,7 @@ const PostMonthly = () => {
 
           Assist.showMessage(message, "error");
         });
-    }, Assist.developmentDelay);
+    }, Assist.DEV_DELAY);
   };
 
   const allowLoanInterestPayment = () => {
@@ -1167,7 +1167,7 @@ const PostMonthly = () => {
                         setTimeout(() => {
                           setLoading(false);
                           setStage(1);
-                        }, Assist.uXDelay);
+                        }, Assist.UX_DELAY);
                       }}
                     >
                       <span className="dx-button-text">Go Back</span>

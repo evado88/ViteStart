@@ -16,14 +16,14 @@ export const navigation: MenuItem[] = [
     items: [],
   },
   {
-    key: "monthly-posting",
+    key: "my-monthly-postings",
     text: "Monthly Posting",
     icon: "fa fa-calendar",
     path: "",
     roles: [1],
     items: [
       {
-        key: "post-savings",
+        key: "my-monthly-posting-new",
         text: "New Monthly Posting",
         icon: "",
         path: "/my/monthly-posting/post",
@@ -31,10 +31,18 @@ export const navigation: MenuItem[] = [
         items: [],
       },
       {
-        key: "savings",
-        text: "Monthly Postings",
+        key: "my-monthly-posting-list",
+        text: "My Monthly Postings",
         icon: "",
         path: "/my/monthly-posting/list",
+        roles: [1],
+        items: [],
+      },
+      {
+        key: "my-monthly-posting-approve",
+        text: "Guarantor Approvals",
+        icon: "",
+        path: "/my/monthly-posting/approvals",
         roles: [1],
         items: [],
       },
@@ -48,18 +56,18 @@ export const navigation: MenuItem[] = [
     roles: [1],
     items: [
       {
-        key: "post-savings",
-        text: "Monthly Posting",
+        key: "my-savings",
+        text: "My Savings",
         icon: "",
-        path: "/contact",
+        path: "/my/savings/list",
         roles: [1],
         items: [],
       },
       {
-        key: "savings",
-        text: "My Savings",
+        key: "my-social-funds",
+        text: "My Social Funds",
         icon: "",
-        path: "/about",
+        path: "/my/social-funds/list",
         roles: [1],
         items: [],
       },
@@ -73,18 +81,10 @@ export const navigation: MenuItem[] = [
     roles: [1],
     items: [
       {
-        key: "loan-application",
-        text: "Loan Application",
-        icon: "",
-        path: "/home",
-        roles: [1],
-        items: [],
-      },
-      {
         key: "my-loans",
-        text: "My loans",
+        text: "My Loans",
         icon: "",
-        path: "/contactt",
+        path: "/my/loans/list",
         roles: [1],
         items: [],
       },
@@ -98,18 +98,27 @@ export const navigation: MenuItem[] = [
     roles: [1],
     items: [
       {
-        key: "post-shares",
-        text: "Monthly Posting",
-        icon: "",
-        path: "/phones",
-        roles: [1],
-        items: [],
-      },
-      {
         key: "my-shares",
         text: "My Shares",
         icon: "",
-        path: "/last-seen",
+        path: "/my/shares/list",
+        roles: [1],
+        items: [],
+      },
+    ],
+  },
+  {
+    key: "messenger",
+    text: "Penalties",
+    icon: "fa fa-money",
+    path: "#",
+    roles: [1],
+    items: [
+      {
+        key: "my-penalties",
+        text: "My Penalties",
+        icon: "",
+        path: "/my/penalties/list",
         roles: [1],
         items: [],
       },
@@ -225,7 +234,7 @@ export const navigation: MenuItem[] = [
   {
     key: "posting-periods",
     text: "Posting Periods",
-    icon: "fa fa-users",
+    icon: "fa fa-calendar",
     path: "#",
     roles: [2],
     items: [
@@ -480,7 +489,7 @@ export const navigation: MenuItem[] = [
   {
     key: "meetings",
     text: "Meetings",
-    icon: "fa fa-bell",
+    icon: "fa fa-suitcase",
     path: "#",
     roles: [2],
     items: [

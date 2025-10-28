@@ -68,7 +68,7 @@ const KnowledgebaseCategoryEdit = () => {
             setError(true);
             Assist.showMessage(message, "error");
           });
-      },  Assist.developmentDelay);
+      },  Assist.DEV_DELAY);
     }
   }, []);
 
@@ -119,7 +119,7 @@ const KnowledgebaseCategoryEdit = () => {
           setSaving(false);
           Assist.showMessage(message, "error");
         });
-    },  Assist.developmentDelay);
+    },  Assist.DEV_DELAY);
   };
 
   const toolbar = useMemo(() => {

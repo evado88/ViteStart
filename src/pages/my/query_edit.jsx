@@ -82,7 +82,7 @@ const MemberQueryEdit = () => {
             setError(true);
             Assist.showMessage(message, "error");
           });
-      },  Assist.developmentDelay);
+      },  Assist.DEV_DELAY);
     }
   }, []);
 
@@ -134,7 +134,7 @@ const MemberQueryEdit = () => {
           setSaving(false);
           Assist.showMessage(message, "error");
         });
-    },  Assist.developmentDelay);
+    },  Assist.DEV_DELAY);
   };
 
   const toolbar = useMemo(() => {

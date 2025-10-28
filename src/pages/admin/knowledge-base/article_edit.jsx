@@ -83,7 +83,7 @@ const KnowledgebaseArticleEdit = () => {
             setError(true);
             Assist.showMessage(message, "error");
           });
-      },  Assist.developmentDelay);
+      },  Assist.DEV_DELAY);
     }
   }, []);
 
@@ -136,7 +136,7 @@ const KnowledgebaseArticleEdit = () => {
           setSaving(false);
           Assist.showMessage(message, "error");
         });
-    },  Assist.developmentDelay);
+    },  Assist.DEV_DELAY);
   };
 
   const toolbar = useMemo(() => {

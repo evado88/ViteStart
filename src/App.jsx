@@ -22,7 +22,7 @@ import {
   //Users
   UsersPendingPage,
   //My
-  MonthlyPostingPage,
+  MonthlyPostingEditPage,
   MonthlyPostingsPage,
   AdminMonthlyPostingsPage,
   AdminMonthlyPostingPage,
@@ -37,7 +37,16 @@ import {
   MemberQueriesPage,
   MemberQuerySubmitPage,
   AdminPostingPeriodsPage,
-  AdminMeetingsPage
+  AdminMeetingsPage,
+  MonthlyPostingPage,
+  MonthlyPostingApprovalsPage,
+  MonthlyPostingApprovePage,
+  MonthlyPostingPOPUploadPage,
+  MemberSavingsPage,
+  MemberSocialFundsPage,
+  MemberPenaltiesPage,
+  MemberSharesPage,
+  MemberLoansPage
 } from "./pages";
 import { BrowserRouter } from "react-router-dom";
 import AttendanceTypes from "./pages/admin/dictionairies/attendance_types";
@@ -93,11 +102,20 @@ function App() {
           <Route path="/admin/knowledge-base/article/add" element={<AdminKnowledgebaseArticleEditPage/>} />
           {/* MEMBER */}
           {/* My */}
-          <Route path="/my/monthly-posting/post" element={<MonthlyPostingPage/>} />
+          <Route path="/my/monthly-posting/post" element={<MonthlyPostingEditPage/>} />
           <Route path="/my/monthly-posting/list" element={<MonthlyPostingsPage/>} />
+          <Route path="/my/monthly-posting/approvals" element={<MonthlyPostingApprovalsPage/>} />
+          <Route path="/my/monthly-posting/view/:eId" element={<MonthlyPostingPage/>} />
+          <Route path="/my/monthly-posting/guarantor-approval/:eId" element={<MonthlyPostingApprovePage/>} />
+          <Route path="/my/monthly-posting/pop-upload/:eId" element={<MonthlyPostingPOPUploadPage/>} />
           <Route path="/my/member-queries/list" element={<MemberQueriesPage/>} />
           <Route path="/my/member-queries/submit" element={<MemberQuerySubmitPage/>} />
           <Route path="/my/member-queries/edit/:eId" element={<MemberQuerySubmitPage/>} />
+          <Route path="/my/savings/list" element={<MemberSavingsPage/>} />
+          <Route path="/my/social-funds/list" element={<MemberSocialFundsPage/>} />
+          <Route path="/my/penalties/list" element={<MemberPenaltiesPage/>} />
+          <Route path="/my/shares/list" element={<MemberSharesPage/>} />
+          <Route path="/my/loans/list" element={<MemberLoansPage/>} />
           {/* Error */}   
           <Route path="*" element={<NotFoundPage></NotFoundPage>} />
         </Route>

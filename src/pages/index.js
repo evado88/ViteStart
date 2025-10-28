@@ -42,7 +42,16 @@ export { default as ConfigurationSACCOPage} from './admin/configuration/sacco'
 
 //MEMBER
 //My
-export { default as MonthlyPostingPage} from './my/month_posting_edit'
+export { default as MonthlyPostingEditPage} from './my/month_posting_edit'
+export { default as MonthlyPostingPage} from './my/month_posting'
+export { default as MonthlyPostingApprovePage} from './my/month_posting_approve'
 export { default as MonthlyPostingsPage} from './my/month_posting_list'
+export { default as MonthlyPostingApprovalsPage} from './my/month_posting_approvals'
+export { default as MonthlyPostingPOPUploadPage} from './my/month_posting_pop_upload'
 export { default as MemberQueriesPage} from './my/query_list'
 export { default as MemberQuerySubmitPage} from './my/query_edit'
+export { default as MemberSavingsPage} from './my/savings'
+export { default as MemberSocialFundsPage} from './my/social'
+export { default as MemberPenaltiesPage} from './my/penalties'
+export { default as MemberSharesPage} from './my/shares'
+export { default as MemberLoansPage} from './my/loans'

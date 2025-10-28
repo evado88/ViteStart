@@ -1,32 +1,24 @@
 import { useState, useEffect } from "react";
-import { Titlebar } from "../../../components/titlebar";
-import { Card } from "../../../components/card";
-import { Row } from "../../../components/row";
-import { Col } from "../../../components/column";
+import { Titlebar } from "../../components/titlebar";
+import { Card } from "../../components/card";
+import { Row } from "../../components/row";
+import { Col } from "../../components/column";
 import Button from "devextreme-react/button";
 import { LoadPanel } from "devextreme-react/load-panel";
-import { useAuth } from "../../../context/AuthContext";
-import PageConfig from "../../../classes/page-config";
-import Assist from "../../../classes/assist";
+import { useAuth } from "../../context/AuthContext";
+import PageConfig from "../../classes/page-config";
+import Assist from "../../classes/assist";
 import { useNavigate, useParams } from "react-router-dom";
 import { confirm } from "devextreme/ui/dialog";
 import TextArea from "devextreme-react/text-area";
 import Validator, { RequiredRule } from "devextreme-react/validator";
 import SelectBox from "devextreme-react/select-box";
-import AppInfo from "../../../classes/app-info";
+import AppInfo from "../../classes/app-info";
 import ValidationSummary from "devextreme-react/validation-summary";
-import { MonthlyPostDetail } from "../../../components/monthlyPostDetail";
+import { MonthlyPostDetail } from "../../components/monthlyPostDetail";
 import LoadIndicator from "devextreme-react/load-indicator";
-import DataGrid, {
-  Column,
-  Pager,
-  Paging,
-  Summary,
-  GroupItem,
-  TotalItem,
-} from "devextreme-react/data-grid";
 
-const AdminMonthlyPosting = ({ props }: any) => {
+const MyMonthlyPosting = ({ props }: any) => {
   //user
   const { user, login, logout } = useAuth();
   const navigate = useNavigate();
@@ -36,7 +28,6 @@ const AdminMonthlyPosting = ({ props }: any) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);
   const [saving, setSaving] = useState(false);
-  const [uploadedFiles, setUploadedFiles] = useState<any | null>([]);
 
   const [status, setStatus] = useState(null);
   const [stage, setStage] = useState(null);
@@ -49,7 +40,7 @@ const AdminMonthlyPosting = ({ props }: any) => {
   const [monthlyPosting, setMonthlyPosting] = useState<any | null>(null);
 
   const pageConfig = new PageConfig(
-    "Review Monthly Posting",
+    "View Monthly Posting",
     `monthly-posting/id/${eId}`,
     "",
     "Monthly Posting",
@@ -80,7 +71,6 @@ const AdminMonthlyPosting = ({ props }: any) => {
     setStatus(res.status.status_name);
     setStage(res.stage.stage_name);
     setApprovalLevels(res.approval_levels);
-    setUploadedFiles([res]);
   };
 
   const isGuarantorRequired = () => {
@@ -136,7 +126,6 @@ const AdminMonthlyPosting = ({ props }: any) => {
     if (status == "Submitted") {
       if (
         stage == "Guarantor Approval" ||
-        stage == "Awaiting POP Upload" ||
         stage == "Awaiting Submission" ||
         stage == "Approved"
       ) {
@@ -197,7 +186,7 @@ const AdminMonthlyPosting = ({ props }: any) => {
       />
       <Titlebar
         title={pageConfig.Title}
-        section={"Administration"}
+        section={"My"}
         icon={"home"}
         url="#"
       ></Titlebar>
@@ -288,55 +277,6 @@ const AdminMonthlyPosting = ({ props }: any) => {
                           </SelectBox>
                         </div>
                       )}
-                      {stage == "Awaiting POP Approval" && <div className="dx-field">
-                        <DataGrid
-                          className={"dx-card wide-card"}
-                          dataSource={uploadedFiles}
-                          keyExpr={"id"}
-                          noDataText={"No POP file uploaded"}
-                          showBorders={false}
-                          focusedRowEnabled={false}
-                          defaultFocusedRowIndex={0}
-                          columnAutoWidth={true}
-                          columnHidingEnabled={true}
-                        >
-                          <Paging defaultPageSize={10} />
-                          <Pager showPageSizeSelector={true} showInfo={true} />
-                          <Column
-                            dataField="id"
-                            caption="ID"
-                            hidingPriority={7}
-                          ></Column>
-                          <Column
-                            dataField="pop_filename"
-                            caption="Name"
-                            hidingPriority={4}
-                            cellRender={(e) => {
-                              return (
-                                <a
-                                  href={encodeURI(
-                                    `${AppInfo.apiUrl}static/${e.data.pop_filename}`
-                                  )}
-                                  target="_null"
-                                >
-                                  POP Uploaded (Click to view)
-                                </a>
-                              );
-                            }}
-                          ></Column>
-                          <Column
-                            dataField="pop_filesize"
-                            caption="Size"
-                            format={",##0.###"}
-                            hidingPriority={4}
-                          ></Column>
-                          <Column
-                            dataField="pop_filetype"
-                            caption="Type"
-                            hidingPriority={5}
-                          ></Column>
-                        </DataGrid>
-                      </div>}
                       <div className="dx-field">
                         <div className="dx-field-label">
                           Comments (Optional)
@@ -468,4 +408,4 @@ const AdminMonthlyPosting = ({ props }: any) => {
   );
 };
 
-export default AdminMonthlyPosting;
+export default MyMonthlyPosting;

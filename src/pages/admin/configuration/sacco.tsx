@@ -83,7 +83,7 @@ const Configuration = () => {
           setError(true);
           Assist.showMessage(message, "error");
         });
-    }, Assist.developmentDelay);
+    }, Assist.DEV_DELAY);
   }, []);
 
   const updateVaues = (data: any) => {
@@ -139,7 +139,7 @@ const Configuration = () => {
           setSaving(false);
           Assist.showMessage(message, "error");
         });
-    }, Assist.developmentDelay);
+    }, Assist.DEV_DELAY);
   };
 
   return (
