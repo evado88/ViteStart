@@ -2,16 +2,16 @@ import { useState, useEffect, useCallback } from "react";
 import { Titlebar } from "../../../components/titlebar";
 import { Row } from "../../../components/row";
 import { Col } from "../../../components/column";
-
 import Assist from "../../../classes/assist";
 import PageConfig from "../../../classes/page-config";
 import { MonthlyPostingsList } from "../../../components/monthlyPostingList";
 import SelectBox, { SelectBoxTypes } from "devextreme-react/select-box";
 
-const AdminMonthlyPostings = () => {
+const AdminMonthlyRejectedPostings = () => {
   const [data, setData] = useState([]);
   const [loadingText, setLoadingText] = useState("Loading data...");
   const [loading, setLoading] = useState(true);
+  const [status, setStatus] = useState(() => Assist.STATUS_REJECTED);
   const [period, setPeriod] = useState(() => {
     const periodDate = new Date();
     const periodId = `${periodDate.getFullYear()}${periodDate.getMonth() + 1}`;
@@ -34,8 +34,8 @@ const AdminMonthlyPostings = () => {
   });
 
   const pageConfig = new PageConfig(
-    "All Monthly Postings",
-    `monthly-posting/period/${period}`,
+    "Rejected Monthly Postings",
+    ``,
     "",
     "Monthly Posting",
     ""
@@ -61,12 +61,12 @@ const AdminMonthlyPostings = () => {
   };
 
   useEffect(() => {
-    loadData(`monthly-posting/period/${period}`);
+    loadData(`monthly-posting/period/${period}/status/${status}`);
   }, []);
 
   const changePostingPeriod = useCallback(
     (e: SelectBoxTypes.ValueChangedEvent) => {
-       loadData(`monthly-posting/period/${e.value}`);
+       loadData(`monthly-posting/period/${e.value}/status/${status}`);
     },
     []
   );
@@ -108,4 +108,4 @@ const AdminMonthlyPostings = () => {
   );
 };
 
-export default AdminMonthlyPostings;
+export default AdminMonthlyRejectedPostings;

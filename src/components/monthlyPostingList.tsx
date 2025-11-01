@@ -12,6 +12,8 @@ import DataGrid, {
   Editing,
   Toolbar,
   Item,
+  Summary,
+  TotalItem,
 } from "devextreme-react/data-grid";
 import SelectBox, { type SelectBoxTypes } from "devextreme-react/select-box";
 
@@ -187,6 +189,63 @@ export const MonthlyPostingsList = ({
           format="dd MMM yyy HH:MM"
           hidingPriority={1}
         ></Column>
+        <Summary>
+          <TotalItem column="OrderNumber" summaryType="count" />
+          <TotalItem
+            column="contribution_total"
+            summaryType="sum"
+            valueFormat={",##0.###"}
+            displayFormat="{0}"
+          />
+          <TotalItem
+            column="deposit_total"
+            summaryType="sum"
+            valueFormat={",##0.###"}
+            displayFormat="{0}"
+          />
+          <TotalItem
+            column="saving"
+            summaryType="sum"
+            valueFormat={",##0.###"}
+            displayFormat="{0}"
+          />
+          <TotalItem
+            column="shares"
+            summaryType="sum"
+            valueFormat={",##0.###"}
+            displayFormat="{0}"
+          />
+          <TotalItem
+            column="social"
+            summaryType="sum"
+            valueFormat={",##0.###"}
+            displayFormat="{0}"
+          />
+          <TotalItem
+            column="penalty"
+            summaryType="sum"
+            valueFormat={",##0.###"}
+            displayFormat="{0}"
+          />
+          <TotalItem
+            column="loan_interest"
+            summaryType="sum"
+            valueFormat={",##0.###"}
+            displayFormat="{0}"
+          />
+          <TotalItem
+            column="loan_month_repayment"
+            summaryType="sum"
+            valueFormat={",##0.###"}
+            displayFormat="{0}"
+          />
+          <TotalItem
+            column="loan_application"
+            summaryType="sum"
+            valueFormat={",##0.###"}
+            displayFormat="{0}"
+          />
+        </Summary>
       </DataGrid>
     </Card>
   );

@@ -25,6 +25,9 @@ export { default as ReviewStagesPage} from './admin/dictionairies/review_stages'
 
 //monthly posting
 export { default as AdminMonthlyPostingsPage } from './admin/monthly-posting/month_posting_list'
+export { default as AdminMonthlySubmittedPostingsPage } from './admin/monthly-posting/month_posting_submitted'
+export { default as AdminMonthlyApprovedPostingsPage } from './admin/monthly-posting/month_posting_approved'
+export { default as AdminMonthlyRejectedPostingsPage } from './admin/monthly-posting/month_posting_rejected'
 export { default as AdminMonthlyPostingPage } from './admin/monthly-posting/month_posting'
 //annoucement
 export { default as AdminAnnouncementsPage } from './admin/announcements/announcement_list'

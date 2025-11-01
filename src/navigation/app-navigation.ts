@@ -324,7 +324,7 @@ export const navigation: MenuItem[] = [
         key: "admin-monthly-posting-rejceted",
         text: "Rejected",
         icon: "",
-        path: "/admin/monthly-postings/rejceted",
+        path: "/admin/monthly-postings/rejected",
         roles: [2],
         items: [],
       },

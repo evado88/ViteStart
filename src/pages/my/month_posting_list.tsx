@@ -13,23 +13,6 @@ import SelectBox, { SelectBoxTypes } from "devextreme-react/select-box";
 const MonthlyPostings = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
-  const [period, setPeriod] = useState(() => {
-    const periodDate = new Date();
-    const periodId = `${periodDate.getFullYear()}${periodDate.getMonth() + 1}`;
-    return periodId;
-  });
-  const [periodData, setPeriodData] = useState<any | null>(() => {
-    const items: { text: string; value: string }[] = [];
-    const years = [2025, 2026];
-
-    years.forEach((year) => {
-      for (let i = 1; i <= 12; i++) {
-        items.push({ text: `${Assist.getMonthName(i)} ${year}`, value: `${year}${i}` });
-      }
-    });
-
-    return items;
-  });
   const [data, setData] = useState([]);
   const [loadingText, setLoadingText] = useState("Loading data...");
   const [loading, setLoading] = useState(true);
@@ -74,26 +57,6 @@ const MonthlyPostings = () => {
   );
 
 
-  const changePostingPeriod = useCallback(
-    (e: SelectBoxTypes.ValueChangedEvent) => {
-      const newGrouping = e.value;
-      console.log("toggle", e);
-    },
-    []
-  );
-
-  const periodFilterComponent = () => {
-    return (
-      <SelectBox
-        width="225"
-        dataSource={periodData}
-        displayExpr="text"
-        valueExpr="value"
-        value={period}
-        onValueChanged={changePostingPeriod}
-      />
-    );
-  };
 
   return (
     <div className="page-content" style={{ minHeight: "862px" }}>
@@ -112,7 +75,6 @@ const MonthlyPostings = () => {
             data={data}
             loadingText={loadingText}
             addButtonOptions={addButtonOptions}
-            filterComponent={periodFilterComponent()}
             isMember={true}
           />
         </Col>

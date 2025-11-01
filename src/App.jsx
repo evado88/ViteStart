@@ -49,11 +49,14 @@ import {
   MemberLoansPage,
   AdminMeetingsEditPage,
   AdminMeetingPage,
-  AdminMemberSummaryPage
+  AdminMemberSummaryPage,
+  AdminMonthlyApprovedPostingsPage,
+  AdminMonthlyRejectedPostingsPage
 } from "./pages";
 import { BrowserRouter } from "react-router-dom";
 import AttendanceTypes from "./pages/admin/dictionairies/attendance_types";
 import ReviewStages from "./pages/admin/dictionairies/review_stages";
+import AdminMonthlySubmittedPostings from "./pages/admin/monthly-posting/month_posting_submitted";
 
 function App() {
   return (
@@ -83,6 +86,9 @@ function App() {
           <Route path="/admin/dictionairies/review-stages" element={<ReviewStages></ReviewStages>} />
           {/* monthly postings */}
           <Route path="/admin/monthly-postings/list" element={<AdminMonthlyPostingsPage/>} />
+          <Route path="/admin/monthly-postings/submitted" element={<AdminMonthlySubmittedPostings/>} />
+          <Route path="/admin/monthly-postings/approved" element={<AdminMonthlyApprovedPostingsPage/>} />
+          <Route path="/admin/monthly-postings/rejected" element={<AdminMonthlyRejectedPostingsPage/>} />
           <Route path="/admin/monthly-postings/view/:eId" element={<AdminMonthlyPostingPage/>} />
           {/* posting periods */}
           <Route path="/admin/posting-periods/list" element={<AdminPostingPeriodsPage/>} />
