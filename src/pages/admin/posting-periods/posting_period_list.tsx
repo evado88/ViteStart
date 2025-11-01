@@ -113,7 +113,7 @@ const AdminPostingPeriods = () => {
                 dataField="period_name"
                 caption="Title"
                 dataType="date"
-                format={"dd MMMM yyy"}
+                format={"MMMM yyy"}
                 hidingPriority={5}
                 cellRender={(e) => {
                   return (

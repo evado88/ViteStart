@@ -99,7 +99,7 @@ const MyMonthlyPosting = ({ props }: any) => {
     e.preventDefault();
 
     if (uploadedFiles.length == 0) {
-      Assist.showMessage("Please uplaod a valid POP file first ", "error");
+      Assist.showMessage("Please upload a valid POP file first ", "error");
       return;
     }
 

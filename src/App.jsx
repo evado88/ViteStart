@@ -7,7 +7,7 @@ import PrivateRoute from "./auth/PrivateRoute";
 import { Routes, Route } from "react-router-dom";
 import {
   HomePage,
-  DashboardPage,
+  MemberDashboardPage,
   ContactPage,
   AboutPage,
   //Error
@@ -46,7 +46,10 @@ import {
   MemberSocialFundsPage,
   MemberPenaltiesPage,
   MemberSharesPage,
-  MemberLoansPage
+  MemberLoansPage,
+  AdminMeetingsEditPage,
+  AdminMeetingPage,
+  AdminMemberSummaryPage
 } from "./pages";
 import { BrowserRouter } from "react-router-dom";
 import AttendanceTypes from "./pages/admin/dictionairies/attendance_types";
@@ -63,11 +66,15 @@ function App() {
             </PrivateRoute>
           }
         >
-          <Route path="/" element={<DashboardPage></DashboardPage>} />
+
           <Route path="/home" element={<HomePage></HomePage>} />
           <Route path="/about" element={<AboutPage></AboutPage>} />
           <Route path="/contact" element={<ContactPage></ContactPage>} />
           {/* ADMIN */}
+          {/* Dashboards */}
+          <Route path="/" element={<MemberDashboardPage></MemberDashboardPage>} />
+          {/* Reports */}
+          <Route path="/admin/reports/member-summary" element={<AdminMemberSummaryPage/>} />
           {/* Dictionaries */}
           <Route path="/admin/dictionairies/statuses" element={<StatusesPage></StatusesPage>} />
           <Route path="/admin/dictionairies/transaction-sources" element={<TransactionSourcesPage></TransactionSourcesPage>} />
@@ -90,6 +97,9 @@ function App() {
           <Route path="/admin/announcements/add" element={<AdminAnnouncementEditPage/>} />
           {/* meetings */}
           <Route path="/admin/meetings/list" element={<AdminMeetingsPage/>} />
+          <Route path="/admin/meetings/view/:eId" element={<AdminMeetingPage/>} />
+          <Route path="/admin/meetings/add" element={<AdminMeetingsEditPage/>} />
+          <Route path="/admin/meetings/edit/:eId" element={<AdminMeetingsEditPage/>} />
           {/* member queries */}
           <Route path="/admin/member-queries/list" element={<AdminMemberQueriesPage/>} />
           <Route path="/admin/member-queries/edit/:eId" element={<AdminMonthlyPostingPage/>} />
@@ -102,7 +112,9 @@ function App() {
           <Route path="/admin/knowledge-base/article/add" element={<AdminKnowledgebaseArticleEditPage/>} />
           {/* MEMBER */}
           {/* My */}
+          <Route path="/" element={<MemberDashboardPage></MemberDashboardPage>} />
           <Route path="/my/monthly-posting/post" element={<MonthlyPostingEditPage/>} />
+          <Route path="/my/monthly-posting/edit/:eId" element={<MonthlyPostingEditPage/>} />
           <Route path="/my/monthly-posting/list" element={<MonthlyPostingsPage/>} />
           <Route path="/my/monthly-posting/approvals" element={<MonthlyPostingApprovalsPage/>} />
           <Route path="/my/monthly-posting/view/:eId" element={<MonthlyPostingPage/>} />

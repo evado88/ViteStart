@@ -2,11 +2,15 @@ import React from "react";
 import { Link, Route } from "react-router-dom";
 import { Card } from "./card";
 import Assist from "../classes/assist";
-
 interface MonthlyPostArgs {
   monthlyPosting: any;
+  unsubmitComponent?: React.ReactElement | null;
 }
-export const MonthlyPostDetail = ({ monthlyPosting }: MonthlyPostArgs) => {
+export const MonthlyPostDetail = ({
+  monthlyPosting,
+  unsubmitComponent,
+}: MonthlyPostArgs) => {
+
   return (
     /* start title */
     <Card title="Properties" showHeader={true}>
@@ -123,6 +127,7 @@ export const MonthlyPostDetail = ({ monthlyPosting }: MonthlyPostArgs) => {
               <strong>{Assist.getDateText(monthlyPosting.created_at)}</strong>
             </div>
           </div>
+          {unsubmitComponent}
         </div>
       </div>
     </Card>

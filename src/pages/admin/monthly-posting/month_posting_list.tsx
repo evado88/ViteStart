@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Titlebar } from "../../../components/titlebar";
 import { Card } from "../../../components/card";
 import { Row } from "../../../components/row";
@@ -16,24 +16,44 @@ import DataGrid, {
 import Assist from "../../../classes/assist";
 import PageConfig from "../../../classes/page-config";
 import { MonthlyPostingsList } from "../../../components/monthlyPostingList";
+import SelectBox, { SelectBoxTypes } from "devextreme-react/select-box";
 
 const AdminMonthlyPostings = () => {
   const [data, setData] = useState([]);
   const [loadingText, setLoadingText] = useState("Loading data...");
   const [loading, setLoading] = useState(true);
+  const [period, setPeriod] = useState(() => {
+    const periodDate = new Date();
+    const periodId = `${periodDate.getFullYear()}${periodDate.getMonth() + 1}`;
+    return periodId;
+  });
+  const [periodData, setPeriodData] = useState<any | null>(() => {
+    const items: { text: string; value: string }[] = [];
+    const years = [2025, 2026];
+
+    years.forEach((year) => {
+      for (let i = 1; i <= 12; i++) {
+        items.push({
+          text: `${Assist.getMonthName(i)} ${year}`,
+          value: `${year}${i}`,
+        });
+      }
+    });
+
+    return items;
+  });
 
   const pageConfig = new PageConfig(
     "All Monthly Postings",
-    "monthly-posting/list",
+    `monthly-posting/period/${period}`,
     "",
     "Monthly Posting",
     ""
   );
 
-  useEffect(() => {
+  const loadData = (url: string) => {
     setLoading(true);
-
-    Assist.loadData(pageConfig.Title, pageConfig.Url)
+    Assist.loadData(pageConfig.Title, url)
       .then((res: any) => {
         setData(res);
         setLoading(false);
@@ -48,7 +68,30 @@ const AdminMonthlyPostings = () => {
         Assist.showMessage(ex.Message, "error");
         setLoadingText("Could not show information");
       });
+  };
+
+  useEffect(() => {
+    loadData(`monthly-posting/period/${period}`);
   }, []);
+
+  const changePostingPeriod = useCallback(
+    (e: SelectBoxTypes.ValueChangedEvent) => {
+       loadData(`monthly-posting/period/${e.value}`);
+    },
+    []
+  );
+
+  const periodFilterComponent = () => {
+    return (
+      <SelectBox
+        dataSource={periodData}
+        displayExpr="text"
+        valueExpr="value"
+        value={period}
+        onValueChanged={changePostingPeriod}
+      />
+    );
+  };
 
   return (
     <div className="page-content" style={{ minHeight: "862px" }}>
@@ -66,6 +109,8 @@ const AdminMonthlyPostings = () => {
           <MonthlyPostingsList
             data={data}
             loadingText={loadingText}
+            filterComponent={periodFilterComponent()}
+            isMember={false}
           />
         </Col>
       </Row>

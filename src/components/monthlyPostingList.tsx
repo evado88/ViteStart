@@ -13,15 +13,21 @@ import DataGrid, {
   Toolbar,
   Item,
 } from "devextreme-react/data-grid";
+import SelectBox, { type SelectBoxTypes } from "devextreme-react/select-box";
+
 interface MonthlyPostArgs {
   data: any;
   loadingText: string;
   addButtonOptions?: any;
+  filterComponent?: React.ReactElement | null;
+  isMember: boolean;
 }
 export const MonthlyPostingsList = ({
   data,
   loadingText,
   addButtonOptions,
+  filterComponent,
+  isMember,
 }: MonthlyPostArgs) => {
   return (
     /* start title */
@@ -49,13 +55,20 @@ export const MonthlyPostingsList = ({
         <LoadPanel enabled={true} />
         <ColumnChooser enabled={true} mode="select"></ColumnChooser>
         <Toolbar>
-          {addButtonOptions != null && <Item
-            location="before"
-            locateInMenu="auto"
-            showText="always"
-            widget="dxButton"
-            options={addButtonOptions}
-          />}
+          {addButtonOptions != null && (
+            <Item
+              location="before"
+              locateInMenu="auto"
+              showText="always"
+              widget="dxButton"
+              options={addButtonOptions}
+            />
+          )}
+          {filterComponent != null && (
+            <Item location="before" locateInMenu="auto">
+              {filterComponent}
+            </Item>
+          )}
           <Item name="columnChooserButton" />
         </Toolbar>
         <Column dataField="id" caption="ID" hidingPriority={13}></Column>
@@ -63,33 +76,61 @@ export const MonthlyPostingsList = ({
           dataField="date"
           caption="Name"
           dataType="date"
-          format={"dd MMMM yyy"}
-          hidingPriority={12}
+          format={"MMMM yyy"}
+          hidingPriority={15}
           cellRender={(e) => {
-            if (
-              e.data.status.status_name == "Submitted" &&
-              e.data.stage.stage_name == "Awaiting POP Upload"
-            ) {
-              return (
-                <a href={`/my/monthly-posting/pop-upload/${e.data.id}`}>
-                  {e.text}
-                </a>
-              );
-            } else {
-              return (
-                <a href={`/my/monthly-posting/view/${e.data.id}`}>{e.text}</a>
-              );
-            }
+            const getLink = () => {
+              const viewAdminLink = `/admin/monthly-postings/view/${e.data.id}`;
+              const viewMemberLink = `/my/monthly-posting/view/${e.data.id}`;
+              const editMemberLink = `/my/monthly-posting/edit/${e.data.id}`;
+              const uploadMemberPOPLink = `/my/monthly-posting/pop-upload/${e.data.id}`;
+
+              //check if this is a member
+              if (isMember) {
+                //member
+                //check if draft
+                if (e.data.status.status_name == "Draft") {
+                  //draft
+                  return editMemberLink;
+                } else {
+                  //check if awaiting POP
+                  if (e.data.stage.stage_name == "Awaiting POP Upload") {
+                    //pop upload
+                    return uploadMemberPOPLink;
+                  } else {
+                    //view only
+                    return viewMemberLink;
+                  }
+                }
+              } else {
+                //admin
+                return viewAdminLink;
+              }
+            };
+
+            return <a href={getLink()}>{e.text}</a>;
           }}
         ></Column>
         <Column
           dataField="stage.stage_name"
           caption="Stage"
-          hidingPriority={11}
+          hidingPriority={141}
         ></Column>
         <Column
           dataField="status.status_name"
           caption="Status"
+          hidingPriority={13}
+        ></Column>
+        <Column
+          dataField="contribution_total"
+          caption="Contribution Total"
+          format={",##0.###"}
+          hidingPriority={12}
+        ></Column>
+        <Column
+          dataField="deposit_total"
+          caption="Deposit Total"
+          format={",##0.###"}
           hidingPriority={11}
         ></Column>
         <Column
@@ -121,11 +162,6 @@ export const MonthlyPostingsList = ({
           caption="Interest"
           format={",##0.###"}
           hidingPriority={6}
-        ></Column>
-        <Column
-          dataField="loan_amount_payment"
-          caption="Loan Payment"
-          hidingPriority={5}
         ></Column>
         <Column
           dataField="loan_month_repayment"

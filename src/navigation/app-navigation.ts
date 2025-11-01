@@ -9,10 +9,10 @@ export interface MenuItem {
 export const navigation: MenuItem[] = [
   {
     key: "home",
-    text: "Home",
-    icon: "fa fa-home",
-    path: "/statuses",
-    roles: [1],
+    text: "Dashboard",
+    icon: "fa fa-cubes",
+    path: "/",
+    roles: [1, 2],
     items: [],
   },
   {
@@ -91,7 +91,7 @@ export const navigation: MenuItem[] = [
     ],
   },
   {
-    key: "messenger",
+    key: "shares",
     text: "Shares",
     icon: "fa fa-money",
     path: "#",
@@ -149,10 +149,27 @@ export const navigation: MenuItem[] = [
       },
     ],
   },
+    {
+    key: "admin-reports",
+    text: "Reports",
+    icon: "fa fa-bar-chart-o",
+    path: "#",
+    roles: [2],
+    items: [
+      {
+        key: "member-summary",
+        text: "Member Summary",
+        icon: "",
+        path: "/admin/reports/member-summary",
+        roles: [2],
+        items: [],
+      },
+    ],
+  },
   {
     key: "dictionairies",
     text: "Dictionairies",
-    icon: "fa fa-list",
+    icon: "fa fa-cube",
     path: "#",
     roles: [2],
     items: [
@@ -174,7 +191,7 @@ export const navigation: MenuItem[] = [
       },
       {
         key: "transaction-sources",
-        text: "Transaction Sources",
+        text: "Sources",
         icon: "",
         path: "/admin/dictionairies/transaction-sources",
         roles: [2],

@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from "react";
 import { Link, NavLink, useLocation } from "react-router-dom";
 import { navigation } from "../navigation/app-navigation";
 import { useAuth } from "../context/AuthContext";
+import './sidebar.css'
 
 function ExpandableGroup({
   openSections,
@@ -110,25 +111,9 @@ export const Sidebar = ({ names, title, isOpen, closeSidebar }) => {
           isOpen ? "show" : ""
         }`}
       >
-        <div id="remove-scroll" className="left-sidemenu">
-          <div
-            className="slimScrollDiv"
-            style={{
-              position: "relative",
-              overflow: "hidden",
-              width: "auto",
-            }}
-          >
+        <div className="left-sidemenu">
             <ul
-              className="sidemenu page-header-fixed slimscroll-style"
-              data-keep-expanded="false"
-              data-auto-scroll="true"
-              data-slide-speed="200"
-              style={{
-                paddingTop: "20px",
-                overflow: "hidden",
-                width: "auto",
-              }}
+              className="sidemenu page-header-fixed"
             >
               <li className="sidebar-toggler-wrapper hide" key={"toggle"}>
                 <div className="sidebar-toggler">
@@ -176,7 +161,6 @@ export const Sidebar = ({ names, title, isOpen, closeSidebar }) => {
               })}
             </ul>
           </div>
-        </div>
       </div>
     </div>
   );

@@ -50,7 +50,9 @@ const Configuration = () => {
 
   //new loan loan application
   const [loanSavingsRatio, setLoanSavingsRatio] = useState<number | null>(null);
+  const [loanDuration, setLoanDuration] = useState<number | null>(null);
   const [approvalLevels, setApprovalLevels] = useState<number | null>(null);
+  const [loanApplyLimit, setLoanApplyLimit] = useState<number | null>(null);
   //additiona
   const [latePostingFee, setLatePostingFee] = useState<number | null>(null);
   const [missedMeetingFee, setMissedMeetingFee] = useState<number | null>(null);
@@ -96,6 +98,8 @@ const Configuration = () => {
     setLoanInterestPercent(data.loan_interest_rate);
     setLoanPaymentPercent(data.loan_repayment_rate);
     setLoanSavingsRatio(data.loan_saving_ratio);
+    setLoanDuration(data.loan_duration);
+    setLoanApplyLimit(data.loan_apply_limit);
 
     setLatePostingFee(data.late_posting_rate);
     setLateMeetingFee(data.late_meeting_rate);
@@ -118,6 +122,8 @@ const Configuration = () => {
       loan_interest_rate: loanInterestPercent,
       loan_repayment_rate: loanPaymentPercent,
       loan_saving_ratio: loanSavingsRatio,
+      loan_duration: loanDuration,
+      loan_apply_limit: loanApplyLimit,
       late_posting_rate: latePostingFee,
       missed_meeting_rate: missedMeetingFee,
       late_meeting_rate: lateMeetingFee,
@@ -314,6 +320,37 @@ const Configuration = () => {
                     >
                       <Validator>
                         <RequiredRule message="Loan saving ratio required" />
+                      </Validator>
+                    </NumberBox>
+                  </div>
+                  <div className="dx-field">
+                    <div className="dx-field-label">Loan Duraton (Months) </div>
+                    <NumberBox
+                      className="dx-field-value"
+                      value={loanDuration!}
+                      placeholder="Loan Duraton (Months)"
+                      disabled={error || saving}
+                      onValueChange={(value) => setLoanDuration(value)}
+                      min={0.0}
+                    >
+                      <Validator>
+                        <RequiredRule message="Loan saving ratio required" />
+                      </Validator>
+                    </NumberBox>
+                  </div>
+                  <div className="dx-field">
+                    <div className="dx-field-label">Loan Guarantor Limit</div>
+                    <NumberBox
+                      className="dx-field-value"
+                      value={loanApplyLimit!}
+                      placeholder="Loan Guarantor Limit"
+                      format={",##0.###"}
+                      disabled={error || saving}
+                      onValueChange={(value) => setLoanApplyLimit(value)}
+                      min={0.0}
+                    >
+                      <Validator>
+                        <RequiredRule message="Loan guarantor limit required" />
                       </Validator>
                     </NumberBox>
                   </div>

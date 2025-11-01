@@ -8,6 +8,11 @@ class Assist {
   static DEV_DELAY: number = 1000;
   static UX_DELAY: number = 500;
 
+  static STAGE_AWAITING_SUBMISSION = 1;
+  static STAGE_SUBMITTED = 2;
+
+  static STATUS_DRAFT = 1;
+  static STATUS_SUBMITTED = 2;
   static STATUS_APPROVED = 4;
   static STATUS_REJECTED = 5;
 
@@ -16,10 +21,10 @@ class Assist {
   static TRANSACTION_LOAN = 3;
   static TRANSACTION_LOAN_PAYMENT = 4;
   static TRANSACTION_INTEREST_CHARGED = 5;
-  static TRANSACTION_INTEREST_EARNED = 6;
+  static TRANSACTION_INTEREST_PAID = 6;
   static TRANSACTION_SOCIAL_FUND = 7;
   static TRANSACTION_PENALTY_CHARGED = 8;
-  static TRANSACTION_PENALTY_EARNED = 9;
+  static TRANSACTION_PENALTY_PAID = 9;
 
   static STATE_OPEN = 1;
   static STATE_CLOSED = 2;
@@ -76,6 +81,13 @@ class Assist {
       const date = new Date(mysqlDate);
       return date.toString();
     }
+  }
+
+  static getMonthName(monthNumber: number): string {
+    // Month numbers are 1-indexed (1 for January, 12 for December)
+    // Date objects use 0-indexed months, so we subtract 1.
+    const date = new Date(2000, monthNumber - 1, 1);
+    return date.toLocaleString("en-US", { month: "long" });
   }
 
   static isTokenExpired() {

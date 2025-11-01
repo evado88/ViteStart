@@ -1,7 +1,4 @@
-import React from "react";
-import { Link, Route } from "react-router-dom";
 import { Card } from "./card";
-import Assist from "../classes/assist";
 import DataGrid, {
   Column,
   Pager,
@@ -17,6 +14,7 @@ interface MonthlyPostArgs {
   data: any;
   loadingText: string,
   addButtonOptions: any
+  isLoan: boolean
 }
 export const TransactionList = ({ data, loadingText, addButtonOptions }: MonthlyPostArgs) => {
   return (

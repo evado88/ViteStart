@@ -1,6 +1,6 @@
 export { default as AboutPage } from './about'
 export { default as ContactPage } from './contact'
-export { default as DashboardPage } from './dashboard'
+
 export { default as HomePage } from './home'
 //Error
 export { default as NotFoundPage } from './404'
@@ -9,6 +9,10 @@ export { default as LoginPage } from '../auth/login'
 export { default as SignupPage } from '../auth/signup'
 
 //ADMIN
+//dahsboard
+
+//reports
+export { default as AdminMemberSummaryPage } from './admin/reports/member_summary'
 //posting period
 export { default as AdminPostingPeriodsPage } from './admin/posting-periods/posting_period_list'
 
@@ -28,6 +32,8 @@ export { default as AdminAnnouncementEditPage } from './admin/announcements/anno
 
 //meetings
 export { default as AdminMeetingsPage } from './admin/meetings/meeting_list'
+export { default as AdminMeetingsEditPage } from './admin/meetings/meeting_edit'
+export { default as AdminMeetingPage } from './admin/meetings/meeting'
 //member queries
 export { default as AdminMemberQueriesPage } from './admin/member-queries/query_list'
 //knowledge-base
@@ -40,8 +46,10 @@ export { default as UsersPendingPage} from './admin/users/users_pending'
 //config
 export { default as ConfigurationSACCOPage} from './admin/configuration/sacco'
 
+
 //MEMBER
 //My
+export { default as MemberDashboardPage } from './dashboard'
 export { default as MonthlyPostingEditPage} from './my/month_posting_edit'
 export { default as MonthlyPostingPage} from './my/month_posting'
 export { default as MonthlyPostingApprovePage} from './my/month_posting_approve'

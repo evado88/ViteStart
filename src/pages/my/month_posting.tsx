@@ -3,20 +3,15 @@ import { Titlebar } from "../../components/titlebar";
 import { Card } from "../../components/card";
 import { Row } from "../../components/row";
 import { Col } from "../../components/column";
-import Button from "devextreme-react/button";
 import { LoadPanel } from "devextreme-react/load-panel";
 import { useAuth } from "../../context/AuthContext";
 import PageConfig from "../../classes/page-config";
 import Assist from "../../classes/assist";
 import { useNavigate, useParams } from "react-router-dom";
 import { confirm } from "devextreme/ui/dialog";
-import TextArea from "devextreme-react/text-area";
-import Validator, { RequiredRule } from "devextreme-react/validator";
-import SelectBox from "devextreme-react/select-box";
-import AppInfo from "../../classes/app-info";
-import ValidationSummary from "devextreme-react/validation-summary";
 import { MonthlyPostDetail } from "../../components/monthlyPostDetail";
-import LoadIndicator from "devextreme-react/load-indicator";
+import Button from "devextreme-react/button";
+import { LoadIndicator } from "devextreme-react/load-indicator";
 
 const MyMonthlyPosting = ({ props }: any) => {
   //user
@@ -173,6 +168,76 @@ const MyMonthlyPosting = ({ props }: any) => {
         });
     }, Assist.DEV_DELAY);
   };
+
+  const unsubmitButton = () => {
+    if (stage == "Submitted" && status == "Submitted") {
+      return (
+        <div className="dx-field">
+          <div className="dx-field-label"></div>
+          <div className="dx-field-value">
+            <Button
+              width="100%"
+              type={saving ? "normal" : "default"}
+              disabled={loading || error || saving}
+              onClick={() => onFormUnsubmit()}
+            >
+              <LoadIndicator className="button-indicator" visible={saving} />
+              <span className="dx-button-text">Unsubmit Monthly Posting</span>
+            </Button>
+          </div>
+        </div>
+      );
+    } else {
+      return null;
+    }
+  };
+
+  const onFormUnsubmit = () => {
+    let result = confirm(
+      "Are you sure you want to unsubmit this monthly posting?",
+      "Confirm submission"
+    );
+    result.then((dialogResult) => {
+      if (dialogResult) {
+        unsubmitPosting();
+      }
+    });
+  };
+
+  const unsubmitPosting = () => {
+    setSaving(true);
+
+    const newData = {
+      status_id: Assist.STATUS_DRAFT,
+      stage_id: Assist.STAGE_AWAITING_SUBMISSION,
+    };
+    const postData = { ...monthlyPosting, ...newData };
+
+    setTimeout(() => {
+      Assist.postPutData(
+        pageConfig.Title,
+        `monthly-posting/update/${eId}`,
+        postData,
+        1
+      )
+        .then((data) => {
+          setSaving(false);
+
+          Assist.showMessage(
+            "You have successfully unsubmitted the monthly posting!",
+            "success"
+          );
+
+          navigate(`/my/monthly-posting/list`);
+        })
+        .catch((message) => {
+          setSaving(false);
+
+          Assist.showMessage(message, "error");
+        });
+    }, Assist.DEV_DELAY);
+  };
+
   return (
     <div id="pageRoot" className="page-content" style={{ minHeight: "862px" }}>
       <LoadPanel
@@ -196,130 +261,12 @@ const MyMonthlyPosting = ({ props }: any) => {
       {monthlyPosting != null && (
         <Row>
           <Col sz={12} sm={12} lg={7}>
-            <MonthlyPostDetail monthlyPosting={monthlyPosting} />
+            <MonthlyPostDetail
+              monthlyPosting={monthlyPosting}
+              unsubmitComponent={unsubmitButton()}
+            />
           </Col>
           <Col sz={12} sm={12} lg={5}>
-            {requiresApproval() && (
-              <Card title="Rejection" showHeader={true}>
-                <div className="form">
-                  <form id="formMain" onSubmit={onFormRejectSubmit}>
-                    <div className="dx-fieldset">
-                      <div className="dx-fieldset-header">Submission</div>
-                      <div className="dx-field">
-                        <div className="dx-field-label">Rejection Reason</div>
-                        <TextArea
-                          className="dx-field-value"
-                          placeholder="Rejection Reason"
-                          disabled={error || saving || saving}
-                          height={80}
-                          value={rejectionReason}
-                          onValueChange={(value) => setRejectionReason(value)}
-                        >
-                          <Validator validationGroup="Reject">
-                            <RequiredRule message="Rejection reason required" />
-                          </Validator>
-                        </TextArea>
-                      </div>
-                    </div>
-                    <div className="dx-field">
-                      <ValidationSummary
-                        id="summaryReject"
-                        validationGroup="Reject"
-                      />
-                    </div>
-                    <div className="dx-field">
-                      <div className="dx-field-label"></div>
-                      <Button
-                        width="100%"
-                        useSubmitBehavior={true}
-                        validationGroup="Reject"
-                        type={saving ? "normal" : "danger"}
-                        disabled={loading || error || saving}
-                      >
-                        <LoadIndicator
-                          className="button-indicator"
-                          visible={saving}
-                        />
-                        <span className="dx-button-text">
-                          Reject Monthly Post
-                        </span>
-                      </Button>
-                    </div>
-                  </form>
-                </div>
-              </Card>
-            )}
-            {requiresApproval() && (
-              <Card title="Approval" showHeader={true}>
-                <div className="form">
-                  <form id="formMain" onSubmit={onFormApproveSubmit}>
-                    <div className="dx-fieldset">
-                      <div className="dx-fieldset-header">Submission</div>
-                      {stage == "Submitted" && (
-                        <div className="dx-field">
-                          <div className="dx-field-label">
-                            Require Guarantor Approval
-                          </div>
-                          <SelectBox
-                            className="dx-field-value"
-                            dataSource={AppInfo.yesNoList}
-                            placeholder="Require Guarantor Approval"
-                            onValueChange={(value) =>
-                              setRequireGuarantorApproval(value)
-                            }
-                            validationMessagePosition="left"
-                            value={requireGuarantorApproval}
-                            disabled={error}
-                          >
-                            <Validator validationGroup="Approve">
-                              <RequiredRule message="Require Guarantor Approval is required" />
-                            </Validator>
-                          </SelectBox>
-                        </div>
-                      )}
-                      <div className="dx-field">
-                        <div className="dx-field-label">
-                          Comments (Optional)
-                        </div>
-                        <TextArea
-                          className="dx-field-value"
-                          placeholder="Comments"
-                          disabled={error || saving || saving}
-                          height={80}
-                          value={approvalComments}
-                          onValueChange={(value) => setApprovalComments(value)}
-                        ></TextArea>
-                      </div>
-                    </div>
-
-                    <div className="dx-field">
-                      <ValidationSummary
-                        id="summaryApprove"
-                        validationGroup="Approve"
-                      />
-                    </div>
-                    <div className="dx-field">
-                      <div className="dx-field-label"></div>
-                      <Button
-                        width="100%"
-                        useSubmitBehavior={true}
-                        type={saving ? "normal" : "success"}
-                        disabled={loading || error || saving}
-                        validationGroup="Approve"
-                      >
-                        <LoadIndicator
-                          className="button-indicator"
-                          visible={saving}
-                        />
-                        <span className="dx-button-text">
-                          Approve Monthly Post
-                        </span>
-                      </Button>
-                    </div>
-                  </form>
-                </div>
-              </Card>
-            )}
             {isReviewed() && (
               <Card title="Review" showHeader={true}>
                 <div className="form">

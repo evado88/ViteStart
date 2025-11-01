@@ -73,6 +73,7 @@ const MonthlyPostings = () => {
             data={data}
             loadingText={loadingText}
             addButtonOptions={addButtonOptions}
+            isLoan={false}
           />
         </Col>
       </Row>

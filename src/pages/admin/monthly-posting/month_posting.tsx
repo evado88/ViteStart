@@ -21,9 +21,6 @@ import DataGrid, {
   Column,
   Pager,
   Paging,
-  Summary,
-  GroupItem,
-  TotalItem,
 } from "devextreme-react/data-grid";
 
 const AdminMonthlyPosting = ({ props }: any) => {

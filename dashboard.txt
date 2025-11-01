@@ -1,0 +1,214 @@
+import React, { useState, useEffect } from "react";
+import { Ticker } from "../components/ticker.jsx";
+import { Titlebar } from "../components/titlebar.js";
+import { Card } from "../components/card.js";
+import { Row } from "../components/row.jsx";
+import { Col } from "../components/column.js";
+import { NotificationList } from "../components/notificationList.jsx";
+import {
+  Chart,
+  Series,
+  CommonSeriesSettings,
+  Label,
+  Format,
+  Legend,
+  Export,
+} from "devextreme-react/chart";
+import { grossProductData } from "./data.js";
+import { LoadPanel } from "devextreme-react/load-panel";
+import { useAuth } from "../context/AuthContext.jsx";
+import PageConfig from "../classes/page-config.js";
+import Assist from "../classes/assist.js";
+
+const MyDashboard = () => {
+  //user
+  const { user } = useAuth();
+  const [savings, setSavings] = useState(0);
+  const [social, setSocial] = useState(0);
+  const [share, setShare] = useState(0);
+  const [interest, setInterest] = useState(0);
+  const [penalty, setPenalty] = useState(0);
+  const [loan, setLoan] = useState(0);
+
+  const [loading, setLoading] = useState(false);
+
+  const pageConfig = new PageConfig(
+    `Dashboard`,
+    user.role == 2
+      ? `transactions/summary/all`
+      : `transactions/member-summary/${user.userid}`,
+    "",
+    "User",
+    `Dashboard`
+  );
+
+  useEffect(() => {
+    setLoading(true);
+
+    setTimeout(() => {
+      Assist.loadData("Dashboard", pageConfig.Url)
+        .then((data: any) => {
+          setLoading(false);
+          updateValues(data);
+        })
+        .catch((message) => {
+          setLoading(false);
+          Assist.showMessage(message, "error");
+        });
+    }, Assist.DEV_DELAY);
+  }, []);
+
+  const updateValues = (data: any) => {
+    const savingItem = data.find(
+      (item: any) => item.id == Assist.TRANSACTION_SAVINGS
+    );
+
+    setSavings(savingItem.amount);
+
+    const socialItem = data.find(
+      (item: any) => item.id == Assist.TRANSACTION_SOCIAL_FUND
+    );
+
+    setSocial(socialItem.amount);
+
+    const interestItem = data.find(
+      (item: any) => item.id == Assist.TRANSACTION_INTEREST_CHARGED
+    );
+
+    const shareItem = data.find(
+      (item: any) => item.id == Assist.TRANSACTION_SHARE
+    );
+
+    setShare(shareItem.amount);
+
+    setInterest(interestItem.amount);
+
+    const loanItem = data.find(
+      (item: any) => item.id == Assist.TRANSACTION_LOAN
+    );
+
+    setLoan(loanItem.amount);
+
+    const penaltyItem = data.find(
+      (item: any) => item.id == Assist.TRANSACTION_PENALTY_CHARGED
+    );
+
+    setPenalty(penaltyItem.amount);
+  };
+
+  function onPointClick(e: any) {
+    e.target.select();
+  }
+
+  return (
+    <div className="page-content" style={{ minHeight: "862px" }}>
+      <LoadPanel
+        shadingColor="rgba(248, 242, 242, 0.9)"
+        position={{ of: "#pageRoot" }}
+        visible={loading}
+        showIndicator={true}
+        shading={true}
+        showPane={true}
+        hideOnOutsideClick={false}
+      />
+      <Titlebar
+        title={"My Dashboard"}
+        section={"Home"}
+        icon={"home"}
+        url={""}
+      ></Titlebar>
+      {/* start widget */}
+      <Row>
+        <Col xl={2} lg={6}>
+          <Ticker
+            title={"Savings"}
+            value={savings}
+            color={"green"}
+            percent={80}
+          ></Ticker>
+        </Col>
+        <Col xl={2} lg={6}>
+          <Ticker
+            title={"Loans"}
+            value={loan}
+            color={"red"}
+            percent={40}
+          ></Ticker>
+        </Col>
+        <Col xl={2} lg={6}>
+          <Ticker
+            title={"Interest"}
+            value={interest}
+            color={"orange"}
+            percent={70}
+          ></Ticker>
+        </Col>
+        <Col xl={2} lg={6}>
+          <Ticker
+            title={"Penalty"}
+            value={penalty}
+            color={"red"}
+            percent={90}
+          ></Ticker>
+        </Col>
+        <Col xl={2} lg={6}>
+          <Ticker
+            title={"Share"}
+            value={share}
+            color={"blue"}
+            percent={90}
+          ></Ticker>
+        </Col>
+        <Col xl={2} lg={6}>
+          <Ticker
+            title={"Social"}
+            value={social}
+            color={"green"}
+            percent={90}
+          ></Ticker>
+        </Col>
+      </Row>
+      {/* end widget */}
+
+      {/* chart start */}
+      <Row>
+        <Col sz={12} sm={12} lg={6}>
+          <Card title={"SACCO Activity"} showHeader={false}>
+            <Chart
+              id="chart"
+              title="Yearly SACCO Activity"
+              dataSource={grossProductData}
+              onPointClick={onPointClick}
+            >
+              <CommonSeriesSettings
+                argumentField="state"
+                type="bar"
+                hoverMode="allArgumentPoints"
+                selectionMode="allArgumentPoints"
+              >
+                <Label visible={true}>
+                  <Format type="fixedPoint" precision={0} />
+                </Label>
+              </CommonSeriesSettings>
+              <Series argumentField="state" valueField="year2018" name="2018" />
+              <Series valueField="year2017" name="2017" />
+              <Series valueField="year2016" name="2016" />
+              <Legend
+                verticalAlignment="bottom"
+                horizontalAlignment="center"
+              ></Legend>
+              <Export enabled={true} />
+            </Chart>
+          </Card>
+        </Col>
+        <Col sz={12} sm={12} lg={6}>
+          <Card title={"Notifications"} showHeader={false}>
+            <NotificationList></NotificationList>
+          </Card>
+        </Col>
+      </Row>
+    </div>
+  );
+};
+
+export default MyDashboard;
