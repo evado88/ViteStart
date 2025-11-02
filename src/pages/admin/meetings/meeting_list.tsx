@@ -18,6 +18,7 @@ import DataGrid, {
 import Assist from "../../../classes/assist";
 import PageConfig from "../../../classes/page-config";
 import { useNavigate } from "react-router-dom";
+import { usePeriod } from "../../../context/PeriodContext";
 
 const AdminMeetings = () => {
   const navigate = useNavigate();

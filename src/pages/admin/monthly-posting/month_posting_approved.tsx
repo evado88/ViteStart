@@ -6,32 +6,15 @@ import Assist from "../../../classes/assist";
 import PageConfig from "../../../classes/page-config";
 import { MonthlyPostingsList } from "../../../components/monthlyPostingList";
 import SelectBox, { SelectBoxTypes } from "devextreme-react/select-box";
+import { usePeriod } from "../../../context/PeriodContext";
 
 const AdminMonthlyApprovedPostings = () => {
   const [data, setData] = useState([]);
+  const { period, periodData ,  updateSelectedPeriod} = usePeriod();
   const [loadingText, setLoadingText] = useState("Loading data...");
   const [loading, setLoading] = useState(true);
   const [status, setStatus] = useState(() => Assist.STATUS_APPROVED);
-  const [period, setPeriod] = useState(() => {
-    const periodDate = new Date();
-    const periodId = `${periodDate.getFullYear()}${periodDate.getMonth() + 1}`;
-    return periodId;
-  });
-  const [periodData, setPeriodData] = useState<any | null>(() => {
-    const items: { text: string; value: string }[] = [];
-    const years = [2025, 2026];
 
-    years.forEach((year) => {
-      for (let i = 1; i <= 12; i++) {
-        items.push({
-          text: `${Assist.getMonthName(i)} ${year}`,
-          value: `${year}${i}`,
-        });
-      }
-    });
-
-    return items;
-  });
 
   const pageConfig = new PageConfig(
     "Approved Monthly Postings",
@@ -66,7 +49,8 @@ const AdminMonthlyApprovedPostings = () => {
 
   const changePostingPeriod = useCallback(
     (e: SelectBoxTypes.ValueChangedEvent) => {
-       loadData(`monthly-posting/period/${e.value}/status/${status}`);
+      updateSelectedPeriod(e.value);
+      loadData(`monthly-posting/period/${e.value}/status/${status}`);
     },
     []
   );

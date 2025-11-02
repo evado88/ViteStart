@@ -15,7 +15,7 @@ export { default as SignupPage } from '../auth/signup'
 export { default as AdminMemberSummaryPage } from './admin/reports/member_summary'
 //posting period
 export { default as AdminPostingPeriodsPage } from './admin/posting-periods/posting_period_list'
-
+export { default as AdminPostingPeriodPage } from './admin/posting-periods/posting_period'
 //Dictionairies
 export { default as StatusesPage} from './admin/dictionairies/status_types'
 export { default as TransactionTypesPage} from './admin/dictionairies/transaction_types'

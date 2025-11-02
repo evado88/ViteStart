@@ -51,7 +51,8 @@ import {
   AdminMeetingPage,
   AdminMemberSummaryPage,
   AdminMonthlyApprovedPostingsPage,
-  AdminMonthlyRejectedPostingsPage
+  AdminMonthlyRejectedPostingsPage,
+  AdminPostingPeriodPage
 } from "./pages";
 import { BrowserRouter } from "react-router-dom";
 import AttendanceTypes from "./pages/admin/dictionairies/attendance_types";
@@ -92,6 +93,7 @@ function App() {
           <Route path="/admin/monthly-postings/view/:eId" element={<AdminMonthlyPostingPage/>} />
           {/* posting periods */}
           <Route path="/admin/posting-periods/list" element={<AdminPostingPeriodsPage/>} />
+          <Route path="/admin/posting-periods/view/:eId" element={<AdminPostingPeriodPage/>} />
           {/* Users */}
           <Route path="/admin/users/pending" element={<UsersPendingPage/>} />
           {/* Configuration */}

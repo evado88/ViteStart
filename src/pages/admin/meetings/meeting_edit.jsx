@@ -31,7 +31,7 @@ const MeetingEdit = () => {
   const [content, setContent] = useState(null);
   const [date, setDate] = useState(null);
   const [uploadedFiles, setUploadedFiles] = useState([]);
-
+  const [attendanceList, setAttendanceList] = useState([]);
   //config
   const [config, setConfig] = useState(null);
 
@@ -56,7 +56,7 @@ const MeetingEdit = () => {
     if (pageConfig.id == 0) {
       setLoading(true);
       setTimeout(() => {
-        Assist.loadData('Configuration', `sacco-config/1`)
+        Assist.loadData("Configuration", `sacco-config/1`)
           .then((data) => {
             setLoading(false);
             setConfig(data);
@@ -239,7 +239,7 @@ const MeetingEdit = () => {
                     </div>
                   </div>
                   <div className="dx-fieldset">
-                    <div className="dx-fieldset-header">Attendance List</div>
+                    <div className="dx-fieldset-header">Attendance File</div>
                     <div className="dx-field">
                       <div className="dx-field-label">
                         Upload File (5MB Max)
@@ -262,7 +262,8 @@ const MeetingEdit = () => {
                                 "error"
                               );
                             } else {
-                              setUploadedFiles([res]);
+                              setUploadedFiles([res.attachment]);
+                              setAttendanceList(res.attendance);
                             }
                           } else {
                             Assist.showMessage(
@@ -271,7 +272,7 @@ const MeetingEdit = () => {
                             );
                           }
                         }}
-                        uploadUrl={`${AppInfo.apiUrl}attachments/create/type/Attachment/parent/0`}
+                        uploadUrl={`${AppInfo.apiUrl}attachments/create/type/AttendanceList/parent/0`}
                       />
                     </div>
                     <div className="dx-field">
@@ -318,6 +319,35 @@ const MeetingEdit = () => {
                         ></Column>
                         <Column
                           dataField="filetype"
+                          caption="Type"
+                          hidingPriority={5}
+                        ></Column>
+                      </DataGrid>
+                    </div>
+                  </div>
+                  <div className="dx-fieldset">
+                    <div className="dx-fieldset-header">Attendance List</div>
+                    <div className="dx-field">
+                      <DataGrid
+                        className={"dx-card wide-card"}
+                        dataSource={attendanceList}
+                        keyExpr={"user"}
+                        noDataText={"No attendance list uploaded"}
+                        showBorders={false}
+                        focusedRowEnabled={false}
+                        defaultFocusedRowIndex={0}
+                        columnAutoWidth={true}
+                        columnHidingEnabled={true}
+                      >
+                        <Paging defaultPageSize={10} />
+                        <Pager showPageSizeSelector={true} showInfo={true} />
+                        <Column
+                          dataField="user"
+                          caption="Member"
+                          hidingPriority={7}
+                        ></Column>
+                        <Column
+                          dataField="type"
                           caption="Type"
                           hidingPriority={5}
                         ></Column>

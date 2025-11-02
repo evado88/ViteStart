@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useCallback } from "react";
 import { Titlebar } from "../../../components/titlebar";
 import { Card } from "../../../components/card";
 import { Row } from "../../../components/row";
@@ -18,25 +18,22 @@ import DataGrid, {
 import Assist from "../../../classes/assist";
 import PageConfig from "../../../classes/page-config";
 import { useNavigate } from "react-router-dom";
+import SelectBox, { SelectBoxTypes } from "devextreme-react/select-box";
+import { usePeriod } from "../../../context/PeriodContext";
+import { PostingPeriodingsList } from "../../../components/postingPeriodsList";
 
 const AdminPostingPeriods = () => {
   const navigate = useNavigate();
   const [data, setData] = useState([]);
+  const { period, periodData, updateSelectedPeriod } = usePeriod();
   const [loadingText, setLoadingText] = useState("Loading data...");
   const [loading, setLoading] = useState(true);
 
-  const pageConfig = new PageConfig(
-    "Posting Periods",
-    "posting-periods/list",
-    "",
-    "Posting Periods",
-    ""
-  );
+  const pageConfig = new PageConfig("All Posting Periods", "", "", "", "");
 
-  useEffect(() => {
+  const loadData = (url: string) => {
     setLoading(true);
-
-    Assist.loadData(pageConfig.Title, pageConfig.Url)
+    Assist.loadData(pageConfig.Title, url)
       .then((res: any) => {
         setData(res);
         setLoading(false);
@@ -51,16 +48,31 @@ const AdminPostingPeriods = () => {
         Assist.showMessage(ex.Message, "error");
         setLoadingText("Could not show information");
       });
+  };
+
+  useEffect(() => {
+    loadData(`posting-periods/current/${period}/status/0`);
   }, []);
 
-  const addButtonOptions = useMemo(
-    () => ({
-      icon: "add",
-      text: "Refresh",
-      onClick: () => navigate("/admin/announcements/add"),
-    }),
+  const changePostingPeriod = useCallback(
+    (e: SelectBoxTypes.ValueChangedEvent) => {
+      updateSelectedPeriod(e.value);
+      loadData(`posting-periods/current/${e.value}`);
+    },
     []
   );
+
+  const periodFilterComponent = () => {
+    return (
+      <SelectBox
+        dataSource={periodData}
+        displayExpr="text"
+        valueExpr="value"
+        value={period}
+        onValueChanged={changePostingPeriod}
+      />
+    );
+  };
 
   return (
     <div className="page-content" style={{ minHeight: "862px" }}>
@@ -75,79 +87,12 @@ const AdminPostingPeriods = () => {
       {/* chart start */}
       <Row>
         <Col sz={12} sm={12} lg={12}>
-          <Card showHeader={false}>
-            <DataGrid
-              className={"dx-card wide-card"}
-              dataSource={data}
-              keyExpr={"id"}
-              noDataText={loadingText}
-              showBorders={false}
-              focusedRowEnabled={true}
-              defaultFocusedRowIndex={0}
-              columnAutoWidth={true}
-              columnHidingEnabled={true}
-            >
-              <Paging defaultPageSize={10} />
-              <Editing
-                mode="row"
-                allowUpdating={false}
-                allowDeleting={false}
-                allowAdding={false}
-              />
-              <Pager showPageSizeSelector={true} showInfo={true} />
-              <FilterRow visible={true} />
-              <LoadPanel enabled={loading} />
-              <ColumnChooser enabled={true} mode="select"></ColumnChooser>
-              <Toolbar>
-                <Item
-                  location="before"
-                  locateInMenu="auto"
-                  showText="inMenu"
-                  widget="dxButton"
-                  options={addButtonOptions}
-                />
-                <Item name="columnChooserButton" />
-              </Toolbar>
-              <Column dataField="id" caption="ID" hidingPriority={6}></Column>
-              <Column
-                dataField="period_name"
-                caption="Title"
-                dataType="date"
-                format={"MMMM yyy"}
-                hidingPriority={5}
-                cellRender={(e) => {
-                  return (
-                    <a href={`/admin/announcements/edit/${e.data.id}`}>
-                      {e.text}
-                    </a>
-                  );
-                }}
-              ></Column>
-              <Column
-                dataField="status.status_name"
-                caption="Status"
-                hidingPriority={4}
-              ></Column>
-              <Column
-                dataField="stage.stage_name"
-                caption="Stage"
-                hidingPriority={3}
-              ></Column>
-              <Column
-                dataField="user.email"
-                caption="User"
-                minWidth={120}
-                hidingPriority={2}
-              ></Column>
-              <Column
-                dataField="created_at"
-                caption="Date"
-                dataType="date"
-                format="dd MMM yyy HH:MM"
-                hidingPriority={1}
-              ></Column>
-            </DataGrid>
-          </Card>
+          <PostingPeriodingsList
+            data={data}
+            loadingText={loadingText}
+            filterComponent={periodFilterComponent()}
+            isMember={false}
+          />
         </Col>
       </Row>
     </div>
