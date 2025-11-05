@@ -8,8 +8,14 @@ import HtmlEditor from "devextreme-react/html-editor";
 
 interface MeetingArgs {
   meeting: any;
+  attendanceList: any;
+  unsubmitComponent?: React.ReactElement | null;
 }
-export const MeetingDetail = ({ meeting }: MeetingArgs) => {
+export const MeetingDetail = ({
+  meeting,
+  attendanceList,
+  unsubmitComponent,
+}: MeetingArgs) => {
   return (
     /* start title */
     <Card title="Properties" showHeader={true}>
@@ -76,6 +82,47 @@ export const MeetingDetail = ({ meeting }: MeetingArgs) => {
           </div>
         </div>
         <div className="dx-fieldset">
+          <div className="dx-fieldset-header">Attendance List</div>
+          <div className="dx-field">
+            <DataGrid
+              className={"dx-card wide-card"}
+              dataSource={attendanceList}
+              keyExpr={"user"}
+              noDataText={"No attendance list uploaded"}
+              showBorders={false}
+              focusedRowEnabled={false}
+              defaultFocusedRowIndex={0}
+              columnAutoWidth={true}
+              columnHidingEnabled={true}
+            >
+              <Paging defaultPageSize={10} />
+              <Pager showPageSizeSelector={true} showInfo={true} />
+              <Column
+                dataField="user"
+                caption="Member"
+                hidingPriority={3}
+              ></Column>
+              <Column
+                dataField="type"
+                caption="Type"
+                hidingPriority={2}
+              ></Column>
+              <Column
+                dataField="typeId"
+                caption="Type ID"
+                visible={false}
+                hidingPriority={2}
+              ></Column>
+              <Column
+                dataField="penalty"
+                format={",##0.###"}
+                caption="Penalty ZMW"
+                hidingPriority={1}
+              />
+            </DataGrid>
+          </div>
+        </div>
+        <div className="dx-fieldset">
           <div className="dx-fieldset-header">Content</div>
           <div className="dx-field">
             <HtmlEditor
@@ -88,6 +135,12 @@ export const MeetingDetail = ({ meeting }: MeetingArgs) => {
         </div>
         <div className="dx-fieldset">
           <div className="dx-fieldset-header">Submission</div>
+          <div className="dx-field">
+            <div className="dx-field-label">User</div>
+            <div className="dx-field-value-static">
+              <strong>{meeting.created_by}</strong>
+            </div>
+          </div>
           <div className="dx-field">
             <div className="dx-field-label">Status</div>
             <div className="dx-field-value-static">
@@ -112,6 +165,7 @@ export const MeetingDetail = ({ meeting }: MeetingArgs) => {
               <strong>{Assist.getDateText(meeting.created_at)}</strong>
             </div>
           </div>
+          {unsubmitComponent}
         </div>
       </div>
     </Card>

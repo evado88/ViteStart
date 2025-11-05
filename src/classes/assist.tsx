@@ -270,7 +270,7 @@ class Assist {
           );
 
           //user friendly message
-          let message = `Unable to ${verb} ${title} `;
+          let message = `Unable to ${title} `;
 
           //check for response
           if (err.response != null) {

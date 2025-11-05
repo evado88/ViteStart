@@ -52,7 +52,12 @@ import {
   AdminMemberSummaryPage,
   AdminMonthlyApprovedPostingsPage,
   AdminMonthlyRejectedPostingsPage,
-  AdminPostingPeriodPage
+  AdminPostingPeriodPage,
+  AdminPostingSubmittedPeriodsPage,
+  AdminPostingApprovedPeriodsPage,
+  AdminPostingRejectedPeriodsPage,
+  AdminMonthlySummaryPage,
+  AdminMonthlyPostingsDDACPage
 } from "./pages";
 import { BrowserRouter } from "react-router-dom";
 import AttendanceTypes from "./pages/admin/dictionairies/attendance_types";
@@ -79,6 +84,7 @@ function App() {
           <Route path="/" element={<MemberDashboardPage></MemberDashboardPage>} />
           {/* Reports */}
           <Route path="/admin/reports/member-summary" element={<AdminMemberSummaryPage/>} />
+          <Route path="/admin/reports/monthly-summary" element={<AdminMonthlySummaryPage/>} />
           {/* Dictionaries */}
           <Route path="/admin/dictionairies/statuses" element={<StatusesPage></StatusesPage>} />
           <Route path="/admin/dictionairies/transaction-sources" element={<TransactionSourcesPage></TransactionSourcesPage>} />
@@ -90,9 +96,13 @@ function App() {
           <Route path="/admin/monthly-postings/submitted" element={<AdminMonthlySubmittedPostings/>} />
           <Route path="/admin/monthly-postings/approved" element={<AdminMonthlyApprovedPostingsPage/>} />
           <Route path="/admin/monthly-postings/rejected" element={<AdminMonthlyRejectedPostingsPage/>} />
+          <Route path="/admin/monthly-postings/ddac-report/:eId" element={<AdminMonthlyPostingsDDACPage/>} />
           <Route path="/admin/monthly-postings/view/:eId" element={<AdminMonthlyPostingPage/>} />
           {/* posting periods */}
           <Route path="/admin/posting-periods/list" element={<AdminPostingPeriodsPage/>} />
+          <Route path="/admin/posting-periods/submitted" element={<AdminPostingSubmittedPeriodsPage/>} />
+          <Route path="/admin/posting-periods/approved" element={<AdminPostingApprovedPeriodsPage/>} />
+          <Route path="/admin/posting-periods/rejected" element={<AdminPostingRejectedPeriodsPage/>} />
           <Route path="/admin/posting-periods/view/:eId" element={<AdminPostingPeriodPage/>} />
           {/* Users */}
           <Route path="/admin/users/pending" element={<UsersPendingPage/>} />

@@ -13,9 +13,14 @@ export { default as SignupPage } from '../auth/signup'
 
 //reports
 export { default as AdminMemberSummaryPage } from './admin/reports/member_summary'
+export { default as AdminMonthlySummaryPage } from './admin/reports/monthly_summary'
 //posting period
 export { default as AdminPostingPeriodsPage } from './admin/posting-periods/posting_period_list'
+export { default as AdminPostingSubmittedPeriodsPage } from './admin/posting-periods/posting_period_submitted'
+export { default as AdminPostingApprovedPeriodsPage } from './admin/posting-periods/posting_period_approved'
+export { default as AdminPostingRejectedPeriodsPage } from './admin/posting-periods/posting_period_rejected'
 export { default as AdminPostingPeriodPage } from './admin/posting-periods/posting_period'
+
 //Dictionairies
 export { default as StatusesPage} from './admin/dictionairies/status_types'
 export { default as TransactionTypesPage} from './admin/dictionairies/transaction_types'
@@ -28,6 +33,7 @@ export { default as AdminMonthlyPostingsPage } from './admin/monthly-posting/mon
 export { default as AdminMonthlySubmittedPostingsPage } from './admin/monthly-posting/month_posting_submitted'
 export { default as AdminMonthlyApprovedPostingsPage } from './admin/monthly-posting/month_posting_approved'
 export { default as AdminMonthlyRejectedPostingsPage } from './admin/monthly-posting/month_posting_rejected'
+export { default as AdminMonthlyPostingsDDACPage } from './admin/monthly-posting/month_posting_ddac'
 export { default as AdminMonthlyPostingPage } from './admin/monthly-posting/month_posting'
 //annoucement
 export { default as AdminAnnouncementsPage } from './admin/announcements/announcement_list'

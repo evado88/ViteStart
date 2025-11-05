@@ -10,6 +10,7 @@ import { useNavigate } from "react-router-dom";
 import { Link, NavLink, useLocation } from "react-router-dom";
 import axios, { AxiosError } from "axios";
 import Assist from "../classes/assist";
+import AppInfo from "../classes/app-info";
 
 const Login = () => {
   const { user, login } = useAuth();
@@ -73,7 +74,7 @@ const Login = () => {
             </Link>
           </div>
           <div className="signin-form">
-            <h2 className="form-title">SACCO</h2>
+            <h2 className="form-title">{AppInfo.appCode}</h2>
             <form
               className="register-form"
               id="login-form"

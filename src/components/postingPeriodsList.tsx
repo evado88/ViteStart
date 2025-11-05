@@ -61,7 +61,12 @@ export const PostingPeriodingsList = ({
           )}
           <Item name="columnChooserButton" />
         </Toolbar>
-        <Column dataField="id" caption="ID" hidingPriority={12} sortOrder="asc"></Column>
+        <Column
+          dataField="id"
+          caption="ID"
+          hidingPriority={12}
+          sortOrder="asc"
+        ></Column>
         <Column
           dataField="name"
           caption="Name"
@@ -74,7 +79,26 @@ export const PostingPeriodingsList = ({
             );
           }}
         ></Column>
-        <Column dataField="status" caption="Status" hidingPriority={10}></Column>
+        <Column
+          dataField="status"
+          caption="Status"
+          hidingPriority={10}
+          cellRender={(e) => {
+
+            if (e.data.status == "Approved") {
+              //draft
+              return (
+                <a
+                  href={`/admin/monthly-postings/ddac-report/${e.data.id}`}
+                >
+                  {e.text}, View DDAC
+                </a>
+              );
+            } else {
+              return e.text;
+            }
+          }}
+        ></Column>
         <Column dataField="stage" caption="Stage" hidingPriority={9}></Column>
         <Column
           dataField={`sid${Assist.STAGE_AWAITING_SUBMISSION}`}

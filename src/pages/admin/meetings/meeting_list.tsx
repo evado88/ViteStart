@@ -117,11 +117,15 @@ const AdminMeetings = () => {
                 format={"dd MMMM yyy"}
                 hidingPriority={5}
                 cellRender={(e) => {
-                  return (
-                    <a href={`/admin/meetings/view/${e.data.id}`}>
-                      {e.text}
-                    </a>
-                  );
+                  const getLink = () => {
+                    if (e.data.status.status_name == "Draft") {
+                      return `/admin/meetings/edit/${e.data.id}`;
+                    } else {
+                      return `/admin/meetings/view/${e.data.id}`;
+                    }
+                  };
+
+                  return <a href={getLink()}>{e.text}</a>;
                 }}
               ></Column>
               <Column

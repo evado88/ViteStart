@@ -47,7 +47,7 @@ const MyDashboard = () => {
   const [loadingText, setLoadingText] = useState("Loading data...");
 
   const pageConfig = new PageConfig(
-    `Dashboard`,
+    `ppDashboard`,
     user.role == 2
       ? `transactions/summary/all`
       : `transactions/member-summary/${user.userid}`,
@@ -131,7 +131,7 @@ const MyDashboard = () => {
         hideOnOutsideClick={false}
       />
       <Titlebar
-        title={"My Dashboard"}
+        title={pageConfig.Title}
         section={"Home"}
         icon={"home"}
         url={""}

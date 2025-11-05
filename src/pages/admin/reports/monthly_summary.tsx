@@ -29,8 +29,14 @@ import DataGrid, {
   Item,
 } from "devextreme-react/data-grid";
 import { useNavigate } from "react-router-dom";
+import {
+  PivotGrid,
+  type PivotGridTypes,
+  Scrolling,
+} from "devextreme-react/pivot-grid";
+import PivotGridDataSource from "devextreme/ui/pivot_grid/data_source";
 
-const MemberSummary = () => {
+const MonthlySummary = () => {
   //user
   const { user } = useAuth();
   const navigate = useNavigate();
@@ -46,13 +52,13 @@ const MemberSummary = () => {
   const [loadingText, setLoadingText] = useState("Loading data...");
 
   const pageConfig = new PageConfig(
-    `xxDashboard`,
+    `Monthly Member Summary`,
     user.role == 2
       ? `transactions/summary/all`
       : `transactions/member-summary/${user.userid}`,
     "",
     "User",
-    `transactions/year-to-date/all`
+    `transactions/transaction-summary/all`
   );
 
   useEffect(() => {
@@ -117,14 +123,35 @@ const MemberSummary = () => {
     setPenalty(penaltyItem.amount);
   };
 
-  const addButtonOptions = useMemo(
-    () => ({
-      icon: "add",
-      text: "New Monthly Posting",
-      onClick: () => navigate("/my/monthly-posting/post"),
-    }),
-    []
-  );
+  const dataSource = new PivotGridDataSource({
+    fields: [
+      {
+        caption: "Member",
+        width: 120,
+        dataField: "name",
+        area: "row",
+      },
+      {
+        caption: "Type",
+        dataField: "type",
+        width: 150,
+        area: "row",
+      },
+      {
+        dataField: "period",
+        area: "column",
+      },
+      {
+        caption: "Amount",
+        dataField: "amount",
+        dataType: "number",
+        summaryType: "sum",
+        format: ",##0.###",
+        area: "data",
+      },
+    ],
+    store: data,
+  });
 
   return (
     <div className="page-content" style={{ minHeight: "862px" }}>
@@ -201,119 +228,18 @@ const MemberSummary = () => {
         <Col sz={12} sm={12} lg={12}>
           <Card title={"Members"} showHeader={false}>
             <Card showHeader={false}>
-              <DataGrid
-                className={"dx-card wide-card"}
-                dataSource={data}
-                keyExpr={"id"}
-                noDataText={loadingText}
-                showBorders={false}
-                focusedRowEnabled={true}
-                defaultFocusedRowIndex={0}
-                columnAutoWidth={true}
-                columnHidingEnabled={true}
+              <PivotGrid
+                allowSorting={true}
+                allowSortingBySummary={true}
+                allowFiltering={true}
+                height={620}
+                showBorders={true}
+                rowHeaderLayout="tree"
+                dataSource={dataSource}
               >
-                <Paging defaultPageSize={10} />
-                <Editing
-                  mode="row"
-                  allowUpdating={false}
-                  allowDeleting={false}
-                  allowAdding={false}
-                />
-                <Pager showPageSizeSelector={true} showInfo={true} />
-                <FilterRow visible={true} />
-                <ColumnChooser enabled={true} mode="select"></ColumnChooser>
-                <Toolbar>
-                  <Item
-                    location="before"
-                    locateInMenu="auto"
-                    showText="always"
-                    widget="dxButton"
-                    options={addButtonOptions}
-                  />
-                  <Item name="columnChooserButton" />
-                </Toolbar>
-                <Column
-                  dataField="id"
-                  caption="ID"
-                  hidingPriority={13}
-                ></Column>
-                <Column
-                  dataField="fname"
-                  caption="First Name"
-                  hidingPriority={12}
-                ></Column>
-                <Column
-                  dataField="lname"
-                  caption="Last name"
-                  hidingPriority={11}
-                ></Column>
-                <Column
-                  dataField="email"
-                  caption="Email"
-                  visible={false}
-                  hidingPriority={11}
-                ></Column>
-                <Column
-                  dataField="phone"
-                  caption="Phone"
-                  visible={false}
-                  hidingPriority={11}
-                ></Column>
-                <Column
-                  dataField={`tid${Assist.TRANSACTION_SAVINGS}`}
-                  caption="Savings"
-                  format={",##0.###"}
-                  hidingPriority={10}
-                ></Column>
-                <Column
-                  dataField={`tid${Assist.TRANSACTION_SHARE}`}
-                  caption="Shares"
-                  format={",##0.###"}
-                  hidingPriority={10}
-                ></Column>
-                <Column
-                  dataField={`tid${Assist.TRANSACTION_LOAN}`}
-                  caption="Loans"
-                  format={",##0.###"}
-                  hidingPriority={10}
-                ></Column>
-                <Column
-                  dataField={`tid${Assist.TRANSACTION_LOAN_PAYMENT}`}
-                  caption="Loan Payment"
-                  format={",##0.###"}
-                  hidingPriority={10}
-                ></Column>
-                <Column
-                  dataField={`tid${Assist.TRANSACTION_INTEREST_CHARGED}`}
-                  caption="Interest Charged"
-                  format={",##0.###"}
-                  hidingPriority={10}
-                ></Column>
-                <Column
-                  dataField={`tid${Assist.TRANSACTION_INTEREST_PAID}`}
-                  caption="Interest Paid"
-                  format={",##0.###"}
-                  hidingPriority={10}
-                ></Column>
-                <Column
-                  dataField={`tid${Assist.TRANSACTION_SOCIAL_FUND}`}
-                  caption="Social Fund"
-                  format={",##0.###"}
-                  hidingPriority={10}
-                ></Column>
-                <Column
-                  dataField={`tid${Assist.TRANSACTION_PENALTY_CHARGED}`}
-                  caption="Penalty Charged"
-                  format={",##0.###"}
-                  hidingPriority={10}
-                ></Column>
-                <Column
-                  dataField={`tid${Assist.TRANSACTION_PENALTY_PAID}`}
-                  caption="Penalty Paid"
-                  format={",##0.###"}
-                  hidingPriority={10}
-                ></Column>
-              </DataGrid>
+             
+                <Scrolling mode="virtual" />
+              </PivotGrid>
             </Card>
           </Card>
         </Col>
@@ -322,4 +248,4 @@ const MemberSummary = () => {
   );
 };
 
-export default MemberSummary;
+export default MonthlySummary;

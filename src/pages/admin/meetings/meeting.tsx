@@ -27,6 +27,7 @@ const AdminMeeting = () => {
 
   //posting
   const [meetingDetail, setMeetingDetail] = useState<null | any>(null);
+  const [attendanceList, setAttendanceList] = useState([]);
 
   //service
   const [loading, setLoading] = useState(false);
@@ -35,6 +36,7 @@ const AdminMeeting = () => {
   const [stage, setStage] = useState("");
   const [stageId, setStageId] = useState(1);
   const [status, setStatus] = useState(null);
+  const [createdBy, setCreatedBy] = useState("");
   const [approvalLevels, setApprovalLevels] = useState(1);
 
   const [rejectionReason, setRejectionReason] = useState("");
@@ -58,7 +60,6 @@ const AdminMeeting = () => {
           .then((data) => {
             setLoading(false);
             updateVaues(data);
-            setMeetingDetail(data);
             setError(false);
           })
           .catch((message) => {
@@ -71,9 +72,14 @@ const AdminMeeting = () => {
   }, []);
 
   const updateVaues = (res: any) => {
+    setMeetingDetail(res);
+
     setStatus(res.status.status_name);
     setStage(res.stage.stage_name);
     setStageId(res.stage_id);
+    setCreatedBy(res.created_by);
+    setAttendanceList(JSON.parse(res.attendanceList));
+
     setApprovalLevels(res.approval_levels);
   };
 
@@ -172,6 +178,73 @@ const AdminMeeting = () => {
     }, Assist.DEV_DELAY);
   };
 
+  const unsubmitButton = () => {
+    if (stage == "Submitted" && status == "Submitted" && createdBy == user.useremail) {
+      return (
+        <div className="dx-field">
+          <div className="dx-field-label"></div>
+          <div className="dx-field-value">
+            <Button
+              width="100%"
+              type={saving ? "normal" : "default"}
+              disabled={loading || error || saving}
+              onClick={() => onFormUnsubmit()}
+            >
+              <LoadIndicator className="button-indicator" visible={saving} />
+              <span className="dx-button-text">Unsubmit</span>
+            </Button>
+          </div>
+        </div>
+      );
+    } else {
+      return null;
+    }
+  };
+
+  const onFormUnsubmit = () => {
+    let result = confirm(
+      "Are you sure you want to unsubmit this meeting?",
+      "Confirm submission"
+    );
+    result.then((dialogResult) => {
+      if (dialogResult) {
+        unsubmitPosting();
+      }
+    });
+  };
+  const unsubmitPosting = () => {
+    setSaving(true);
+
+    const newData = {
+      status_id: Assist.STATUS_DRAFT,
+      stage_id: Assist.STAGE_AWAITING_SUBMISSION,
+    };
+    const postData = { ...meetingDetail, ...newData };
+
+    setTimeout(() => {
+      Assist.postPutData(
+        pageConfig.Title,
+        `meetings/update/${eId}`,
+        postData,
+        1
+      )
+        .then((data) => {
+          setSaving(false);
+
+          Assist.showMessage(
+            "You have successfully unsubmitted the meeting!",
+            "success"
+          );
+
+          navigate(`/admin/meetings/list`);
+        })
+        .catch((message) => {
+          setSaving(false);
+
+          Assist.showMessage(message, "error");
+        });
+    }, Assist.DEV_DELAY);
+  };
   return (
     <div id="pageRoot" className="page-content">
       <LoadPanel
@@ -194,7 +267,13 @@ const AdminMeeting = () => {
       {/* chart start */}
       <Row>
         <Col sz={12} sm={12} lg={7}>
-          {meetingDetail != null && <MeetingDetail meeting={meetingDetail} />}
+          {meetingDetail != null && (
+            <MeetingDetail
+              meeting={meetingDetail}
+              attendanceList={attendanceList}
+              unsubmitComponent={unsubmitButton()}
+            />
+          )}
         </Col>
         <Col sz={12} sm={12} lg={5}>
           {requiresApproval() && (
@@ -320,7 +399,7 @@ const AdminMeeting = () => {
                     </div>
                   </div>
                 </div>
-                {approvalLevels >= 2 && stageId > 2 &&(
+                {approvalLevels >= 2 && stageId > 2 && (
                   <div className="dx-fieldset">
                     <div className="dx-fieldset-header">Secondary Review</div>
                     <div className="dx-field">

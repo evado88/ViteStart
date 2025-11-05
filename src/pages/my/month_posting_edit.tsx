@@ -29,6 +29,9 @@ import DataGrid, {
 } from "devextreme-react/data-grid";
 import { MemberHeader } from "../../components/memberHeader";
 import { confirm } from "devextreme/ui/dialog";
+import SelectBox from "devextreme-react/select-box";
+import AppInfo from "../../classes/app-info";
+import TextBox from "devextreme-react/text-box";
 const PostMonthly = () => {
   //user
   const { user } = useAuth();
@@ -53,7 +56,9 @@ const PostMonthly = () => {
   const [postingShares, setPostingShares] = useState<number | null>(null);
   const [postingSocial, setPostingSocial] = useState<number | null>(null);
   const [postingPenalty, setPostingPenalty] = useState<number | null>(0);
-
+  const [postingPayMethod, setPostingPayMethod] = useState<string | null>(null);
+  const [postingPayNumber, setPostingPayNumber] = useState<string | null>(null);
+  const [postingPayName, setPostingPayName] = useState<string | null>(null);
   //interest payment - minimum 10% if not yet paid on loan
   const [postingLoanInterestPayment, setPostingLoanInterestPayment] = useState<
     number | null
@@ -103,7 +108,7 @@ const PostMonthly = () => {
   //new loan loan application
   const [loanSavingsRatio, setLoanSavingsRatio] = useState<number | null>(null);
 
-  //additiona
+  //additional
   const [latePostingFee, setLatePostingFee] = useState<number | null>(null);
   const [missedMeetingFee, setMissedMeetingFee] = useState<number | null>(null);
   const [lateMeetingFee, setLateMeetingFee] = useState<number | null>(null);
@@ -116,7 +121,6 @@ const PostMonthly = () => {
 
   const [loanData, setLoanData] = useState<any[] | null>([]);
   const [penaltyData, setPenaltyData] = useState<any[] | null>([]);
-
   const [totalSavingsAmount, setTotalSavingsAmount] = useState<number | null>(
     0
   );
@@ -200,6 +204,9 @@ const PostMonthly = () => {
     }
   };
   const updateVaues = (data: any) => {
+    setPostingPayNumber(data.member.mobile2);
+    setPostingPayName(`${data.member.fname} ${data.member.lname}`);
+
     setLatePostingStartDate(
       Assist.updateDateDay(postingDate, data.latePostingStartDay)
     );
@@ -300,7 +307,7 @@ const PostMonthly = () => {
     const periodId = `${periodDate.getFullYear()}${periodDate.getMonth() + 1}`;
 
     const totalContributions = getContributions();
-    const depositTotal = Math.abs(totalContributions + getLoanAmount());
+    const depositTotal = totalContributions + getLoanAmount();
 
     const postData = {
       user_id: user.userid,
@@ -319,6 +326,9 @@ const PostMonthly = () => {
       comments: postingComments,
       contribution_total: totalContributions,
       deposit_total: depositTotal,
+      payment_method_type: postingPayMethod,
+      payment_method_number: postingPayNumber,
+      payment_method_name: postingPayName,
       stage_id: Assist.STAGE_SUBMITTED,
     };
 
@@ -355,6 +365,15 @@ const PostMonthly = () => {
       return true;
     } else {
       return false;
+    }
+  };
+
+  const isMobileMoney = () => {
+    //check if there is a loan
+    if (postingPayMethod == null) {
+      return false;
+    } else {
+      return postingPayMethod != "Bank Transfer";
     }
   };
 
@@ -428,6 +447,28 @@ const PostMonthly = () => {
 
   const getLoanAmount = () => {
     return allowLoanApplication() ? postingLoanApplication! * -1 : 0;
+  };
+
+  const getDepositAmount = () => {
+    const contributions = getContributions();
+    const loan = getLoanAmount();
+
+    if (contributions >= Math.abs(loan)) {
+      return contributions - Math.abs(loan);
+    } else {
+      return 0;
+    }
+  };
+
+  const getReceiveAmount = () => {
+    const contributions = getContributions();
+    const loan = getLoanAmount();
+
+    if (contributions < Math.abs(loan)) {
+      return Math.abs(loan) - contributions;
+    } else {
+      return 0;
+    }
   };
 
   const updateSummary = () => {
@@ -592,7 +633,7 @@ const PostMonthly = () => {
                 </div>
                 <div className="dx-fieldset">
                   <div className="dx-fieldset-header">
-                    Savings & Contrbutions
+                    Savings & Contributions
                   </div>
                   <div className="dx-field">
                     <div className="dx-field-label">Savings</div>
@@ -670,6 +711,56 @@ const PostMonthly = () => {
                       </Validator>
                     </NumberBox>
                   </div>
+                  <div className="dx-field">
+                    <div className="dx-field-label">
+                      Prefered Payment Method
+                    </div>
+                    <SelectBox
+                      className="dx-field-value"
+                      placeholder="Prefered Payment Method"
+                      dataSource={AppInfo.paymethodsList}
+                      onValueChange={(value) => setPostingPayMethod(value)}
+                      validationMessagePosition="left"
+                      value={postingPayMethod}
+                      disabled={error}
+                    >
+                      <Validator>
+                        <RequiredRule message=" Prefered payment method is required" />
+                      </Validator>
+                    </SelectBox>
+                  </div>
+                  {isMobileMoney() && (
+                    <div className="dx-field">
+                      <div className="dx-field-label">Mobile Money Number</div>
+                      <TextBox
+                        className="dx-field-value"
+                        placeholder="Mobile Money Number"
+                        value={postingPayNumber!}
+                        disabled={error || saving}
+                        onValueChange={(text) => setPostingPayNumber(text)}
+                      >
+                        <Validator>
+                          <RequiredRule message="Mobile money number is required" />
+                        </Validator>
+                      </TextBox>
+                    </div>
+                  )}
+                  {isMobileMoney() && (
+                    <div className="dx-field">
+                      <div className="dx-field-label">Mobile Money Name</div>
+                      <TextBox
+                        className="dx-field-value"
+                        placeholder="Mobile Money Name"
+                        value={postingPayName!}
+                        disabled={error || saving}
+                        onValueChange={(text) => setPostingPayName(text)}
+                      >
+                        <Validator>
+                          <RequiredRule message="Mobile money name is required" />
+                        </Validator>
+                      </TextBox>
+                    </div>
+                  )}
                 </div>
                 <div className="dx-fieldset">
                   <div className="dx-fieldset-header">Interest</div>
@@ -1016,21 +1107,19 @@ const PostMonthly = () => {
                   </DataGrid>
                 </div>
                 <div className="dx-field">
-                  <div className="dx-field-label">Deposit Amount</div>
+                  <div className="dx-field-label">Deposit Amount ZMW</div>
                   <div className="dx-field-value-static">
                     <strong className="text-danger">
-                      {Assist.formatCurrency(getContributions())}
+                      {Assist.formatCurrency(getDepositAmount())}
                     </strong>
-                    +{" "}
+                  </div>
+                </div>
+                <div className="dx-field">
+                  <div className="dx-field-label">Receive Amount ZMW</div>
+                  <div className="dx-field-value-static">
                     <strong className="text-success">
-                      {Assist.formatCurrency(getLoanAmount())}
+                      {Assist.formatCurrency(getReceiveAmount())}
                     </strong>{" "}
-                    =
-                    <strong>
-                      {Assist.formatCurrency(
-                        getContributions() + getLoanAmount()
-                      )}
-                    </strong>
                   </div>
                 </div>
                 <div className="dx-field">
