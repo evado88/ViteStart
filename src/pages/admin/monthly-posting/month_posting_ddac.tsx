@@ -46,7 +46,7 @@ const AdminMonthlyApprovedPostings = () => {
   };
 
   useEffect(() => {
-    loadData(`monthly-posting/period/${eId}/status/${status}`);
+    loadData(`posting-periods/ddac/${eId}`);
   }, []);
 
   return (

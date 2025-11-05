@@ -101,56 +101,74 @@ export const MonthlyPostingsListDDAC = ({
           visible={false}
         ></Column>
         <Column
-          dataField="user.fname"
+          dataField="member.fname"
           caption="First Name"
           minWidth={120}
           hidingPriority={2}
         ></Column>
         <Column
-          dataField="user.lname"
+          dataField="member.lname"
           caption="Last Name"
           minWidth={120}
           hidingPriority={2}
         ></Column>
         <Column
-          dataField="user.bank_name"
+          dataField="payment_method_type"
+          caption="Pay Method"
+          minWidth={120}
+          hidingPriority={2}
+        ></Column>
+        <Column
+          dataField="payment_method_number"
+          caption="Phone Number"
+          minWidth={120}
+          hidingPriority={2}
+        ></Column>
+        <Column
+          dataField="payment_method_name"
+          caption="Phone Name"
+          minWidth={120}
+          hidingPriority={2}
+        ></Column>
+        <Column
+          dataField="member.bank_name"
           caption="Bank"
           minWidth={120}
           hidingPriority={2}
         ></Column>
         <Column
-          dataField="user.branch_name"
+          dataField="member.bank_branch_name"
           caption="Branch Name"
           minWidth={120}
           hidingPriority={2}
         ></Column>
         <Column
-          dataField="user.branch_code"
+          dataField="member.bank_branch_code"
           caption="Branch Code"
           minWidth={120}
           hidingPriority={2}
         ></Column>
         <Column
-          dataField="user.account_no"
+          dataField="member.bank_account_no"
           caption="Account No"
           minWidth={120}
           hidingPriority={2}
         ></Column>
         <Column
-          dataField="user.account_name"
+          dataField="member.bank_account_name"
           caption="Account Name"
           minWidth={120}
           hidingPriority={2}
         ></Column>
         <Column
-          dataField="deposit_total"
+          dataField="receive_total"
           caption="Amount ZMW"
           format={",##0.###"}
           hidingPriority={11}
         ></Column>
         <Summary>
           <TotalItem
-            column="deposit_total"
+            column="receive_total"
             summaryType="sum"
             valueFormat={",##0.###"}
             displayFormat="{0}"

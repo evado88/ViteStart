@@ -59,6 +59,8 @@ const PostMonthly = () => {
   const [postingPayMethod, setPostingPayMethod] = useState<string | null>(null);
   const [postingPayNumber, setPostingPayNumber] = useState<string | null>(null);
   const [postingPayName, setPostingPayName] = useState<string | null>(null);
+
+  const [postingMemberId, setPostingMemberId] = useState<string | null>(null);
   //interest payment - minimum 10% if not yet paid on loan
   const [postingLoanInterestPayment, setPostingLoanInterestPayment] = useState<
     number | null
@@ -190,6 +192,11 @@ const PostMonthly = () => {
     setPostingDate(postDate);
     setPostingSavings(data.saving);
     setPostingShares(data.shares);
+
+    setPostingPayMethod(data.payment_method_type);
+    setPostingPayNumber(data.payment_method_number);
+    setPostingPayName(data.payment_method_name);
+
     setPostingLoanApplication(data.loan_application);
     setPostingComments(data.comments);
 
@@ -204,6 +211,7 @@ const PostMonthly = () => {
     }
   };
   const updateVaues = (data: any) => {
+    setPostingMemberId(data.member.id);
     setPostingPayNumber(data.member.mobile2);
     setPostingPayName(`${data.member.fname} ${data.member.lname}`);
 
@@ -307,10 +315,10 @@ const PostMonthly = () => {
     const periodId = `${periodDate.getFullYear()}${periodDate.getMonth() + 1}`;
 
     const totalContributions = getContributions();
-    const depositTotal = totalContributions + getLoanAmount();
 
     const postData = {
       user_id: user.userid,
+      member_id: postingMemberId,
       period_id: periodId,
       date: `${postingDate} ${Assist.getCurrentTime()}`,
       saving: postingSavings,
@@ -325,7 +333,8 @@ const PostMonthly = () => {
       approval_levels: approvalLevels,
       comments: postingComments,
       contribution_total: totalContributions,
-      deposit_total: depositTotal,
+      deposit_total: getDepositAmount(),
+      receive_total: getReceiveAmount(),
       payment_method_type: postingPayMethod,
       payment_method_number: postingPayNumber,
       payment_method_name: postingPayName,

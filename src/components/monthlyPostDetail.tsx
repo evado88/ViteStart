@@ -10,6 +10,14 @@ export const MonthlyPostDetail = ({
   monthlyPosting,
   unsubmitComponent,
 }: MonthlyPostArgs) => {
+  const isMobileMoney = () => {
+    //check if there is a loan
+    if (monthlyPosting.payment_method_type == null) {
+      return false;
+    } else {
+      return monthlyPosting.payment_method_type != "Bank Transfer";
+    }
+  };
 
   return (
     /* start title */
@@ -58,6 +66,28 @@ export const MonthlyPostDetail = ({
               <strong>{Assist.formatCurrency(monthlyPosting.penalty)}</strong>
             </div>
           </div>
+          <div className="dx-field">
+            <div className="dx-field-label">Payment Method Type</div>
+            <div className="dx-field-value-static">
+              <strong>{monthlyPosting.payment_method_type}</strong>
+            </div>
+          </div>
+          {isMobileMoney() && (
+            <div className="dx-field">
+              <div className="dx-field-label">Payment Method Number</div>
+              <div className="dx-field-value-static">
+                <strong>{monthlyPosting.payment_method_number}</strong>
+              </div>
+            </div>
+          )}
+          {isMobileMoney() && (
+            <div className="dx-field">
+              <div className="dx-field-label">Payment Method Name</div>
+              <div className="dx-field-value-static">
+                <strong>{monthlyPosting.payment_method_name}</strong>
+              </div>
+            </div>
+          )}
         </div>
         <div className="dx-fieldset">
           <div className="dx-fieldset-header">Interest</div>
@@ -88,6 +118,33 @@ export const MonthlyPostDetail = ({
             <div className="dx-field-value-static">
               <strong>
                 {Assist.formatCurrency(monthlyPosting.loan_application)}
+              </strong>
+            </div>
+          </div>
+        </div>
+        <div className="dx-fieldset">
+          <div className="dx-fieldset-header">Summary</div>
+          <div className="dx-field">
+            <div className="dx-field-label">Contribution Total</div>
+            <div className="dx-field-value-static">
+              <strong>
+                {Assist.formatCurrency(monthlyPosting.contribution_total)}
+              </strong>
+            </div>
+          </div>
+          <div className="dx-field">
+            <div className="dx-field-label">Deposit Total</div>
+            <div className="dx-field-value-static">
+              <strong className="text-danger">
+                {Assist.formatCurrency(monthlyPosting.deposit_total)}
+              </strong>
+            </div>
+          </div>
+          <div className="dx-field">
+            <div className="dx-field-label">Receive Total</div>
+            <div className="dx-field-value-static">
+              <strong className="text-success">
+                {Assist.formatCurrency(monthlyPosting.receive_total)}
               </strong>
             </div>
           </div>

@@ -136,6 +136,12 @@ export const MonthlyPostingsList = ({
           hidingPriority={11}
         ></Column>
         <Column
+          dataField="receive_total"
+          caption="Receive Total"
+          format={",##0.###"}
+          hidingPriority={11}
+        ></Column>
+        <Column
           dataField="saving"
           caption="Saving"
           format={",##0.###"}
@@ -199,6 +205,12 @@ export const MonthlyPostingsList = ({
           />
           <TotalItem
             column="deposit_total"
+            summaryType="sum"
+            valueFormat={",##0.###"}
+            displayFormat="{0}"
+          />
+          <TotalItem
+            column="receive_total"
             summaryType="sum"
             valueFormat={",##0.###"}
             displayFormat="{0}"
