@@ -79,6 +79,7 @@ export const MemberQueryDetail = ({
             </DataGrid>
           </div>
         </div>
+
         <div className="dx-fieldset">
           <div className="dx-fieldset-header">Content</div>
           <div className="dx-field">
@@ -90,6 +91,19 @@ export const MemberQueryDetail = ({
             ></HtmlEditor>
           </div>
         </div>
+        {memberQuery.stage_id > 2 && (
+          <div className="dx-fieldset">
+            <div className="dx-fieldset-header">Response</div>
+            <div className="dx-field">
+              <HtmlEditor
+                height="325px"
+                readOnly={true}
+                defaultValue={memberQuery.response}
+                value={memberQuery.response}
+              ></HtmlEditor>
+            </div>
+          </div>
+        )}
         <div className="dx-fieldset">
           <div className="dx-fieldset-header">Submission</div>
           <div className="dx-field">

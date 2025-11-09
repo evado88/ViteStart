@@ -14,7 +14,6 @@ import { useNavigate, useParams } from "react-router-dom";
 import HtmlEditor, { MediaResizing } from "devextreme-react/html-editor";
 import AppInfo from "../../../classes/app-info";
 import DataGrid, { Column, Pager, Paging } from "devextreme-react/data-grid";
-import { MeetingDetail } from "../../../components/meetingDetail";
 import { confirm } from "devextreme/ui/dialog";
 import TextArea from "devextreme-react/text-area";
 import ValidationSummary from "devextreme-react/validation-summary";
@@ -28,7 +27,7 @@ const MyMemberQuery = () => {
   const { eId } = useParams(); // Destructure the parameter directly
 
   //posting
-  const [meetingDetail, setMeetingDetail] = useState<null | any>(null);
+  const [queryDetail, setQueryDetail] = useState<null | any>(null);
   const [response, setResponse] = useState(null);
   //service
   const [loading, setLoading] = useState(false);
@@ -74,7 +73,8 @@ const MyMemberQuery = () => {
   }, []);
 
   const updateVaues = (res: any) => {
-    setMeetingDetail(res);
+    setQueryDetail(res);
+    setResponse(res.response);
     setStatus(res.status.status_name);
     setStage(res.stage.stage_name);
     setStageId(res.stage_id);
@@ -155,6 +155,7 @@ const MyMemberQuery = () => {
       user_id: user.userid,
       review_action: action,
       comments: reviewComments,
+      content: stage == "Submitted" ? response : null,
     };
 
     setTimeout(() => {
@@ -167,7 +168,7 @@ const MyMemberQuery = () => {
             "success"
           );
 
-          navigate(`/admin/meetings/list`);
+          navigate(`/admin/member-queries/list`);
         })
         .catch((message) => {
           setSaving(false);
@@ -177,9 +178,6 @@ const MyMemberQuery = () => {
         });
     }, Assist.DEV_DELAY);
   };
-
-
-
 
   const toolbar: any = useMemo(() => {
     return AppInfo.htmlToolbar;
@@ -207,10 +205,8 @@ const MyMemberQuery = () => {
       {/* chart start */}
       <Row>
         <Col sz={12} sm={12} lg={6}>
-          {meetingDetail != null && (
-            <MemberQueryDetail
-              memberQuery={meetingDetail}
-            />
+          {queryDetail != null && (
+            <MemberQueryDetail memberQuery={queryDetail} />
           )}
         </Col>
         <Col sz={12} sm={12} lg={6}>
@@ -268,7 +264,7 @@ const MyMemberQuery = () => {
             <Card title="Approval" showHeader={true}>
               <div className="form">
                 <form id="formMain" onSubmit={onFormApproveSubmit}>
-                  <div className="dx-fieldset">
+                  {stage == "Submitted" && <div className="dx-fieldset">
                     <div className="dx-fieldset-header">Response</div>
                     <div className="dx-field">
                       <HtmlEditor
@@ -284,7 +280,7 @@ const MyMemberQuery = () => {
                         </Validator>
                       </HtmlEditor>
                     </div>
-                  </div>
+                  </div>}
                   <div className="dx-fieldset">
                     <div className="dx-fieldset-header">Submission</div>
                     <div className="dx-field">
@@ -337,20 +333,20 @@ const MyMemberQuery = () => {
                     <div className="dx-field-label">Date</div>
                     <div className="dx-field-value-static">
                       <strong>
-                        {Assist.getDateText(meetingDetail.review1_at)}
+                        {Assist.getDateText(queryDetail.review1_at)}
                       </strong>
                     </div>
                   </div>
                   <div className="dx-field">
                     <div className="dx-field-label">Reviewer</div>
                     <div className="dx-field-value-static">
-                      <strong>{meetingDetail.review1_by}</strong>
+                      <strong>{queryDetail.review1_by}</strong>
                     </div>
                   </div>
                   <div className="dx-field">
                     <div className="dx-field-label">Comments</div>
                     <div className="dx-field-value-static">
-                      <strong>{meetingDetail.review1_comments}</strong>
+                      <strong>{queryDetail.review1_comments}</strong>
                     </div>
                   </div>
                 </div>
@@ -362,20 +358,20 @@ const MyMemberQuery = () => {
                       <div className="dx-field-value-static">
                         {" "}
                         <strong>
-                          {Assist.getDateText(meetingDetail.review2_at)}
+                          {Assist.getDateText(queryDetail.review2_at)}
                         </strong>
                       </div>
                     </div>
                     <div className="dx-field">
                       <div className="dx-field-label">Reviewer</div>
                       <div className="dx-field-value-static">
-                        <strong> {meetingDetail.review2_by}</strong>
+                        <strong> {queryDetail.review2_by}</strong>
                       </div>
                     </div>
                     <div className="dx-field">
                       <div className="dx-field-label">Comments</div>
                       <div className="dx-field-value-static">
-                        <strong>{meetingDetail.review2_comments}</strong>
+                        <strong>{queryDetail.review2_comments}</strong>
                       </div>
                     </div>
                   </div>
@@ -388,20 +384,20 @@ const MyMemberQuery = () => {
                       <div className="dx-field-value-static">
                         {" "}
                         <strong>
-                          {Assist.getDateText(meetingDetail.review3_at)}
+                          {Assist.getDateText(queryDetail.review3_at)}
                         </strong>
                       </div>
                     </div>
                     <div className="dx-field">
                       <div className="dx-field-label">Reviewer</div>
                       <div className="dx-field-value-static">
-                        <strong>{meetingDetail.review3_by}</strong>
+                        <strong>{queryDetail.review3_by}</strong>
                       </div>
                     </div>
                     <div className="dx-field">
                       <div className="dx-field-label">Comments</div>
                       <div className="dx-field-value-static">
-                        <strong>{meetingDetail.review3_comments}</strong>
+                        <strong>{queryDetail.review3_comments}</strong>
                       </div>
                     </div>
                   </div>

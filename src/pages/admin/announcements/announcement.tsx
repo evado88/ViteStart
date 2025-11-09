@@ -162,7 +162,7 @@ const AdminAnnouncement = () => {
             "success"
           );
 
-          navigate(`/admin/meetings/list`);
+          navigate(`/admin/announcements/list`);
         })
         .catch((message) => {
           setSaving(false);
