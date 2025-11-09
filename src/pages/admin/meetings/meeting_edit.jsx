@@ -64,7 +64,7 @@ const MeetingEdit = () => {
               });
           } else {
             setLoading(false);
-            setConfigs(data);
+            setConfig(data);
             setError(false);
           }
         })
@@ -145,7 +145,7 @@ const MeetingEdit = () => {
           setSaving(false);
           Assist.showMessage(message, "error");
         });
-    }, Assist.developmentDelay);
+    }, Assist.DEV_DELAY);
   };
 
   const toolbar = useMemo(() => {
@@ -201,8 +201,8 @@ const MeetingEdit = () => {
                       displayFormat={"dd MMMM yyyy"}
                       value={date}
                       disabled={error || saving}
+                      >
                       onValueChange={(text) => setDate(text)}
-                    >
                       <Validator>
                         <RequiredRule message="Meeting date is required" />
                       </Validator>

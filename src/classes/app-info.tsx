@@ -1,9 +1,10 @@
 const AppInfo = {
-  appName: "Oaswe Control Panel",
-  appCode: "Osawe",
+  appName: "SACCO Control Panel",
+  appCode: "SACCO",
   apiUrl: "http://127.0.0.1:8700/",
   onlineApiUrl: "",
   localApiUrl: "http://127.0.0.1:8700/",
+  configApiUrl: "sacco-config/1",
   uploadUrl: "",
   fileServer: "",
   noImageUrl: "",
@@ -21,20 +22,6 @@ const AppInfo = {
       {
         name: "size",
         acceptedValues: ["8pt", "10pt", "12pt", "14pt", "18pt", "24pt", "36pt"],
-      },
-
-      {
-        name: "font",
-        acceptedValues: [
-          "Arial",
-          "Courier New",
-          "Georgia",
-          "Impact",
-          "Lucida Console",
-          "Tahoma",
-          "Times New Roman",
-          "Verdana",
-        ],
       },
       "separator",
       "bold",

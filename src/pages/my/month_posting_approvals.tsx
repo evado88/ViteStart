@@ -29,7 +29,7 @@ const MonthlyPostingApprovals = () => {
 
   const pageConfig = new PageConfig(
     "Guarantor Approvals",
-    `monthly-posting/guarantor-approvals/${user.userid}`,
+    `monthly-posting/guarantor-approvals/email/${encodeURI(user.sub)}`,
     "",
     "Monthly Posting",
     ""
@@ -45,7 +45,9 @@ const MonthlyPostingApprovals = () => {
           setLoading(false);
 
           if (data.length === 0) {
-            setLoadingText("You have no monthly posts that require your approval");
+            setLoadingText(
+              "You have no monthly posts that require your approval"
+            );
           } else {
             setLoadingText("");
           }
@@ -56,8 +58,6 @@ const MonthlyPostingApprovals = () => {
         });
     }, Assist.DEV_DELAY);
   }, []);
-
-
 
   return (
     <div className="page-content" style={{ minHeight: "862px" }}>
@@ -107,7 +107,9 @@ const MonthlyPostingApprovals = () => {
                 hidingPriority={12}
                 cellRender={(e) => {
                   return (
-                    <a href={`/my/monthly-posting/guarantor-approval/${e.data.id}`}>
+                    <a
+                      href={`/my/monthly-posting/guarantor-approval/${e.data.id}`}
+                    >
                       {e.text}
                     </a>
                   );

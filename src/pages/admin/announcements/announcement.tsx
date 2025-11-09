@@ -11,23 +11,19 @@ import PageConfig from "../../../classes/page-config";
 import Assist from "../../../classes/assist";
 import { LoadIndicator } from "devextreme-react/load-indicator";
 import { useNavigate, useParams } from "react-router-dom";
-import HtmlEditor, { MediaResizing } from "devextreme-react/html-editor";
-import AppInfo from "../../../classes/app-info";
-import DataGrid, { Column, Pager, Paging } from "devextreme-react/data-grid";
-import { MeetingDetail } from "../../../components/meetingDetail";
 import { confirm } from "devextreme/ui/dialog";
 import TextArea from "devextreme-react/text-area";
 import ValidationSummary from "devextreme-react/validation-summary";
+import { AnnouncementDetail } from "../../../components/accouncementDetail";
 
-const AdminMeeting = () => {
+const AdminAnnouncement = () => {
   //user
   const navigate = useNavigate();
   const { user } = useAuth();
   const { eId } = useParams(); // Destructure the parameter directly
 
   //posting
-  const [meetingDetail, setMeetingDetail] = useState<null | any>(null);
-  const [attendanceList, setAttendanceList] = useState([]);
+  const [announcementDetail, setAnnouncementDetail] = useState<null | any>(null);
 
   //service
   const [loading, setLoading] = useState(false);
@@ -42,11 +38,11 @@ const AdminMeeting = () => {
   const [rejectionReason, setRejectionReason] = useState("");
   const [approvalComments, setApprovalComments] = useState("");
   const pageConfig = new PageConfig(
-    `${status == "Approved" ? "View" : "Review"} Meeting`,
+    `${status == "Approved" ? "View" : "Review"} Announcement `,
     "",
     "",
-    "Meeting",
-    `meetings/review-update/${eId}`
+    "Announcement ",
+    `announcements/review-update/${eId}`
   );
 
   pageConfig.id = eId == undefined ? 0 : Number(eId);
@@ -56,7 +52,7 @@ const AdminMeeting = () => {
     if (pageConfig.id != 0) {
       setLoading(true);
       setTimeout(() => {
-        Assist.loadData(pageConfig.Title, `meetings/id/${pageConfig.id}`)
+        Assist.loadData(pageConfig.Title, `announcements/id/${pageConfig.id}`)
           .then((data) => {
             setLoading(false);
             updateVaues(data);
@@ -72,13 +68,12 @@ const AdminMeeting = () => {
   }, []);
 
   const updateVaues = (res: any) => {
-    setMeetingDetail(res);
+    setAnnouncementDetail(res);
 
     setStatus(res.status.status_name);
     setStage(res.stage.stage_name);
     setStageId(res.stage_id);
     setCreatedBy(res.created_by);
-    setAttendanceList(JSON.parse(res.attendanceList));
 
     setApprovalLevels(res.approval_levels);
   };
@@ -203,7 +198,7 @@ const AdminMeeting = () => {
 
   const onFormUnsubmit = () => {
     let result = confirm(
-      "Are you sure you want to unsubmit this meeting?",
+      `Are you sure you want to unsubmit this ${pageConfig.Single}?`,
       "Confirm submission"
     );
     result.then((dialogResult) => {
@@ -219,12 +214,16 @@ const AdminMeeting = () => {
       status_id: Assist.STATUS_DRAFT,
       stage_id: Assist.STAGE_AWAITING_SUBMISSION,
     };
-    const postData = { ...meetingDetail, ...newData };
+
+
+    const postData = { ...announcementDetail, ...newData };
+
+    console.log(postData);
 
     setTimeout(() => {
       Assist.postPutData(
         pageConfig.Title,
-        `meetings/update/${eId}`,
+        `announcements/update/${eId}`,
         postData,
         1
       )
@@ -232,11 +231,11 @@ const AdminMeeting = () => {
           setSaving(false);
 
           Assist.showMessage(
-            "You have successfully unsubmitted the meeting!",
+            `You have successfully unsubmitted the ${pageConfig.Single}!`,
             "success"
           );
 
-          navigate(`/admin/meetings/list`);
+          navigate(`/admin/announcements/list`);
         })
         .catch((message) => {
           setSaving(false);
@@ -267,10 +266,9 @@ const AdminMeeting = () => {
       {/* chart start */}
       <Row>
         <Col sz={12} sm={12} lg={7}>
-          {meetingDetail != null && (
-            <MeetingDetail
-              meeting={meetingDetail}
-              attendanceList={attendanceList}
+          {announcementDetail != null && (
+            <AnnouncementDetail
+              announcement={announcementDetail}
               unsubmitComponent={unsubmitButton()}
             />
           )}
@@ -382,20 +380,20 @@ const AdminMeeting = () => {
                     <div className="dx-field-label">Date</div>
                     <div className="dx-field-value-static">
                       <strong>
-                        {Assist.getDateText(meetingDetail.review1_at)}
+                        {Assist.getDateText(announcementDetail.review1_at)}
                       </strong>
                     </div>
                   </div>
                   <div className="dx-field">
                     <div className="dx-field-label">Reviewer</div>
                     <div className="dx-field-value-static">
-                      <strong>{meetingDetail.review1_by}</strong>
+                      <strong>{announcementDetail.review1_by}</strong>
                     </div>
                   </div>
                   <div className="dx-field">
                     <div className="dx-field-label">Comments</div>
                     <div className="dx-field-value-static">
-                      <strong>{meetingDetail.review1_comments}</strong>
+                      <strong>{announcementDetail.review1_comments}</strong>
                     </div>
                   </div>
                 </div>
@@ -407,20 +405,20 @@ const AdminMeeting = () => {
                       <div className="dx-field-value-static">
                         {" "}
                         <strong>
-                          {Assist.getDateText(meetingDetail.review2_at)}
+                          {Assist.getDateText(announcementDetail.review2_at)}
                         </strong>
                       </div>
                     </div>
                     <div className="dx-field">
                       <div className="dx-field-label">Reviewer</div>
                       <div className="dx-field-value-static">
-                        <strong> {meetingDetail.review2_by}</strong>
+                        <strong> {announcementDetail.review2_by}</strong>
                       </div>
                     </div>
                     <div className="dx-field">
                       <div className="dx-field-label">Comments</div>
                       <div className="dx-field-value-static">
-                        <strong>{meetingDetail.review2_comments}</strong>
+                        <strong>{announcementDetail.review2_comments}</strong>
                       </div>
                     </div>
                   </div>
@@ -433,20 +431,20 @@ const AdminMeeting = () => {
                       <div className="dx-field-value-static">
                         {" "}
                         <strong>
-                          {Assist.getDateText(meetingDetail.review3_at)}
+                          {Assist.getDateText(announcementDetail.review3_at)}
                         </strong>
                       </div>
                     </div>
                     <div className="dx-field">
                       <div className="dx-field-label">Reviewer</div>
                       <div className="dx-field-value-static">
-                        <strong>{meetingDetail.review3_by}</strong>
+                        <strong>{announcementDetail.review3_by}</strong>
                       </div>
                     </div>
                     <div className="dx-field">
                       <div className="dx-field-label">Comments</div>
                       <div className="dx-field-value-static">
-                        <strong>{meetingDetail.review3_comments}</strong>
+                        <strong>{announcementDetail.review3_comments}</strong>
                       </div>
                     </div>
                   </div>
@@ -460,4 +458,4 @@ const AdminMeeting = () => {
   );
 };
 
-export default AdminMeeting;
+export default AdminAnnouncement;

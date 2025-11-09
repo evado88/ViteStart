@@ -47,7 +47,7 @@ const MyDashboard = () => {
   const [loadingText, setLoadingText] = useState("Loading data...");
 
   const pageConfig = new PageConfig(
-    `ppDashboard`,
+    `Dashboard`,
     user.role == 2
       ? `transactions/summary/all`
       : `transactions/member-summary/${user.userid}`,
@@ -138,7 +138,7 @@ const MyDashboard = () => {
       ></Titlebar>
       {/* start widget */}
       <Row>
-        <Col xl={2} lg={6}>
+        <Col xl={3} lg={3}>
           <Ticker
             title={"Savings"}
             value={savings}
@@ -146,7 +146,7 @@ const MyDashboard = () => {
             percent={80}
           ></Ticker>
         </Col>
-        <Col xl={2} lg={6}>
+        <Col xl={3} lg={3}>
           <Ticker
             title={"Loans"}
             value={loan}
@@ -154,23 +154,39 @@ const MyDashboard = () => {
             percent={40}
           ></Ticker>
         </Col>
-        <Col xl={2} lg={6}>
+        <Col xl={3} lg={3}>
           <Ticker
-            title={"Interest"}
+            title={"Interest Charged"}
             value={interest}
             color={"orange"}
             percent={70}
           ></Ticker>
         </Col>
-        <Col xl={2} lg={6}>
+        <Col xl={3} lg={3}>
           <Ticker
-            title={"Penalty"}
+            title={"Interest Paid"}
+            value={interest}
+            color={"orange"}
+            percent={70}
+          ></Ticker>
+        </Col>
+        <Col xl={3} lg={3}>
+          <Ticker
+            title={"Penalty Charged"}
             value={penalty}
             color={"red"}
             percent={90}
           ></Ticker>
         </Col>
-        <Col xl={2} lg={6}>
+        <Col xl={3} lg={3}>
+          <Ticker
+            title={"Penalty Paid"}
+            value={penalty}
+            color={"red"}
+            percent={90}
+          ></Ticker>
+        </Col>
+        <Col xl={3} lg={3}>
           <Ticker
             title={"Share"}
             value={share}
@@ -178,7 +194,7 @@ const MyDashboard = () => {
             percent={90}
           ></Ticker>
         </Col>
-        <Col xl={2} lg={6}>
+        <Col xl={3} lg={3}>
           <Ticker
             title={"Social"}
             value={social}
@@ -197,8 +213,9 @@ const MyDashboard = () => {
               <DataGrid
                 className={"dx-card wide-card"}
                 dataSource={data}
+                showColumnHeaders={false}
                 keyExpr={"id"}
-                noDataText={loadingText}
+                noDataText={'No accouncements added yet'}
                 showBorders={false}
                 focusedRowEnabled={true}
                 defaultFocusedRowIndex={0}
@@ -305,7 +322,8 @@ const MyDashboard = () => {
                 className={"dx-card wide-card"}
                 dataSource={data}
                 keyExpr={"id"}
-                noDataText={loadingText}
+                showColumnHeaders={false}
+                noDataText={`No How To's added yet`}
                 showBorders={false}
                 focusedRowEnabled={true}
                 defaultFocusedRowIndex={0}
@@ -320,7 +338,6 @@ const MyDashboard = () => {
                   allowAdding={false}
                 />
                 <Pager showPageSizeSelector={true} showInfo={true} />
-
 
                 <Column
                   dataField="id"

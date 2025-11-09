@@ -42,7 +42,7 @@ const AdminAnnouncements = () => {
         setLoading(false);
 
         if (res.length === 0) {
-          setLoadingText("No Data");
+          setLoadingText("No announcements added for now");
         } else {
           setLoadingText("");
         }
@@ -116,11 +116,15 @@ const AdminAnnouncements = () => {
                 format={"dd MMMM yyy"}
                 hidingPriority={5}
                 cellRender={(e) => {
-                  return (
-                    <a href={`/admin/announcements/edit/${e.data.id}`}>
-                      {e.text}
-                    </a>
-                  );
+                  const getLink = () => {
+                    if (e.data.status.status_name == "Draft") {
+                      return `/admin/announcements/edit/${e.data.id}`;
+                    } else {
+                      return `/admin/announcements/view/${e.data.id}`;
+                    }
+                  };
+
+                  return <a href={getLink()}>{e.text}</a>;
                 }}
               ></Column>
               <Column

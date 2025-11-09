@@ -2,6 +2,11 @@ import React from "react";
 import { Link, Route } from "react-router-dom";
 import { Card } from "./card";
 import Assist from "../classes/assist";
+import { Fieldset } from "./fieldset";
+import { Field } from "./field";
+import { DataGrid } from "devextreme-react";
+import { Column, Pager, Paging } from "devextreme-react/data-grid";
+import AppInfo from "../classes/app-info";
 interface MonthlyPostArgs {
   monthlyPosting: any;
   unsubmitComponent?: React.ReactElement | null;
@@ -23,72 +28,46 @@ export const MonthlyPostDetail = ({
     /* start title */
     <Card title="Properties" showHeader={true}>
       <div className="form">
-        <div className="dx-fieldset">
-          <div className="dx-fieldset-header">Personal Details</div>
-          <div className="dx-field">
-            <div className="dx-field-label">Full Name</div>
-            <div className="dx-field-value-static">
-              <strong>
-                {monthlyPosting.user.fname} {monthlyPosting.user.lname}
-              </strong>
-            </div>
-          </div>
-          <div className="dx-field">
-            <div className="dx-field-label">Period</div>
-            <div className="dx-field-value-static">
-              <strong>{monthlyPosting.period.period_name}</strong>
-            </div>
-          </div>
-        </div>
-        <div className="dx-fieldset">
-          <div className="dx-fieldset-header">Savings & Contrbutions</div>
-          <div className="dx-field">
-            <div className="dx-field-label">Savings</div>
-            <div className="dx-field-value-static">
+        <Fieldset title="Personal Details">
+          <Field title="Full Name" staticContent={true}>
+            <strong>
+              {monthlyPosting.user.fname} {monthlyPosting.user.lname}
+            </strong>
+          </Field>
+          <Field title="Period" staticContent={true}>
+            <strong>{monthlyPosting.period.period_name}</strong>
+          </Field>
+        </Fieldset>
+        <Fieldset title="Savings & Contributions">
+          <Field title="Savings" staticContent={true}>
+            <strong>
               <strong>{Assist.formatCurrency(monthlyPosting.saving)}</strong>
-            </div>
-          </div>
-          <div className="dx-field">
-            <div className="dx-field-label">Shares</div>
-            <div className="dx-field-value-static">
-              <strong>{Assist.formatCurrency(monthlyPosting.shares)}</strong>
-            </div>
-          </div>
-          <div className="dx-field">
-            <div className="dx-field-label">Social Fund</div>
-            <div className="dx-field-value-static">
-              <strong>{Assist.formatCurrency(monthlyPosting.social)}</strong>
-            </div>
-          </div>
-          <div className="dx-field">
-            <div className="dx-field-label">Penalty</div>
-            <div className="dx-field-value-static">
-              <strong>{Assist.formatCurrency(monthlyPosting.penalty)}</strong>
-            </div>
-          </div>
-          <div className="dx-field">
-            <div className="dx-field-label">Payment Method Type</div>
-            <div className="dx-field-value-static">
-              <strong>{monthlyPosting.payment_method_type}</strong>
-            </div>
-          </div>
+            </strong>
+          </Field>
+          <Field title="Shares" staticContent={true}>
+            <strong>{Assist.formatCurrency(monthlyPosting.shares)}</strong>
+          </Field>
+          <Field title="Social Fund" staticContent={true}>
+            <strong>{Assist.formatCurrency(monthlyPosting.social)}</strong>
+          </Field>
+          <Field title="Penalty" staticContent={true}>
+            <strong>{Assist.formatCurrency(monthlyPosting.penalty)}</strong>
+          </Field>
+          <Field title="Payment Method Type" staticContent={true}>
+            <strong>{monthlyPosting.payment_method_type}</strong>
+          </Field>
           {isMobileMoney() && (
-            <div className="dx-field">
-              <div className="dx-field-label">Payment Method Number</div>
-              <div className="dx-field-value-static">
-                <strong>{monthlyPosting.payment_method_number}</strong>
-              </div>
-            </div>
+            <Field title="Payment Method Number" staticContent={true}>
+              <strong>{monthlyPosting.payment_method_number}</strong>
+            </Field>
           )}
           {isMobileMoney() && (
-            <div className="dx-field">
-              <div className="dx-field-label">Payment Method Name</div>
-              <div className="dx-field-value-static">
-                <strong>{monthlyPosting.payment_method_name}</strong>
-              </div>
-            </div>
+            <Field title="Payment Method Name" staticContent={true}>
+              <strong>{monthlyPosting.payment_method_name}</strong>
+            </Field>
           )}
-        </div>
+        </Fieldset>
+
         <div className="dx-fieldset">
           <div className="dx-fieldset-header">Interest</div>
           <div className="dx-field">
@@ -121,7 +100,93 @@ export const MonthlyPostDetail = ({
               </strong>
             </div>
           </div>
+          <div className="dx-field">
+            <div className="dx-field-label">Require Guarantor Approval</div>
+            <div className="dx-field-value-static">
+              <strong>
+                {monthlyPosting.guarantor_required == Assist.RESPONSE_YES
+                  ? "Yes"
+                  : "No"}
+              </strong>
+            </div>
+          </div>
         </div>
+        {monthlyPosting.stage_id >= 7 &&  <div className="dx-fieldset">
+          <div className="dx-fieldset-header">Proof of Payment</div>
+          <Field staticContent={true} title="POP Comments / Reference">
+            <strong>{monthlyPosting.pop_comments}</strong>
+          </Field>
+
+          <div className="dx-field">
+            <DataGrid
+              className={"dx-card wide-card"}
+              dataSource={[monthlyPosting.attachment]}
+              keyExpr={"id"}
+              noDataText={"No POP uploaded"}
+              showBorders={false}
+              focusedRowEnabled={false}
+              defaultFocusedRowIndex={0}
+              columnAutoWidth={true}
+              columnHidingEnabled={true}
+            >
+              <Paging defaultPageSize={10} />
+              <Pager showPageSizeSelector={true} showInfo={true} />
+              <Column dataField="id" caption="ID" hidingPriority={7}></Column>
+              <Column
+                dataField="name"
+                caption="Name"
+                hidingPriority={4}
+                cellRender={(e) => {
+                  return (
+                    <a
+                      href={encodeURI(`${AppInfo.apiUrl}static/${e.data.path}`)}
+                      target="_null"
+                    >
+                      {e.text}
+                    </a>
+                  );
+                }}
+              ></Column>
+              <Column
+                dataField="filesize"
+                caption="Size"
+                format={",##0.###"}
+                hidingPriority={4}
+              ></Column>
+              <Column
+                dataField="filetype"
+                caption="Type"
+                hidingPriority={5}
+              ></Column>
+            </DataGrid>
+          </div>
+        </div>}
+        {monthlyPosting.guarantor_required == Assist.RESPONSE_YES && (
+          <div className="dx-fieldset">
+            <div className="dx-fieldset-header">Guarantor</div>
+            <div className="dx-field">
+              <div className="dx-field-label">Name</div>
+              <div className="dx-field-value-static">
+                <strong>
+                  {monthlyPosting.member.guar_fname}{" "}
+                  {monthlyPosting.member.guar_lname}
+                </strong>
+              </div>
+            </div>
+            <div className="dx-field">
+              <div className="dx-field-label">Email</div>
+              <div className="dx-field-value-static">
+                <strong>{monthlyPosting.member.guar_email}</strong>
+              </div>
+            </div>
+            <div className="dx-field">
+              <div className="dx-field-label">Phone</div>
+              <div className="dx-field-value-static">
+                <strong>{monthlyPosting.member.guar_mobile}</strong>
+              </div>
+            </div>
+          </div>
+        )}
         <div className="dx-fieldset">
           <div className="dx-fieldset-header">Summary</div>
           <div className="dx-field">

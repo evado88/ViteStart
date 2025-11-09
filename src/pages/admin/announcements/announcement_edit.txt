@@ -32,7 +32,7 @@ import HtmlEditor, {
 } from "devextreme-react/html-editor";
 import AppInfo from "../../../classes/app-info";
 
-const MemberQueryEdit = () => {
+const AnnouncementEdit = () => {
   //user
   const navigate = useNavigate();
   const { user } = useAuth();
@@ -215,4 +215,4 @@ const MemberQueryEdit = () => {
   );
 };
 
-export default MemberQueryEdit;
+export default AnnouncementEdit;

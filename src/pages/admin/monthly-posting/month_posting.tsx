@@ -17,11 +17,9 @@ import AppInfo from "../../../classes/app-info";
 import ValidationSummary from "devextreme-react/validation-summary";
 import { MonthlyPostDetail } from "../../../components/monthlyPostDetail";
 import LoadIndicator from "devextreme-react/load-indicator";
-import DataGrid, {
-  Column,
-  Pager,
-  Paging,
-} from "devextreme-react/data-grid";
+import DataGrid, { Column, Pager, Paging } from "devextreme-react/data-grid";
+import { Field } from "../../../components/field";
+import { Fieldset } from "../../../components/fieldset";
 
 const AdminMonthlyPosting = ({ props }: any) => {
   //user
@@ -39,7 +37,6 @@ const AdminMonthlyPosting = ({ props }: any) => {
   const [stage, setStage] = useState(null);
   const [approvalLevels, setApprovalLevels] = useState(1);
 
-  const [requireGuarantorApproval, setRequireGuarantorApproval] = useState("");
   const [rejectionReason, setRejectionReason] = useState("");
   const [approvalComments, setApprovalComments] = useState("");
 
@@ -64,6 +61,7 @@ const AdminMonthlyPosting = ({ props }: any) => {
           setLoading(false);
           updateVaues(res);
           setMonthlyPosting(res);
+          console.log("rsssssssss", res);
           setError(false);
         })
         .catch((ex) => {
@@ -80,27 +78,24 @@ const AdminMonthlyPosting = ({ props }: any) => {
     setUploadedFiles([res]);
   };
 
-  const isGuarantorRequired = () => {
-    return requireGuarantorApproval == "No" ? 1 : 2;
-  };
-
   const onFormApproveSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
     //simulate process
+    const additional =
+      stage == "Awaiting POP Approval"
+        ? " This will post all transactions in the this monthly post"
+        : "";
+
     let result = confirm(
-      "Are you sure you want to approve this monthly posting?",
+      `Are you sure you want to approve this monthly posting?${additional}`,
       "Confirm changes"
     );
 
     result.then((dialogResult) => {
       if (dialogResult) {
-        const addGurantorApproval =
-          stage == "Submitted" ? isGuarantorRequired() : null;
-
         submitPostingReview(
-          2,
-          addGurantorApproval,
+          Assist.REVIEW_ACTION_APPROVE,
           approvalComments,
           "approved"
         );
@@ -120,7 +115,11 @@ const AdminMonthlyPosting = ({ props }: any) => {
     );
     result.then((dialogResult) => {
       if (dialogResult) {
-        submitPostingReview(1, 1, rejectionReason, "rejected");
+        submitPostingReview(
+          Assist.REVIEW_ACTION_REJECT,
+          rejectionReason,
+          "rejected"
+        );
       }
     });
   };
@@ -148,7 +147,6 @@ const AdminMonthlyPosting = ({ props }: any) => {
 
   const submitPostingReview = (
     action: number,
-    requireGuarantor: any,
     reviewComments: string,
     verb: string
   ) => {
@@ -157,7 +155,6 @@ const AdminMonthlyPosting = ({ props }: any) => {
     const postData = {
       user_id: user.userid,
       review_action: action,
-      require_guarantor_approval: requireGuarantor,
       comments: reviewComments,
     };
 
@@ -263,77 +260,68 @@ const AdminMonthlyPosting = ({ props }: any) => {
                   <form id="formMain" onSubmit={onFormApproveSubmit}>
                     <div className="dx-fieldset">
                       <div className="dx-fieldset-header">Submission</div>
-                      {stage == "Submitted" && (
+                      {stage == "Awaiting POP Approval" && (
+                        <Field
+                          staticContent={true}
+                          title="POP Comments / Reference"
+                        >
+                          <strong>{monthlyPosting.pop_comments}</strong>
+                        </Field>
+                      )}
+                      {stage == "Awaiting POP Approval" && (
                         <div className="dx-field">
-                          <div className="dx-field-label">
-                            Require Guarantor Approval
-                          </div>
-                          <SelectBox
-                            className="dx-field-value"
-                            dataSource={AppInfo.yesNoList}
-                            placeholder="Require Guarantor Approval"
-                            onValueChange={(value) =>
-                              setRequireGuarantorApproval(value)
-                            }
-                            validationMessagePosition="left"
-                            value={requireGuarantorApproval}
-                            disabled={error}
+                          <DataGrid
+                            className={"dx-card wide-card"}
+                            dataSource={[monthlyPosting.attachment]}
+                            keyExpr={"id"}
+                            noDataText={"No POP uploaded"}
+                            showBorders={false}
+                            focusedRowEnabled={false}
+                            defaultFocusedRowIndex={0}
+                            columnAutoWidth={true}
+                            columnHidingEnabled={true}
                           >
-                            <Validator validationGroup="Approve">
-                              <RequiredRule message="Require Guarantor Approval is required" />
-                            </Validator>
-                          </SelectBox>
+                            <Paging defaultPageSize={10} />
+                            <Pager
+                              showPageSizeSelector={true}
+                              showInfo={true}
+                            />
+                            <Column
+                              dataField="id"
+                              caption="ID"
+                              hidingPriority={7}
+                            ></Column>
+                            <Column
+                              dataField="name"
+                              caption="Name"
+                              hidingPriority={4}
+                              cellRender={(e) => {
+                                return (
+                                  <a
+                                    href={encodeURI(
+                                      `${AppInfo.apiUrl}static/${e.data.path}`
+                                    )}
+                                    target="_null"
+                                  >
+                                    {e.text}
+                                  </a>
+                                );
+                              }}
+                            ></Column>
+                            <Column
+                              dataField="filesize"
+                              caption="Size"
+                              format={",##0.###"}
+                              hidingPriority={4}
+                            ></Column>
+                            <Column
+                              dataField="filetype"
+                              caption="Type"
+                              hidingPriority={5}
+                            ></Column>
+                          </DataGrid>
                         </div>
                       )}
-                      {stage == "Awaiting POP Approval" && <div className="dx-field">
-                        <DataGrid
-                          className={"dx-card wide-card"}
-                          dataSource={uploadedFiles}
-                          keyExpr={"id"}
-                          noDataText={"No POP file uploaded"}
-                          showBorders={false}
-                          focusedRowEnabled={false}
-                          defaultFocusedRowIndex={0}
-                          columnAutoWidth={true}
-                          columnHidingEnabled={true}
-                        >
-                          <Paging defaultPageSize={10} />
-                          <Pager showPageSizeSelector={true} showInfo={true} />
-                          <Column
-                            dataField="id"
-                            caption="ID"
-                            hidingPriority={7}
-                          ></Column>
-                          <Column
-                            dataField="pop_filename"
-                            caption="Name"
-                            hidingPriority={4}
-                            cellRender={(e) => {
-                              return (
-                                <a
-                                  href={encodeURI(
-                                    `${AppInfo.apiUrl}static/${e.data.pop_filename}`
-                                  )}
-                                  target="_null"
-                                >
-                                  POP Uploaded (Click to view)
-                                </a>
-                              );
-                            }}
-                          ></Column>
-                          <Column
-                            dataField="pop_filesize"
-                            caption="Size"
-                            format={",##0.###"}
-                            hidingPriority={4}
-                          ></Column>
-                          <Column
-                            dataField="pop_filetype"
-                            caption="Type"
-                            hidingPriority={5}
-                          ></Column>
-                        </DataGrid>
-                      </div>}
                       <div className="dx-field">
                         <div className="dx-field-label">
                           Comments (Optional)
@@ -455,6 +443,58 @@ const AdminMonthlyPosting = ({ props }: any) => {
                       </div>
                     </div>
                   )}
+                  {monthlyPosting.guarantor_required == Assist.RESPONSE_YES && (
+                    <div className="dx-fieldset">
+                      <div className="dx-fieldset-header">
+                        Guarantor Approval
+                      </div>
+                      <div className="dx-field">
+                        <div className="dx-field-label">Date</div>
+                        <div className="dx-field-value-static">
+                          {" "}
+                          <strong>
+                            {Assist.getDateText(monthlyPosting.guarantor_at)}
+                          </strong>
+                        </div>
+                      </div>
+                      <div className="dx-field">
+                        <div className="dx-field-label">Reviewer</div>
+                        <div className="dx-field-value-static">
+                          <strong>{monthlyPosting.guarantor_by}</strong>
+                        </div>
+                      </div>
+                      <div className="dx-field">
+                        <div className="dx-field-label">Comments</div>
+                        <div className="dx-field-value-static">
+                          <strong>{monthlyPosting.guarantor_comments}</strong>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                  <div className="dx-fieldset">
+                    <div className="dx-fieldset-header">Proof of Payment Approval</div>
+                    <div className="dx-field">
+                      <div className="dx-field-label">Date</div>
+                      <div className="dx-field-value-static">
+                        {" "}
+                        <strong>
+                          {Assist.getDateText(monthlyPosting.pop_review_at)}
+                        </strong>
+                      </div>
+                    </div>
+                    <div className="dx-field">
+                      <div className="dx-field-label">Reviewer</div>
+                      <div className="dx-field-value-static">
+                        <strong>{monthlyPosting.pop_review_by}</strong>
+                      </div>
+                    </div>
+                    <div className="dx-field">
+                      <div className="dx-field-label">Comments</div>
+                      <div className="dx-field-value-static">
+                        <strong>{monthlyPosting.pop_review_comments}</strong>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </Card>
             )}

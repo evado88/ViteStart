@@ -94,7 +94,7 @@ const AdminMemberQueries = () => {
                 hidingPriority={5}
                 cellRender={(e) => {
                   return (
-                    <a href={`/admin/announcements/edit/${e.data.id}`}>
+                    <a href={`/admin/member-queries/view/${e.data.id}`}>
                       {e.text}
                     </a>
                   );

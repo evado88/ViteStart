@@ -1,36 +1,24 @@
-import React, { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { Titlebar } from "../../components/titlebar";
 import { Card } from "../../components/card";
 import { Row } from "../../components/row";
 import { Col } from "../../components/column";
-import SelectBox from "devextreme-react/select-box";
 import { TextBox } from "devextreme-react/text-box";
-import {
-  Validator,
-  RequiredRule,
-  AsyncRule,
-  CompareRule,
-  CustomRule,
-} from "devextreme-react/validator";
-import TextArea from "devextreme-react/text-area";
-import { NumberBox } from "devextreme-react/number-box";
+import { Validator, RequiredRule } from "devextreme-react/validator";
 import Button from "devextreme-react/button";
 import ValidationSummary from "devextreme-react/validation-summary";
 import { LoadPanel } from "devextreme-react/load-panel";
-import DateBox from "devextreme-react/date-box";
-import { useTheme } from "../../context/ThemeContext";
+import SelectBox from "devextreme-react/select-box";
 import { useAuth } from "../../context/AuthContext";
 import PageConfig from "../../classes/page-config";
 import Assist from "../../classes/assist";
-import axios from "axios";
 import { LoadIndicator } from "devextreme-react/load-indicator";
 import { useNavigate, useParams } from "react-router-dom";
-import HtmlEditor, {
-  Toolbar,
-  Item,
-  MediaResizing,
-} from "devextreme-react/html-editor";
+import HtmlEditor, { MediaResizing } from "devextreme-react/html-editor";
 import AppInfo from "../../classes/app-info";
+import FileUploader from "devextreme-react/file-uploader";
+import DataGrid, { Column, Pager, Paging } from "devextreme-react/data-grid";
+import { confirm } from "devextreme/ui/dialog";
 
 const MemberQueryEdit = () => {
   //user
@@ -43,20 +31,22 @@ const MemberQueryEdit = () => {
   const [categories, setCategories] = useState([]);
   const [category, setCategory] = useState(null);
   const [content, setContent] = useState(null);
-
-
+  const [uploadedFiles, setUploadedFiles] = useState([]);
+  const [attendanceList, setAttendanceList] = useState([]);
+  //config
+  const [config, setConfig] = useState(null);
 
   //service
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState(false);
 
-  const pageConfig = new PageConfig("Member Query", "", "", "Member Query", "");
+  const pageConfig = new PageConfig(`New Member Query`, "", "", "Member Query", "");
 
   pageConfig.id = eId == undefined ? 0 : Number(eId);
 
   useEffect(() => {
-    Assist.loadData("Categories", "member-query-types")
+    Assist.loadData("Categories", "member-query-types/list")
       .then((res) => {
         setCategories(res);
       })
@@ -66,45 +56,73 @@ const MemberQueryEdit = () => {
   }, []);
 
   useEffect(() => {
-    //only load if updating item
-    if (pageConfig.id != 0) {
-      setLoading(true);
-
-      setTimeout(() => {
-        Assist.loadData(pageConfig.Title, `member-queries/id/${pageConfig.id}`)
-          .then((data) => {
+    //only load config for new items to get approval levels and other data
+    setLoading(true);
+    setTimeout(() => {
+      Assist.loadData("Configuration", AppInfo.configApiUrl)
+        .then((data) => {
+          if (pageConfig.id != 0) {
+            Assist.loadData(
+              pageConfig.Single,
+              `member-queries/id/${eId}`
+            )
+              .then((postData) => {
+                setLoading(false);
+                updateVaues(postData, true);
+                setConfig(data);
+              })
+              .catch((message) => {
+                setLoading(false);
+                setError(true);
+                Assist.showMessage(message, "error");
+              });
+          } else {
             setLoading(false);
-            updateVaues(data, true);
+            setConfig(data);
             setError(false);
-          })
-          .catch((message) => {
-            setLoading(false);
-            setError(true);
-            Assist.showMessage(message, "error");
-          });
-      },  Assist.DEV_DELAY);
-    }
+          }
+        })
+        .catch((message) => {
+          setLoading(false);
+          setError(true);
+          Assist.showMessage(message, "error");
+        });
+    }, Assist.DEV_DELAY);
   }, []);
 
   const updateVaues = (data, isLoading) => {
     setTitle(data.title);
-    setCategory(isLoading ? data.type.id : data.type_id);
+    setCategory(data.type_id);
     setContent(data.content);
+    setUploadedFiles([data.attachment]);
   };
 
   const onFormSubmit = (e) => {
-    setSaving(true);
-
     e.preventDefault();
+
+    let result = confirm(
+      `Are you sure you want to submit this ${pageConfig.Single}?`,
+      "Confirm submission"
+    );
+    result.then((dialogResult) => {
+      if (dialogResult) {
+        submitArticle();
+      }
+    });
+  };
+
+  const submitArticle = () => {
+    setSaving(true);
 
     const postData = {
       user_id: user.userid,
-      type_id: category,
+      attachment_id: uploadedFiles[0].id,
       title: title,
+      type_id: category,
       content: content,
-      status_id: 1,
-      stage_id: 1,
-      approval_levels: 1,
+      status_id: Assist.STATUS_SUBMITTED,
+      stage_id: Assist.STAGE_SUBMITTED,
+      approval_levels: config.approval_levels,
     };
 
     setTimeout(() => {
@@ -118,23 +136,20 @@ const MemberQueryEdit = () => {
       )
         .then((data) => {
           setSaving(false);
-          updateVaues(data, false);
 
           Assist.showMessage(
-            `You have successfully updated the ${pageConfig.Title}!`,
+            `You have successfully submitted the ${pageConfig.Title}!`,
             "success"
           );
 
-          if (pageConfig.id == 0) {
-            //navigate
-            navigate(`/my/member-queries/edit/${data.id}`);
-          }
+          //navigate
+          navigate(`/my/member-queries/list`);
         })
         .catch((message) => {
           setSaving(false);
           Assist.showMessage(message, "error");
         });
-    },  Assist.DEV_DELAY);
+    }, Assist.DEV_DELAY);
   };
 
   const toolbar = useMemo(() => {
@@ -153,7 +168,7 @@ const MemberQueryEdit = () => {
         hideOnOutsideClick={false}
       />
       <Titlebar
-        title={`${pageConfig.verb()} ${pageConfig.Title}`}
+        title={`${pageConfig.Title}`}
         section={"Configuration"}
         icon={"gear"}
         url="#"
@@ -161,10 +176,10 @@ const MemberQueryEdit = () => {
       {/* end widget */}
 
       {/* chart start */}
-      <Row>
-        <Col sz={12} sm={12} lg={7}>
-          <Card title="Properties" showHeader={true}>
-            <form id="formMain" onSubmit={onFormSubmit}>
+      <form id="formMain" onSubmit={onFormSubmit}>
+        <Row>
+          <Col sz={12} sm={12} lg={7}>
+            <Card title="Properties" showHeader={true}>
               <div className="form">
                 <div className="dx-fieldset">
                   <div className="dx-fieldset-header">Title</div>
@@ -178,7 +193,7 @@ const MemberQueryEdit = () => {
                       onValueChange={(text) => setTitle(text)}
                     >
                       <Validator>
-                        <RequiredRule message="Title is required" />
+                        <RequiredRule message="Meeting title is required" />
                       </Validator>
                     </TextBox>
                   </div>
@@ -198,6 +213,91 @@ const MemberQueryEdit = () => {
                         <RequiredRule message="Category is required" />
                       </Validator>
                     </SelectBox>
+                  </div>
+                </div>
+                <div className="dx-fieldset">
+                  <div className="dx-fieldset-header">Attachment File</div>
+                  <div className="dx-field">
+                    <div className="dx-field-label">Upload File (5MB Max)</div>
+                    <FileUploader
+                      className="dx-field-value"
+                      multiple={false}
+                      accept="*"
+                      name="file"
+                      uploadMode="instantly"
+                      onUploaded={(e) => {
+                        if (e.request.status === 200) {
+                          const res = JSON.parse(e.request.response);
+
+                          console.log("runq", res);
+
+                          if (res === null) {
+                            Assist.showMessage(
+                              `The response from the server is invalid. Please try again`,
+                              "error"
+                            );
+                          } else {
+                            setUploadedFiles([res.attachment]);
+                            setAttendanceList(res.attendance);
+                          }
+                        } else {
+                          Assist.showMessage(
+                            `Unable to upload attachment file. Please try again`,
+                            "error"
+                          );
+                        }
+                      }}
+                      uploadUrl={`${AppInfo.apiUrl}attachments/create/type/${pageConfig.Single}/parent/0`}
+                    />
+                  </div>
+                  <div className="dx-field">
+                    <DataGrid
+                      className={"dx-card wide-card"}
+                      dataSource={uploadedFiles}
+                      keyExpr={"id"}
+                      noDataText={"No attachment file uploaded"}
+                      showBorders={false}
+                      focusedRowEnabled={false}
+                      defaultFocusedRowIndex={0}
+                      columnAutoWidth={true}
+                      columnHidingEnabled={true}
+                    >
+                      <Paging defaultPageSize={10} />
+                      <Pager showPageSizeSelector={true} showInfo={true} />
+                      <Column
+                        dataField="id"
+                        caption="ID"
+                        hidingPriority={7}
+                      ></Column>
+                      <Column
+                        dataField="name"
+                        caption="Name"
+                        hidingPriority={4}
+                        cellRender={(e) => {
+                          return (
+                            <a
+                              href={encodeURI(
+                                `${AppInfo.apiUrl}static/${e.data.path}`
+                              )}
+                              target="_null"
+                            >
+                              {e.text}
+                            </a>
+                          );
+                        }}
+                      ></Column>
+                      <Column
+                        dataField="filesize"
+                        caption="Size"
+                        format={",##0.###"}
+                        hidingPriority={4}
+                      ></Column>
+                      <Column
+                        dataField="filetype"
+                        caption="Type"
+                        hidingPriority={5}
+                      ></Column>
+                    </DataGrid>
                   </div>
                 </div>
                 <div className="dx-fieldset">
@@ -226,7 +326,7 @@ const MemberQueryEdit = () => {
                   <div className="dx-field-label"></div>
                   <Button
                     width="100%"
-                    type={saving ? "normal" : "default"}
+                    type={saving ? "normal" : "success"}
                     disabled={loading || error || saving}
                     useSubmitBehavior={true}
                   >
@@ -234,16 +334,14 @@ const MemberQueryEdit = () => {
                       className="button-indicator"
                       visible={saving}
                     />
-                    <span className="dx-button-text">
-                      {pageConfig.verb()} {pageConfig.Title}
-                    </span>
+                    <span className="dx-button-text">Submit for Review</span>
                   </Button>
                 </div>
               </div>
-            </form>
-          </Card>
-        </Col>
-      </Row>
+            </Card>
+          </Col>
+        </Row>
+      </form>
     </div>
   );
 };

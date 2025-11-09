@@ -20,7 +20,7 @@ import {
   TransactionSourcesPage,
   TransactionTypesPage,
   //Users
-  UsersPendingPage,
+  AdminMembersSubmittedPage,
   //My
   MonthlyPostingEditPage,
   MonthlyPostingsPage,
@@ -57,12 +57,21 @@ import {
   AdminPostingApprovedPeriodsPage,
   AdminPostingRejectedPeriodsPage,
   AdminMonthlySummaryPage,
-  AdminMonthlyPostingsDDACPage
+  AdminMonthlyPostingsDDACPage,
+  AdminMemberPage,
+  AdminMembersPage,
+  AdminAnnouncementPage,
+  AdminKnowledgebaseArticlePage,
+  MemberQueryPage,
+  AdminMemberQueryPage,
+
 } from "./pages";
 import { BrowserRouter } from "react-router-dom";
 import AttendanceTypes from "./pages/admin/dictionairies/attendance_types";
 import ReviewStages from "./pages/admin/dictionairies/review_stages";
 import AdminMonthlySubmittedPostings from "./pages/admin/monthly-posting/month_posting_submitted";
+import AdminMembersApproved from "./pages/admin/members/member_approved";
+import AdminMembersRejected from "./pages/admin/members/member_rejected";
 
 function App() {
   return (
@@ -105,14 +114,18 @@ function App() {
           <Route path="/admin/posting-periods/rejected" element={<AdminPostingRejectedPeriodsPage/>} />
           <Route path="/admin/posting-periods/view/:eId" element={<AdminPostingPeriodPage/>} />
           {/* Users */}
-          <Route path="/admin/users/pending" element={<UsersPendingPage/>} />
+          <Route path="/admin/members/list" element={<AdminMembersPage/>} />
+          <Route path="/admin/members/submitted" element={<AdminMembersSubmittedPage/>} />
+          <Route path="/admin/members/approved" element={<AdminMembersApproved/>} />
+          <Route path="/admin/members/rejected" element={<AdminMembersRejected/>} />
+          <Route path="/admin/members/view/:eId" element={<AdminMemberPage/>} />
           {/* Configuration */}
-          <Route path="/admin/config/sacco" element={<ConfigurationSACCOPage/>} />
-         {/* member queries */}     
+          <Route path="/admin/config/sacco" element={<ConfigurationSACCOPage/>} />  
           {/* announcements */}
           <Route path="/admin/announcements/list" element={<AdminAnnouncementsPage/>} />
           <Route path="/admin/announcements/edit/:eId" element={<AdminAnnouncementEditPage/>} />
           <Route path="/admin/announcements/add" element={<AdminAnnouncementEditPage/>} />
+          <Route path="/admin/announcements/view/:eId" element={<AdminAnnouncementPage/>} />
           {/* meetings */}
           <Route path="/admin/meetings/list" element={<AdminMeetingsPage/>} />
           <Route path="/admin/meetings/view/:eId" element={<AdminMeetingPage/>} />
@@ -120,13 +133,14 @@ function App() {
           <Route path="/admin/meetings/edit/:eId" element={<AdminMeetingsEditPage/>} />
           {/* member queries */}
           <Route path="/admin/member-queries/list" element={<AdminMemberQueriesPage/>} />
-          <Route path="/admin/member-queries/edit/:eId" element={<AdminMonthlyPostingPage/>} />
+          <Route path="/admin/member-queries/view/:eId" element={<AdminMemberQueryPage/>} />
           {/* knowledge-base */}
           <Route path="/admin/knowledge-base/category/list" element={<AdminKnowledgebaseCategoriesPage/>} />
           <Route path="/admin/knowledge-base/category/edit/:eId" element={<AdminKnowledgebaseCategoryEditPage/>} />
           <Route path="/admin/knowledge-base/category/add" element={<AdminKnowledgebaseCategoryEditPage/>} />
-          <Route path="/admin/nowledge-base/article/list" element={<AdminKnowledgebaseArticlesPage/>} />
+          <Route path="/admin/knowledge-base/article/list" element={<AdminKnowledgebaseArticlesPage/>} />
           <Route path="/admin/knowledge-base/article/edit/:eId" element={<AdminKnowledgebaseArticleEditPage/>} />
+          <Route path="/admin/knowledge-base/article/view/:eId" element={<AdminKnowledgebaseArticlePage/>} />
           <Route path="/admin/knowledge-base/article/add" element={<AdminKnowledgebaseArticleEditPage/>} />
           {/* MEMBER */}
           {/* My */}
@@ -141,6 +155,7 @@ function App() {
           <Route path="/my/member-queries/list" element={<MemberQueriesPage/>} />
           <Route path="/my/member-queries/submit" element={<MemberQuerySubmitPage/>} />
           <Route path="/my/member-queries/edit/:eId" element={<MemberQuerySubmitPage/>} />
+          <Route path="/my/member-queries/view/:eId" element={<MemberQueryPage/>} />
           <Route path="/my/savings/list" element={<MemberSavingsPage/>} />
           <Route path="/my/social-funds/list" element={<MemberSocialFundsPage/>} />
           <Route path="/my/penalties/list" element={<MemberPenaltiesPage/>} />

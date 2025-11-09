@@ -18,15 +18,16 @@ import { MeetingDetail } from "../../../components/meetingDetail";
 import { confirm } from "devextreme/ui/dialog";
 import TextArea from "devextreme-react/text-area";
 import ValidationSummary from "devextreme-react/validation-summary";
+import { MemberDetail } from "../../../components/memberDetail";
 
-const AdminMeeting = () => {
+const AdminMember = () => {
   //user
   const navigate = useNavigate();
   const { user } = useAuth();
   const { eId } = useParams(); // Destructure the parameter directly
 
   //posting
-  const [meetingDetail, setMeetingDetail] = useState<null | any>(null);
+  const [memberDetail, setMeetingDetail] = useState<null | any>(null);
   const [attendanceList, setAttendanceList] = useState([]);
 
   //service
@@ -42,11 +43,11 @@ const AdminMeeting = () => {
   const [rejectionReason, setRejectionReason] = useState("");
   const [approvalComments, setApprovalComments] = useState("");
   const pageConfig = new PageConfig(
-    `${status == "Approved" ? "View" : "Review"} Meeting`,
+    `${status == "Approved" ? "View" : "Review"} Member`,
     "",
     "",
-    "Meeting",
-    `meetings/review-update/${eId}`
+    "Member",
+    `members/review-update/${eId}`
   );
 
   pageConfig.id = eId == undefined ? 0 : Number(eId);
@@ -56,7 +57,7 @@ const AdminMeeting = () => {
     if (pageConfig.id != 0) {
       setLoading(true);
       setTimeout(() => {
-        Assist.loadData(pageConfig.Title, `meetings/id/${pageConfig.id}`)
+        Assist.loadData(pageConfig.Title, `members/id/${pageConfig.id}`)
           .then((data) => {
             setLoading(false);
             updateVaues(data);
@@ -78,7 +79,6 @@ const AdminMeeting = () => {
     setStage(res.stage.stage_name);
     setStageId(res.stage_id);
     setCreatedBy(res.created_by);
-    setAttendanceList(JSON.parse(res.attendanceList));
 
     setApprovalLevels(res.approval_levels);
   };
@@ -167,7 +167,7 @@ const AdminMeeting = () => {
             "success"
           );
 
-          navigate(`/admin/meetings/list`);
+          navigate(`/admin/members/list`);
         })
         .catch((message) => {
           setSaving(false);
@@ -178,73 +178,7 @@ const AdminMeeting = () => {
     }, Assist.DEV_DELAY);
   };
 
-  const unsubmitButton = () => {
-    if (stage == "Submitted" && status == "Submitted" && createdBy == user.sub) {
-      return (
-        <div className="dx-field">
-          <div className="dx-field-label"></div>
-          <div className="dx-field-value">
-            <Button
-              width="100%"
-              type={saving ? "normal" : "default"}
-              disabled={loading || error || saving}
-              onClick={() => onFormUnsubmit()}
-            >
-              <LoadIndicator className="button-indicator" visible={saving} />
-              <span className="dx-button-text">Unsubmit</span>
-            </Button>
-          </div>
-        </div>
-      );
-    } else {
-      return null;
-    }
-  };
 
-  const onFormUnsubmit = () => {
-    let result = confirm(
-      "Are you sure you want to unsubmit this meeting?",
-      "Confirm submission"
-    );
-    result.then((dialogResult) => {
-      if (dialogResult) {
-        unsubmitPosting();
-      }
-    });
-  };
-  const unsubmitPosting = () => {
-    setSaving(true);
-
-    const newData = {
-      status_id: Assist.STATUS_DRAFT,
-      stage_id: Assist.STAGE_AWAITING_SUBMISSION,
-    };
-    const postData = { ...meetingDetail, ...newData };
-
-    setTimeout(() => {
-      Assist.postPutData(
-        pageConfig.Title,
-        `meetings/update/${eId}`,
-        postData,
-        1
-      )
-        .then((data) => {
-          setSaving(false);
-
-          Assist.showMessage(
-            "You have successfully unsubmitted the meeting!",
-            "success"
-          );
-
-          navigate(`/admin/meetings/list`);
-        })
-        .catch((message) => {
-          setSaving(false);
-
-          Assist.showMessage(message, "error");
-        });
-    }, Assist.DEV_DELAY);
-  };
   return (
     <div id="pageRoot" className="page-content">
       <LoadPanel
@@ -258,8 +192,8 @@ const AdminMeeting = () => {
       />
       <Titlebar
         title={`${pageConfig.Title}`}
-        section={"Configuration"}
-        icon={"gear"}
+        section={"Onboarding"}
+        icon={"users"}
         url="#"
       ></Titlebar>
       {/* end widget */}
@@ -267,11 +201,9 @@ const AdminMeeting = () => {
       {/* chart start */}
       <Row>
         <Col sz={12} sm={12} lg={7}>
-          {meetingDetail != null && (
-            <MeetingDetail
-              meeting={meetingDetail}
-              attendanceList={attendanceList}
-              unsubmitComponent={unsubmitButton()}
+          {memberDetail != null && (
+            <MemberDetail
+              member={memberDetail}
             />
           )}
         </Col>
@@ -382,20 +314,20 @@ const AdminMeeting = () => {
                     <div className="dx-field-label">Date</div>
                     <div className="dx-field-value-static">
                       <strong>
-                        {Assist.getDateText(meetingDetail.review1_at)}
+                        {Assist.getDateText(memberDetail.review1_at)}
                       </strong>
                     </div>
                   </div>
                   <div className="dx-field">
                     <div className="dx-field-label">Reviewer</div>
                     <div className="dx-field-value-static">
-                      <strong>{meetingDetail.review1_by}</strong>
+                      <strong>{memberDetail.review1_by}</strong>
                     </div>
                   </div>
                   <div className="dx-field">
                     <div className="dx-field-label">Comments</div>
                     <div className="dx-field-value-static">
-                      <strong>{meetingDetail.review1_comments}</strong>
+                      <strong>{memberDetail.review1_comments}</strong>
                     </div>
                   </div>
                 </div>
@@ -407,20 +339,20 @@ const AdminMeeting = () => {
                       <div className="dx-field-value-static">
                         {" "}
                         <strong>
-                          {Assist.getDateText(meetingDetail.review2_at)}
+                          {Assist.getDateText(memberDetail.review2_at)}
                         </strong>
                       </div>
                     </div>
                     <div className="dx-field">
                       <div className="dx-field-label">Reviewer</div>
                       <div className="dx-field-value-static">
-                        <strong> {meetingDetail.review2_by}</strong>
+                        <strong> {memberDetail.review2_by}</strong>
                       </div>
                     </div>
                     <div className="dx-field">
                       <div className="dx-field-label">Comments</div>
                       <div className="dx-field-value-static">
-                        <strong>{meetingDetail.review2_comments}</strong>
+                        <strong>{memberDetail.review2_comments}</strong>
                       </div>
                     </div>
                   </div>
@@ -433,20 +365,20 @@ const AdminMeeting = () => {
                       <div className="dx-field-value-static">
                         {" "}
                         <strong>
-                          {Assist.getDateText(meetingDetail.review3_at)}
+                          {Assist.getDateText(memberDetail.review3_at)}
                         </strong>
                       </div>
                     </div>
                     <div className="dx-field">
                       <div className="dx-field-label">Reviewer</div>
                       <div className="dx-field-value-static">
-                        <strong>{meetingDetail.review3_by}</strong>
+                        <strong>{memberDetail.review3_by}</strong>
                       </div>
                     </div>
                     <div className="dx-field">
                       <div className="dx-field-label">Comments</div>
                       <div className="dx-field-value-static">
-                        <strong>{meetingDetail.review3_comments}</strong>
+                        <strong>{memberDetail.review3_comments}</strong>
                       </div>
                     </div>
                   </div>
@@ -460,4 +392,4 @@ const AdminMeeting = () => {
   );
 };
 
-export default AdminMeeting;
+export default AdminMember;

@@ -18,8 +18,12 @@ import DataGrid, {
 import Assist from "../../classes/assist";
 import PageConfig from "../../classes/page-config";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../../context/AuthContext";
 
 const MemberQueries = () => {
+  //user
+  const { user } = useAuth();
+  //other
   const navigate = useNavigate();
   const [data, setData] = useState([]);
   const [loadingText, setLoadingText] = useState("Loading data...");
@@ -27,7 +31,7 @@ const MemberQueries = () => {
 
   const pageConfig = new PageConfig(
     "Member Queries",
-    "member-queries/user/3",
+    `member-queries/user/${user.userid}`,
     "",
     "Member Query",
     ""
@@ -114,14 +118,23 @@ const MemberQueries = () => {
                 caption="Title"
                 dataType="date"
                 format={"dd MMMM yyy"}
-                hidingPriority={5}
+                hidingPriority={6}
                 cellRender={(e) => {
-                  return (
-                    <a href={`/my/member-queries/edit/${e.data.id}`}>
-                      {e.text}
-                    </a>
-                  );
+                  const getLink = () => {
+                    if (e.data.status.status_name == "Draft") {
+                      return `/my/member-queries/edit/${e.data.id}`;
+                    } else {
+                      return `/my/member-queries/view/${e.data.id}`;
+                    }
+                  };
+
+                  return <a href={getLink()}>{e.text}</a>;
                 }}
+              ></Column>
+              <Column
+                dataField="type.query_type_name"
+                caption="Type"
+                hidingPriority={5}
               ></Column>
               <Column
                 dataField="status.status_name"

@@ -18,6 +18,7 @@ import { MeetingDetail } from "../../../components/meetingDetail";
 import { confirm } from "devextreme/ui/dialog";
 import TextArea from "devextreme-react/text-area";
 import ValidationSummary from "devextreme-react/validation-summary";
+import { ArticleDetail } from "../../../components/articleDetail";
 
 const AdminMeeting = () => {
   //user
@@ -42,11 +43,11 @@ const AdminMeeting = () => {
   const [rejectionReason, setRejectionReason] = useState("");
   const [approvalComments, setApprovalComments] = useState("");
   const pageConfig = new PageConfig(
-    `${status == "Approved" ? "View" : "Review"} Meeting`,
+    `${status == "Approved" ? "View" : "Review"} Article`,
     "",
     "",
-    "Meeting",
-    `meetings/review-update/${eId}`
+    "Article",
+    `knowledge-base-articles/review-update/${eId}`
   );
 
   pageConfig.id = eId == undefined ? 0 : Number(eId);
@@ -56,7 +57,7 @@ const AdminMeeting = () => {
     if (pageConfig.id != 0) {
       setLoading(true);
       setTimeout(() => {
-        Assist.loadData(pageConfig.Title, `meetings/id/${pageConfig.id}`)
+        Assist.loadData(pageConfig.Title, `knowledge-base-articles/id/${pageConfig.id}`)
           .then((data) => {
             setLoading(false);
             updateVaues(data);
@@ -78,7 +79,6 @@ const AdminMeeting = () => {
     setStage(res.stage.stage_name);
     setStageId(res.stage_id);
     setCreatedBy(res.created_by);
-    setAttendanceList(JSON.parse(res.attendanceList));
 
     setApprovalLevels(res.approval_levels);
   };
@@ -167,7 +167,7 @@ const AdminMeeting = () => {
             "success"
           );
 
-          navigate(`/admin/meetings/list`);
+          navigate(`/admin/knowledge-base/article/list`);
         })
         .catch((message) => {
           setSaving(false);
@@ -203,7 +203,7 @@ const AdminMeeting = () => {
 
   const onFormUnsubmit = () => {
     let result = confirm(
-      "Are you sure you want to unsubmit this meeting?",
+      `Are you sure you want to unsubmit this ${pageConfig.Single}?`,
       "Confirm submission"
     );
     result.then((dialogResult) => {
@@ -224,7 +224,7 @@ const AdminMeeting = () => {
     setTimeout(() => {
       Assist.postPutData(
         pageConfig.Title,
-        `meetings/update/${eId}`,
+        `knowledge-base-articles/update/${eId}`,
         postData,
         1
       )
@@ -232,11 +232,11 @@ const AdminMeeting = () => {
           setSaving(false);
 
           Assist.showMessage(
-            "You have successfully unsubmitted the meeting!",
+            `You have successfully unsubmitted the ${pageConfig.Single}!`,
             "success"
           );
 
-          navigate(`/admin/meetings/list`);
+          navigate(`/admin/knowledge-base/article/list`);
         })
         .catch((message) => {
           setSaving(false);
@@ -268,9 +268,8 @@ const AdminMeeting = () => {
       <Row>
         <Col sz={12} sm={12} lg={7}>
           {meetingDetail != null && (
-            <MeetingDetail
-              meeting={meetingDetail}
-              attendanceList={attendanceList}
+            <ArticleDetail
+              article={meetingDetail}
               unsubmitComponent={unsubmitButton()}
             />
           )}

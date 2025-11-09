@@ -49,6 +49,9 @@ class Assist {
   static RESPONSE_NO = 1;
   static RESPONSE_YES = 2;
 
+  static NOTIFY_WAITING = 1;
+  static NOTIFY_SENT = 2;
+
   static firebaseConfig = {
     apiKey: "AIzaSyCbH2wyJmcqTQU3gIl_raQwr0AmVuG_bhA",
     authDomain: "myzambia-5c62c.firebaseapp.com",
@@ -58,6 +61,41 @@ class Assist {
     messagingSenderId: "878075714362",
     appId: "1:878075714362:web:55575ac3647ff7d3cd0e03",
   };
+
+  static getAgeUTC(mysqlDateString: string) {
+    // Parse the date strictly as UTC
+    const birthDate = new Date(mysqlDateString);
+    if (isNaN(birthDate.getTime())) {
+      return -1;
+    }
+
+    const now = new Date();
+
+    // Compute age based on UTC parts, not local parts
+    let age = now.getUTCFullYear() - birthDate.getUTCFullYear();
+
+    const hasHadBirthdayThisYear =
+      now.getUTCMonth() > birthDate.getUTCMonth() ||
+      (now.getUTCMonth() === birthDate.getUTCMonth() &&
+        now.getUTCDate() >= birthDate.getUTCDate());
+
+    if (!hasHadBirthdayThisYear) {
+      age -= 1;
+    }
+
+    return age;
+  }
+
+  static formatDateLong(date: string | Date): string {
+    const d = new Date(date);
+    if (isNaN(d.getTime())) return "";
+
+    return new Intl.DateTimeFormat("en-GB", {
+      day: "2-digit",
+      month: "long",
+      year: "numeric",
+    }).format(d);
+  }
 
   // Currency formatting
   static currencyFormatter = new Intl.NumberFormat("en-US", {
@@ -87,6 +125,13 @@ class Assist {
       const date = new Date(mysqlDate);
       return date.toString();
     }
+  }
+
+  static toMySQLFormat(date: Date, includeTime: boolean) {
+    return date
+      .toISOString()
+      .slice(0, includeTime ? 19 : 10)
+      .replace("T", " ");
   }
 
   static getMonthName(monthNumber: number): string {

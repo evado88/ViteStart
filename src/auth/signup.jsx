@@ -6,7 +6,7 @@ import {
   RequiredRule,
   EmailRule,
   AsyncRule,
-  CompareRule
+  CustomRule,
 } from "devextreme-react/validator";
 import ValidationSummary from "devextreme-react/validation-summary";
 import { LoadIndicator } from "devextreme-react/load-indicator";
@@ -17,59 +17,100 @@ import axios from "axios";
 import { DateBox } from "devextreme-react";
 import SelectBox from "devextreme-react/select-box";
 import { v4 as uuidv4 } from "uuid";
+import Assist from "../classes/assist";
+import { LoadPanel } from "devextreme-react/load-panel";
+import PageConfig from "../classes/page-config";
+import { confirm } from "devextreme/ui/dialog";
+import AppInfo from "../classes/app-info";
 
 const Signup = () => {
   const { user, login } = useAuth();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
-
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState(false);
+  //config
+  const [config, setConfig] = useState(null);
   //personal details
-  const [firstname, setFirstname] = useState("Jane");
-  const [lastname, setLastname] = useState("Doe");
-  const [dateOfBirth, setDateOfBirth] = useState("1987-09-25");
-  const [mobile2FA, setMobile2FA] = useState("+260978989259");
-  const [mobileMoney, setMobileMoney] = useState("+260977123002");
+  const [firstname, setFirstname] = useState(null);
+  const [lastname, setLastname] = useState(null);
+  const [dateOfBirthText, setDateOfBirthText] = useState(null);
+  const [dateOfBirthValue, setDateOfBirthValue] = useState(null);
+  const [mobile2FA, setMobile2FA] = useState(null);
+  const [mobileMoney, setMobileMoney] = useState(null);
 
   const [otp, setOTP] = useState("");
   const [code, setCode] = useState("");
 
-  const [email, setEmail] = useState("jane2003@company.co.zm");
-  const [idType, setIdType] = useState("NRC");
-  const [idNo, setIdNo] = useState("147780/10/1");
+  const [email, setEmail] = useState(null);
+  const [idType, setIdType] = useState(null);
+  const [idNo, setIdNo] = useState(null);
   //guarantor details
-  const [guarantorFirstname, setGuarantorFirstname] = useState("Joe");
-  const [guarantorLastname, setGuarantorLastname] = useState("Doha");
-  const [guarantorMobile, setGuarantorMobile] = useState("+260977123003");
-  const [guarantorEmail, setGuarantorEmail] = useState("joe@company.co.zm");
+  const [guarantorFirstname, setGuarantorFirstname] = useState(null);
+  const [guarantorLastname, setGuarantorLastname] = useState(null);
+  const [guarantorMobile, setGuarantorMobile] = useState(null);
+  const [guarantorEmail, setGuarantorEmail] = useState(null);
 
   //bank details
-  const [bank, setBank] = useState("ABSA");
-  const [branch, setBranch] = useState("Lusaka Business Centre");
-  const [accountName, setAccountName] = useState("Jane Doe");
-  const [accountNumber, setAccountNumber] = useState("016-2469782");
+  const [bank, setBank] = useState(null);
+  const [branchName, setBranchName] = useState(null);
+  const [branchCode, setBranchCode] = useState(null);
+  const [accountName, setAccountName] = useState(null);
+  const [accountNumber, setAccountNumber] = useState(null);
 
-  const [password, setPassword] = useState("12345677");
-  const [confirmPassword, setConfirmPassword] = useState("12345678");
+  const [password, setPassword] = useState(null);
+  const [confirmPassword, setConfirmPassword] = useState(null);
 
   const [stage, setStage] = useState(1);
+
+  const pageConfig = new PageConfig(
+    `New Account`,
+    AppInfo.configApiUrl,
+    "",
+    "Meeting",
+    "members/register"
+  );
 
   useEffect(() => {
     // Redirect if already logged in
     if (user) {
       navigate("/");
+    } else {
+      setLoading(true);
+      setTimeout(() => {
+        Assist.loadData("Configuration", pageConfig.Url)
+          .then((data) => {
+            setLoading(false);
+            setConfig(data);
+            setError(false);
+          })
+          .catch((message) => {
+            setLoading(false);
+            setError(true);
+            Assist.showMessage(message, "error");
+          });
+      }, Assist.DEV_DELAY);
     }
-  }, [user, navigate]);
+  }, []);
 
   const onFormSubmitPersonalDetails = async (e) => {
     e.preventDefault();
 
-    setStage(2);
+    setLoading(true);
+    setTimeout(() => {
+      setLoading(false);
+      setStage(2);
+    }, Assist.UX_DELAY);
   };
 
   const onFormSubmitID = async (e) => {
     e.preventDefault();
 
-    setStage(3);
+    setLoading(true);
+    setTimeout(() => {
+      setLoading(false);
+      setStage(3);
+    }, Assist.UX_DELAY);
   };
 
   const onFormSubmitMobile = async (e) => {
@@ -82,20 +123,32 @@ const Signup = () => {
     e.preventDefault();
 
     if (parseInt(code) === otp) {
-      setStage(5);
+      setLoading(true);
+      setTimeout(() => {
+        setLoading(false);
+        setStage(5);
+      }, Assist.UX_DELAY);
     }
   };
 
   const onFormSubmitGuarantor = async (e) => {
     e.preventDefault();
 
-    setStage(6);
+    setLoading(true);
+    setTimeout(() => {
+      setLoading(false);
+      setStage(6);
+    }, Assist.UX_DELAY);
   };
 
   const onFormSubmitBank = async (e) => {
     e.preventDefault();
 
-    setStage(7);
+    setLoading(true);
+    setTimeout(() => {
+      setLoading(false);
+      setStage(7);
+    }, Assist.UX_DELAY);
   };
   const showMessge = (msg, type = "info") => {
     notify(
@@ -116,8 +169,12 @@ const Signup = () => {
 
     const state = 3;
 
-    if (state === 3) {
-      setStage(4);
+    if (state === 4) {
+      setLoading(true);
+      setTimeout(() => {
+        setLoading(false);
+        setStage(4);
+      }, Assist.UX_DELAY);
       return;
     }
 
@@ -155,6 +212,7 @@ const Signup = () => {
       ],
     };
 
+    setLoading(true);
     axios
       .post(
         "https://xk85nl.api.infobip.com/whatsapp/1/message/template",
@@ -162,7 +220,7 @@ const Signup = () => {
         config
       )
       .then((res) => {
-        console.log("res", res);
+        setLoading(false);
 
         if (res.status === 200) {
           console.log("OTP Success:", res.data);
@@ -180,7 +238,7 @@ const Signup = () => {
         }
       })
       .catch((err) => {
-        console.error("Error posting data:", err);
+        setLoading(false);
         showMessge(
           `Error sending OTP to ${mobile2FA}. Please try again`,
           "error"
@@ -189,113 +247,113 @@ const Signup = () => {
   };
 
   const onFormSubmit = async (e) => {
-    if (confirmPassword !== password) {
-      showMessge(
-        `The provided passwords do not match. Please try again`,
-        "warn"
-      );
-      return;
-    }
-
-    setLoading(true);
-
     e.preventDefault();
 
+    let result = confirm(
+      "Are you sure you want to register an account with provided details?",
+      "Confirm submission"
+    );
+    result.then((dialogResult) => {
+      if (dialogResult) {
+        registerAccount();
+      }
+    });
+  };
+
+  const registerAccount = () => {
+    setSaving(true);
+
     const postData = {
+      // id
+      // personal details
       fname: firstname,
       lname: lastname,
-      mobile1: mobile2FA,
-      mobile2: mobileMoney,
+      dob: dateOfBirthValue,
+      // id
       id_type: idType,
       id_no: idNo,
+      id_attachment: 2,
+      // contact details
       email: email,
-      dob: dateOfBirth,
+      mobile1: mobile2FA,
+      mobile2: mobileMoney,
+      // guarantor
       guar_fname: guarantorFirstname,
       guar_lname: guarantorLastname,
       guar_mobile: guarantorMobile,
       guar_email: guarantorEmail,
+      // banking
       bank_name: bank,
-      bank_branch: branch,
-      bank_acc_name: accountName,
-      bank_acc_no: accountNumber,
+      bank_branch_name: branchName,
+      bank_branch_code: branchCode,
+      bank_account_name: accountName,
+      bank_account_no: accountNumber,
+      //account
       password: password,
+      // approval
+      status_id: Assist.STATUS_SUBMITTED,
+      stage_id: Assist.STAGE_SUBMITTED,
+      approval_levels: config.approval_levels,
     };
 
-    axios
-      .post("http://localhost:8700/users/register", postData)
-      .then((res) => {
-        setLoading(false);
-        if (res.status === 200) {
-          console.log("Success:", res.data);
-          showMessge("You have successfully submitted the form!", "success");
-        } else {
-          console.warn("Unexpected status:", res.status);
-          showMessge(
-            `Error submiting the form and wrong status: ${res.status}`,
+    console.log("xxx", postData);
+
+    setTimeout(() => {
+      Assist.postPutData(pageConfig.Title, pageConfig.updateUrl, postData, 0)
+        .then((data) => {
+          setSaving(false);
+
+          Assist.showMessage(
+            `You have successfully registered an account on the member portal!`,
             "success"
           );
-        }
-      })
-      .catch((err) => {
-        setLoading(false);
-        console.error("Error posting data:", err);
 
-        if (err.response.data != null) {
-          if (Array.isArray(err.response.data.detail)) {
-            const field = err.response.data.detail[0].loc[1];
-            showMessge(
-              `Error submiting the form field: ${err.response.data.detail[0].msg}: ${field}`,
-              "error"
-            );
-          } else {
-            showMessge(
-              `Error submiting the form single: ${err.response.data.detail}`,
-              "error"
-            );
-          }
-        } else {
-          showMessge(`Error submiting the form general`, "error");
-        }
-      });
+          //navigate
+          navigate(`/login`);
+        })
+        .catch((message) => {
+          setSaving(false);
+          console.log(message);
+          Assist.showMessage(message, "error");
+        });
+    }, Assist.DEV_DELAY);
   };
-
   const setPreviousStage = (e) => {
     e.preventDefault();
     setStage((prev) => prev - 1);
   };
 
   function asyncValidation(params) {
-    console.log("async", params.value);
-
-    return new Promise(function (resolve) {
+    return new Promise(function (resolve, reject) {
       setTimeout(function () {
-        const existingUsernames = ["admin", "user123", "jane@company.co.zm"];
-        const isUsernameTaken = existingUsernames.includes(params.value);
-        resolve(!isUsernameTaken); // Resolve with true if valid, false if invalid
-      },  Assist.developmentDelay); // Simulate a 1-second delay for the server call
+        Assist.loadData("User", `users/email/${encodeURI(params.value)}`)
+          .then((res) => {
+            if (res.length == 0) {
+              resolve();
+            } else {
+              reject("The email address has already been registered");
+            }
+          })
+          .catch((ex) => {
+            reject("Could not perform validation. Please try again later.");
+          });
+      }, Assist.DEV_DELAY); // Simulate a 1-second delay for the server call
     });
   }
 
-  function asyncOTPValidation(params) {
-    console.log("async otp", params.value);
-
-    return new Promise(function (resolve) {
-      resolve(parseInt(code) === otp); // Resolve with true if valid, false if invalid
-      // Simulate a 1-second delay for the server call
-    });
-  }
-
-  function asyncEmailVerification(params) {
-    console.log("async email", params.value);
-
-    return new Promise(function (resolve) {
-      resolve(password === confirmPassword); // Resolve with true if valid, false if invalid
-    });
-  }
   return (
     <section className="signup">
       <div className="container">
         <div className="signup-content">
+          <LoadPanel
+            shadingColor="rgba(0,0,0,0.4)"
+            position={{ of: "#pageRoot" }}
+            visible={loading}
+            showIndicator={true}
+            shading={true}
+            showPane={true}
+            hideOnOutsideClick={false}
+          />
           <div className="signup-form">
             <h2 className="form-title">Sign up</h2>
 
@@ -305,7 +363,9 @@ const Signup = () => {
                 id="formPersonalDetails"
                 onSubmit={onFormSubmitPersonalDetails}
               >
-                <p>Please provide your names and date of birth</p>
+                {config != null && (
+                  <p>Please provide your names and date of birth </p>
+                )}
                 <div className="dx-fieldset">
                   <div className="dx-fieldset-header">Personal Details</div>
                   <div className="dx-field">
@@ -341,13 +401,22 @@ const Signup = () => {
                     <DateBox
                       className="dx-field-value"
                       placeholder="Date of birth"
-                      displayFormat={"dd MMM yyy"}
-                      value={dateOfBirth}
-                      onValueChange={(text) => setDateOfBirth(text)}
+                      displayFormat={"dd MMMM yyy"}
+                      value={dateOfBirthText}
+                      onValueChange={(text) => {
+                        setDateOfBirthText(text);
+                        setDateOfBirthValue(Assist.toMySQLFormat(text, false))
+                      }}
                     >
                       {" "}
                       <Validator>
                         <RequiredRule message="Date of birth is required" />
+                        <CustomRule
+                          validationCallback={(e) =>
+                            Assist.getAgeUTC(e.value) >= 18
+                          }
+                          message={`You must be 18 years or older to register`}
+                        />
                       </Validator>
                     </DateBox>
                   </div>
@@ -363,10 +432,7 @@ const Signup = () => {
                       <Validator>
                         <RequiredRule message="Email is required" />
                         <EmailRule message="Email is invalid" />
-                        <AsyncRule
-                          message="Email is already registered"
-                          validationCallback={asyncValidation}
-                        />
+                        <AsyncRule validationCallback={asyncValidation} />
                       </Validator>
                     </TextBox>
                   </div>
@@ -459,7 +525,7 @@ const Signup = () => {
                     <div className="dx-field-label">Verification</div>
                     <TextBox
                       className="dx-field-value"
-                      placeholder="Mobile1"
+                      placeholder="Mobile i.e. 260977123456"
                       value={mobile2FA}
                       onValueChange={(text) => setMobile2FA(text)}
                     >
@@ -473,7 +539,7 @@ const Signup = () => {
                     <div className="dx-field-label">Mobile money</div>
                     <TextBox
                       className="dx-field-value"
-                      placeholder="Mobile 2"
+                      placeholder="Mobile i.e. 260977123456"
                       value={mobileMoney}
                       onValueChange={(text) => setMobileMoney(text)}
                     >
@@ -524,9 +590,9 @@ const Signup = () => {
                       {" "}
                       <Validator>
                         <RequiredRule message="OTP code required" />
-                        <AsyncRule
-                          message="The provided OTP is not correct"
-                          validationCallback={asyncOTPValidation}
+                        <CustomRule
+                          validationCallback={(e) => e.value == otp}
+                          message={`The specified code is not valid. Please try again`}
                         />
                       </Validator>
                     </TextBox>
@@ -592,7 +658,7 @@ const Signup = () => {
                     <div className="dx-field-label">Mobile</div>
                     <TextBox
                       className="dx-field-value"
-                      placeholder="First name"
+                      placeholder="Mobile i.e. 260977123456"
                       value={guarantorMobile}
                       onValueChange={(text) => setGuarantorMobile(text)}
                     />
@@ -601,7 +667,7 @@ const Signup = () => {
                     <div className="dx-field-label">Email</div>
                     <TextBox
                       className="dx-field-value"
-                      placeholder="First name"
+                      placeholder="Email"
                       value={guarantorEmail}
                       onValueChange={(text) => setGuarantorEmail(text)}
                     >
@@ -652,16 +718,30 @@ const Signup = () => {
                     </TextBox>
                   </div>
                   <div className="dx-field">
-                    <div className="dx-field-label">Branch</div>
+                    <div className="dx-field-label">Branch name</div>
                     <TextBox
                       className="dx-field-value"
-                      placeholder="Branch"
-                      value={branch}
-                      onValueChange={(text) => setBranch(text)}
+                      placeholder="Branch name"
+                      value={branchName}
+                      onValueChange={(text) => setBranchName(text)}
                     >
                       {" "}
                       <Validator>
                         <RequiredRule message="Branch name is required" />
+                      </Validator>
+                    </TextBox>
+                  </div>
+                  <div className="dx-field">
+                    <div className="dx-field-label">Branch code</div>
+                    <TextBox
+                      className="dx-field-value"
+                      placeholder="Branch code"
+                      value={branchCode}
+                      onValueChange={(text) => setBranchCode(text)}
+                    >
+                      {" "}
+                      <Validator>
+                        <RequiredRule message="Branch code is required" />
                       </Validator>
                     </TextBox>
                   </div>
@@ -737,6 +817,10 @@ const Signup = () => {
                       {" "}
                       <Validator>
                         <RequiredRule message="Bank name is required" />
+                        <CustomRule
+                          validationCallback={(e) => e.value == confirmPassword}
+                          message={`Password does not match confirm password`}
+                        />
                       </Validator>
                     </TextBox>
                   </div>
@@ -752,9 +836,9 @@ const Signup = () => {
                       {" "}
                       <Validator>
                         <RequiredRule message="Please confirm password" />
-                        <AsyncRule
-                          message="The provided passwords do not match"
-                          validationCallback={asyncEmailVerification}
+                        <CustomRule
+                          validationCallback={(e) => e.value == password}
+                          message={`Confirm password does not match password`}
                         />
                       </Validator>
                     </TextBox>
@@ -766,8 +850,8 @@ const Signup = () => {
                 <div className="form-group form-button">
                   <Button
                     width="100%"
-                    type={loading ? "normal" : "default"}
-                    disabled={loading}
+                    type={saving ? "normal" : "default"}
+                    disabled={saving}
                     useSubmitBehavior={true}
                   >
                     <LoadIndicator

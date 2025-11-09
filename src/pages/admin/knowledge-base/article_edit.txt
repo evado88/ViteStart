@@ -32,7 +32,7 @@ import HtmlEditor, {
 } from "devextreme-react/html-editor";
 import AppInfo from "../../../classes/app-info";
 
-const MemberQueryEdit = () => {
+const KnowledgebaseArticleEdit = () => {
   //user
   const navigate = useNavigate();
   const { user } = useAuth();
@@ -40,6 +40,8 @@ const MemberQueryEdit = () => {
 
   //posting
   const [title, setTitle] = useState(null);
+  const [categories, setCategories] = useState([]);
+  const [category, setCategory] = useState(null);
   const [content, setContent] = useState(null);
 
   //service
@@ -47,9 +49,19 @@ const MemberQueryEdit = () => {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState(false);
 
-  const pageConfig = new PageConfig("Announcement", "", "", "Announcement", "");
+  const pageConfig = new PageConfig("Article", "", "", "Article", "");
 
   pageConfig.id = eId == undefined ? 0 : Number(eId);
+
+  useEffect(() => {
+    Assist.loadData("Categories", "knowledge-base-categories/list")
+      .then((res) => {
+        setCategories(res);
+      })
+      .catch((ex) => {
+        Assist.showMessage(ex.Message, "error");
+      });
+  }, []);
 
   useEffect(() => {
     //only load if updating item
@@ -57,10 +69,13 @@ const MemberQueryEdit = () => {
       setLoading(true);
 
       setTimeout(() => {
-        Assist.loadData(pageConfig.Title, `announcements/id/${pageConfig.id}`)
+        Assist.loadData(
+          pageConfig.Title,
+          `knowledge-base-articles/id/${pageConfig.id}`
+        )
           .then((data) => {
             setLoading(false);
-            updateVaues(data);
+            updateVaues(data, true);
             setError(false);
           })
           .catch((message) => {
@@ -72,8 +87,10 @@ const MemberQueryEdit = () => {
     }
   }, []);
 
-  const updateVaues = (data) => {
+  const updateVaues = (data, isLoading) => {
+    console.log("data", data);
     setTitle(data.title);
+    setCategory(isLoading ? data.category.id : data.cat_id);
     setContent(data.content);
   };
 
@@ -83,6 +100,7 @@ const MemberQueryEdit = () => {
     e.preventDefault();
 
     const postData = {
+      cat_id: category,
       user_id: user.userid,
       title: title,
       content: content,
@@ -95,14 +113,14 @@ const MemberQueryEdit = () => {
       Assist.postPutData(
         pageConfig.Title,
         pageConfig.id == 0
-          ? `announcements/create`
-          : `announcements/update/${pageConfig.id}`,
+          ? `knowledge-base-articles/create`
+          : `knowledge-base-articles/update/${pageConfig.id}`,
         postData,
         pageConfig.id
       )
         .then((data) => {
           setSaving(false);
-          updateVaues(data);
+          updateVaues(data, false);
 
           Assist.showMessage(
             `You have successfully updated the ${pageConfig.Title}!`,
@@ -111,7 +129,7 @@ const MemberQueryEdit = () => {
 
           if (pageConfig.id == 0) {
             //navigate
-            navigate(`/admin/announcements/edit/${data.id}`);
+            navigate(`/admin/knowledge-base/article/${data.id}`);
           }
         })
         .catch((message) => {
@@ -153,18 +171,35 @@ const MemberQueryEdit = () => {
                 <div className="dx-fieldset">
                   <div className="dx-fieldset-header">Title</div>
                   <div className="dx-field">
-                    <div className="dx-field-label">Announcement Title</div>
+                    <div className="dx-field-label">Title</div>
                     <TextBox
                       className="dx-field-value"
-                      placeholder="Announcement Title"
+                      placeholder="Title"
                       value={title}
                       disabled={error || saving}
                       onValueChange={(text) => setTitle(text)}
                     >
                       <Validator>
-                        <RequiredRule message="Announcement title is required" />
+                        <RequiredRule message="Title is required" />
                       </Validator>
                     </TextBox>
+                  </div>
+                  <div className="dx-field">
+                    <div className="dx-field-label">Category</div>
+                    <SelectBox
+                      className="dx-field-value"
+                      dataSource={categories}
+                      onValueChange={(value) => setCategory(value)}
+                      validationMessagePosition="left"
+                      value={category}
+                      disabled={error}
+                      valueExpr={"id"}
+                      displayExpr={"cat_name"}
+                    >
+                      <Validator>
+                        <RequiredRule message="Category is required" />
+                      </Validator>
+                    </SelectBox>
                   </div>
                 </div>
                 <div className="dx-fieldset">
@@ -215,4 +250,4 @@ const MemberQueryEdit = () => {
   );
 };
 
-export default MemberQueryEdit;
+export default KnowledgebaseArticleEdit;

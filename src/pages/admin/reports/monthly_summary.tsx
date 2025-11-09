@@ -172,7 +172,7 @@ const MonthlySummary = () => {
       ></Titlebar>
       {/* start widget */}
       <Row>
-        <Col xl={2} lg={6}>
+        <Col xl={3} lg={3}>
           <Ticker
             title={"Savings"}
             value={savings}
@@ -180,7 +180,7 @@ const MonthlySummary = () => {
             percent={80}
           ></Ticker>
         </Col>
-        <Col xl={2} lg={6}>
+        <Col xl={3} lg={3}>
           <Ticker
             title={"Loans"}
             value={loan}
@@ -188,23 +188,39 @@ const MonthlySummary = () => {
             percent={40}
           ></Ticker>
         </Col>
-        <Col xl={2} lg={6}>
+        <Col xl={3} lg={3}>
           <Ticker
-            title={"Interest"}
+            title={"Interest Charged"}
             value={interest}
             color={"orange"}
             percent={70}
           ></Ticker>
         </Col>
-        <Col xl={2} lg={6}>
+        <Col xl={3} lg={3}>
           <Ticker
-            title={"Penalty"}
+            title={"Interest Paid"}
+            value={interest}
+            color={"orange"}
+            percent={70}
+          ></Ticker>
+        </Col>
+        <Col xl={3} lg={3}>
+          <Ticker
+            title={"Penalty Charged"}
             value={penalty}
             color={"red"}
             percent={90}
           ></Ticker>
         </Col>
-        <Col xl={2} lg={6}>
+        <Col xl={3} lg={3}>
+          <Ticker
+            title={"Penalty Paid"}
+            value={penalty}
+            color={"red"}
+            percent={90}
+          ></Ticker>
+        </Col>
+        <Col xl={3} lg={3}>
           <Ticker
             title={"Share"}
             value={share}
@@ -212,7 +228,7 @@ const MonthlySummary = () => {
             percent={90}
           ></Ticker>
         </Col>
-        <Col xl={2} lg={6}>
+        <Col xl={3} lg={3}>
           <Ticker
             title={"Social"}
             value={social}
@@ -237,7 +253,6 @@ const MonthlySummary = () => {
                 rowHeaderLayout="tree"
                 dataSource={dataSource}
               >
-             
                 <Scrolling mode="virtual" />
               </PivotGrid>
             </Card>

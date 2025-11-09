@@ -37,6 +37,7 @@ const MyMonthlyPosting = ({ props }: any) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [attachmentID, setAttachmentID] = useState<Number | null>(null);
   const [uploadedFiles, setUploadedFiles] = useState<any | null>([]);
 
   const [status, setStatus] = useState(null);
@@ -99,23 +100,31 @@ const MyMonthlyPosting = ({ props }: any) => {
     e.preventDefault();
 
     if (uploadedFiles.length == 0) {
-      Assist.showMessage("Please upload a valid POP file first ", "error");
-      return;
+      //simulate process
+      let result = confirm(
+        "Are you sure you want to submit the POP without attaching a file?",
+        "Confirm changes"
+      );
+
+      result.then((dialogResult) => {
+        if (dialogResult) {
+          submitPostingReview(Assist.REVIEW_ACTION_APPROVE, approvalComments);
+        }
+      });
+    } else {
+      //simulate process
+      let result = confirm(
+        "Are you sure you want to submit the POP for this monthly posting?",
+        "Confirm changes"
+      );
+
+      result.then((dialogResult) => {
+        if (dialogResult) {
+          submitPostingReview(Assist.REVIEW_ACTION_APPROVE, approvalComments);
+        }
+      });
     }
 
-    //simulate process
-    let result = confirm(
-      "Are you sure you want to submit the POP for this monthly posting?",
-      "Confirm changes"
-    );
-
-    result.then((dialogResult) => {
-      if (dialogResult) {
-        submitPostingReview(2, approvalComments);
-      }
-    });
-
-    return;
   };
 
   const submitPostingReview = (action: number, reviewComments: string) => {
@@ -125,6 +134,7 @@ const MyMonthlyPosting = ({ props }: any) => {
       user_id: user.userid,
       review_action: action,
       comments: reviewComments,
+      attachment_id: attachmentID,
     };
 
     setTimeout(() => {
@@ -201,7 +211,8 @@ const MyMonthlyPosting = ({ props }: any) => {
                                   "error"
                                 );
                               } else {
-                                setUploadedFiles([res]);
+                                setUploadedFiles([res.attachment]);
+                                setAttachmentID(res.attachment.id);
                               }
                             } else {
                               Assist.showMessage(
@@ -210,75 +221,74 @@ const MyMonthlyPosting = ({ props }: any) => {
                               );
                             }
                           }}
-                          uploadUrl={`${AppInfo.apiUrl}monthly-posting/upload-pop/${eId}`}
+                          uploadUrl={`${AppInfo.apiUrl}attachments/create/type/monthlyPost/parent/${eId}`}
                         />
                       </div>
-                      {stage == "" && (
-                        <div className="dx-field">
-                          <DataGrid
-                            className={"dx-card wide-card"}
-                            dataSource={uploadedFiles}
-                            keyExpr={"id"}
-                            noDataText={"No POP file uploaded"}
-                            showBorders={false}
-                            focusedRowEnabled={false}
-                            defaultFocusedRowIndex={0}
-                            columnAutoWidth={true}
-                            columnHidingEnabled={true}
-                          >
-                            <Paging defaultPageSize={10} />
-                            <Pager
-                              showPageSizeSelector={true}
-                              showInfo={true}
-                            />
-                            <Column
-                              dataField="id"
-                              caption="ID"
-                              hidingPriority={7}
-                            ></Column>
-                            <Column
-                              dataField="pop_filename"
-                              caption="Name"
-                              hidingPriority={4}
-                              cellRender={(e) => {
-                                return (
-                                  <a
-                                    href={encodeURI(
-                                      `${AppInfo.apiUrl}static/${e.data.pop_filename}`
-                                    )}
-                                    target="_null"
-                                  >
-                                    POP Uploaded (Click to view)
-                                  </a>
-                                );
-                              }}
-                            ></Column>
-                            <Column
-                              dataField="pop_filesize"
-                              caption="Size"
-                              format={",##0.###"}
-                              hidingPriority={4}
-                            ></Column>
-                            <Column
-                              dataField="pop_filetype"
-                              caption="Type"
-                              hidingPriority={5}
-                            ></Column>
-                          </DataGrid>
-                        </div>
-                      )}
+                      <div className="dx-field">
+                        <DataGrid
+                          className={"dx-card wide-card"}
+                          dataSource={uploadedFiles}
+                          keyExpr={"id"}
+                          noDataText={"No POP uploaded"}
+                          showBorders={false}
+                          focusedRowEnabled={false}
+                          defaultFocusedRowIndex={0}
+                          columnAutoWidth={true}
+                          columnHidingEnabled={true}
+                        >
+                          <Paging defaultPageSize={10} />
+                          <Pager showPageSizeSelector={true} showInfo={true} />
+                          <Column
+                            dataField="id"
+                            caption="ID"
+                            hidingPriority={7}
+                          ></Column>
+                          <Column
+                            dataField="name"
+                            caption="Name"
+                            hidingPriority={4}
+                            cellRender={(e) => {
+                              return (
+                                <a
+                                  href={encodeURI(
+                                    `${AppInfo.apiUrl}static/${e.data.path}`
+                                  )}
+                                  target="_null"
+                                >
+                                  {e.text}
+                                </a>
+                              );
+                            }}
+                          ></Column>
+                          <Column
+                            dataField="filesize"
+                            caption="Size"
+                            format={",##0.###"}
+                            hidingPriority={4}
+                          ></Column>
+                          <Column
+                            dataField="filetype"
+                            caption="Type"
+                            hidingPriority={5}
+                          ></Column>
+                        </DataGrid>
+                      </div>
                       <div className="dx-field">
                         <div className="dx-field-label">
-                          Comments (Optional)
+                          Comments / Reference
                         </div>
                         <TextArea
                           className="dx-field-value"
-                          placeholder="Comments"
+                          placeholder="Comments / Reference"
                           disabled={error || saving || saving}
                           height={80}
                           value={approvalComments}
                           onValueChange={(value) => setApprovalComments(value)}
-                        ></TextArea>
+                        >
+                          <Validator validationGroup="Approve">
+                            <RequiredRule message="Comments / reference required" />
+                          </Validator>
+                        </TextArea>
                       </div>
                     </div>
 

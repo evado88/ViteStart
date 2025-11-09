@@ -114,11 +114,15 @@ const AdminKnowledgebaseArticles = () => {
                 caption="Title"
                 hidingPriority={5}
                 cellRender={(e) => {
-                  return (
-                    <a href={`/admin/knowledge-base/article/edit/${e.data.id}`}>
-                      {e.text}
-                    </a>
-                  );
+                  const getLink = () => {
+                    if (e.data.status.status_name == "Draft") {
+                      return `/admin/knowledge-base/article/edit/${e.data.id}`;
+                    } else {
+                      return `/admin/knowledge-base/article/view/${e.data.id}`;
+                    }
+                  };
+
+                  return <a href={getLink()}>{e.text}</a>;
                 }}
               ></Column>
               <Column

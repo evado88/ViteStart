@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useMemo } from "react";
-import { Titlebar } from "../../../components/titlebar";
-import { Card } from "../../../components/card";
-import { Row } from "../../../components/row";
-import { Col } from "../../../components/column";
+import { Titlebar } from "../../components/titlebar";
+import { Card } from "../../components/card";
+import { Row } from "../../components/row";
+import { Col } from "../../components/column";
 import SelectBox from "devextreme-react/select-box";
 import { TextBox } from "devextreme-react/text-box";
 import {
@@ -18,10 +18,10 @@ import Button from "devextreme-react/button";
 import ValidationSummary from "devextreme-react/validation-summary";
 import { LoadPanel } from "devextreme-react/load-panel";
 import DateBox from "devextreme-react/date-box";
-import { useTheme } from "../../../context/ThemeContext";
-import { useAuth } from "../../../context/AuthContext";
-import PageConfig from "../../../classes/page-config";
-import Assist from "../../../classes/assist";
+import { useTheme } from "../../context/ThemeContext";
+import { useAuth } from "../../context/AuthContext";
+import PageConfig from "../../classes/page-config";
+import Assist from "../../classes/assist";
 import axios from "axios";
 import { LoadIndicator } from "devextreme-react/load-indicator";
 import { useNavigate, useParams } from "react-router-dom";
@@ -30,7 +30,7 @@ import HtmlEditor, {
   Item,
   MediaResizing,
 } from "devextreme-react/html-editor";
-import AppInfo from "../../../classes/app-info";
+import AppInfo from "../../classes/app-info";
 
 const MemberQueryEdit = () => {
   //user
@@ -40,16 +40,30 @@ const MemberQueryEdit = () => {
 
   //posting
   const [title, setTitle] = useState(null);
+  const [categories, setCategories] = useState([]);
+  const [category, setCategory] = useState(null);
   const [content, setContent] = useState(null);
+
+
 
   //service
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState(false);
 
-  const pageConfig = new PageConfig("Announcement", "", "", "Announcement", "");
+  const pageConfig = new PageConfig("Member Query", "", "", "Member Query", "");
 
   pageConfig.id = eId == undefined ? 0 : Number(eId);
+
+  useEffect(() => {
+    Assist.loadData("Categories", "member-query-types")
+      .then((res) => {
+        setCategories(res);
+      })
+      .catch((ex) => {
+        Assist.showMessage(ex.Message, "error");
+      });
+  }, []);
 
   useEffect(() => {
     //only load if updating item
@@ -57,10 +71,10 @@ const MemberQueryEdit = () => {
       setLoading(true);
 
       setTimeout(() => {
-        Assist.loadData(pageConfig.Title, `announcements/id/${pageConfig.id}`)
+        Assist.loadData(pageConfig.Title, `member-queries/id/${pageConfig.id}`)
           .then((data) => {
             setLoading(false);
-            updateVaues(data);
+            updateVaues(data, true);
             setError(false);
           })
           .catch((message) => {
@@ -72,8 +86,9 @@ const MemberQueryEdit = () => {
     }
   }, []);
 
-  const updateVaues = (data) => {
+  const updateVaues = (data, isLoading) => {
     setTitle(data.title);
+    setCategory(isLoading ? data.type.id : data.type_id);
     setContent(data.content);
   };
 
@@ -84,6 +99,7 @@ const MemberQueryEdit = () => {
 
     const postData = {
       user_id: user.userid,
+      type_id: category,
       title: title,
       content: content,
       status_id: 1,
@@ -95,14 +111,14 @@ const MemberQueryEdit = () => {
       Assist.postPutData(
         pageConfig.Title,
         pageConfig.id == 0
-          ? `announcements/create`
-          : `announcements/update/${pageConfig.id}`,
+          ? `member-queries/create`
+          : `member-queries/update/${pageConfig.id}`,
         postData,
         pageConfig.id
       )
         .then((data) => {
           setSaving(false);
-          updateVaues(data);
+          updateVaues(data, false);
 
           Assist.showMessage(
             `You have successfully updated the ${pageConfig.Title}!`,
@@ -111,7 +127,7 @@ const MemberQueryEdit = () => {
 
           if (pageConfig.id == 0) {
             //navigate
-            navigate(`/admin/announcements/edit/${data.id}`);
+            navigate(`/my/member-queries/edit/${data.id}`);
           }
         })
         .catch((message) => {
@@ -153,18 +169,35 @@ const MemberQueryEdit = () => {
                 <div className="dx-fieldset">
                   <div className="dx-fieldset-header">Title</div>
                   <div className="dx-field">
-                    <div className="dx-field-label">Announcement Title</div>
+                    <div className="dx-field-label">Title</div>
                     <TextBox
                       className="dx-field-value"
-                      placeholder="Announcement Title"
+                      placeholder="Title"
                       value={title}
                       disabled={error || saving}
                       onValueChange={(text) => setTitle(text)}
                     >
                       <Validator>
-                        <RequiredRule message="Announcement title is required" />
+                        <RequiredRule message="Title is required" />
                       </Validator>
                     </TextBox>
+                  </div>
+                  <div className="dx-field">
+                    <div className="dx-field-label">Category</div>
+                    <SelectBox
+                      className="dx-field-value"
+                      dataSource={categories}
+                      onValueChange={(value) => setCategory(value)}
+                      validationMessagePosition="left"
+                      value={category}
+                      disabled={error}
+                      valueExpr={"id"}
+                      displayExpr={"query_type_name"}
+                    >
+                      <Validator>
+                        <RequiredRule message="Category is required" />
+                      </Validator>
+                    </SelectBox>
                   </div>
                 </div>
                 <div className="dx-fieldset">

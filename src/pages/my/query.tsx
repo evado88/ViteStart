@@ -1,25 +1,27 @@
 import { useState, useEffect } from "react";
-import { Titlebar } from "../../../components/titlebar";
-import { Card } from "../../../components/card";
-import { Row } from "../../../components/row";
-import { Col } from "../../../components/column";
+import { Titlebar } from "../../components/titlebar";
+import { Card } from "../../components/card";
+import { Row } from "../../components/row";
+import { Col } from "../../components/column";
 import { Validator, RequiredRule } from "devextreme-react/validator";
 import Button from "devextreme-react/button";
 import { LoadPanel } from "devextreme-react/load-panel";
-import { useAuth } from "../../../context/AuthContext";
-import PageConfig from "../../../classes/page-config";
-import Assist from "../../../classes/assist";
+import { useAuth } from "../../context/AuthContext";
+import PageConfig from "../../classes/page-config";
+import Assist from "../../classes/assist";
 import { LoadIndicator } from "devextreme-react/load-indicator";
 import { useNavigate, useParams } from "react-router-dom";
 import HtmlEditor, { MediaResizing } from "devextreme-react/html-editor";
-import AppInfo from "../../../classes/app-info";
+import AppInfo from "../../classes/app-info";
 import DataGrid, { Column, Pager, Paging } from "devextreme-react/data-grid";
-import { MeetingDetail } from "../../../components/meetingDetail";
+import { MeetingDetail } from "../../components/meetingDetail";
 import { confirm } from "devextreme/ui/dialog";
 import TextArea from "devextreme-react/text-area";
 import ValidationSummary from "devextreme-react/validation-summary";
+import { ArticleDetail } from "../../components/articleDetail";
+import { MemberQueryDetail } from "../../components/memberQueryDetail";
 
-const AdminMeeting = () => {
+const MyMemberQuery = () => {
   //user
   const navigate = useNavigate();
   const { user } = useAuth();
@@ -27,7 +29,6 @@ const AdminMeeting = () => {
 
   //posting
   const [meetingDetail, setMeetingDetail] = useState<null | any>(null);
-  const [attendanceList, setAttendanceList] = useState([]);
 
   //service
   const [loading, setLoading] = useState(false);
@@ -39,14 +40,12 @@ const AdminMeeting = () => {
   const [createdBy, setCreatedBy] = useState("");
   const [approvalLevels, setApprovalLevels] = useState(1);
 
-  const [rejectionReason, setRejectionReason] = useState("");
-  const [approvalComments, setApprovalComments] = useState("");
   const pageConfig = new PageConfig(
-    `${status == "Approved" ? "View" : "Review"} Meeting`,
+    `View Member Query`,
     "",
     "",
-    "Meeting",
-    `meetings/review-update/${eId}`
+    "Member Query",
+    `member-queries/review-update/${eId}`
   );
 
   pageConfig.id = eId == undefined ? 0 : Number(eId);
@@ -56,7 +55,7 @@ const AdminMeeting = () => {
     if (pageConfig.id != 0) {
       setLoading(true);
       setTimeout(() => {
-        Assist.loadData(pageConfig.Title, `meetings/id/${pageConfig.id}`)
+        Assist.loadData(pageConfig.Title, `member-queries/id/${pageConfig.id}`)
           .then((data) => {
             setLoading(false);
             updateVaues(data);
@@ -78,104 +77,12 @@ const AdminMeeting = () => {
     setStage(res.stage.stage_name);
     setStageId(res.stage_id);
     setCreatedBy(res.created_by);
-    setAttendanceList(JSON.parse(res.attendanceList));
 
     setApprovalLevels(res.approval_levels);
   };
 
   const isReviewed = () => {
     return status == "Approved" || status == "Rejected";
-  };
-
-  const requiresApproval = () => {
-    if (status == "Submitted") {
-      if (
-        stage == "Submitted" ||
-        stage == "Primary Approval" ||
-        stage == "Secondary Approval"
-      ) {
-        return true;
-      } else {
-        return false;
-      }
-    } else {
-      return false;
-    }
-  };
-
-  const onFormApproveSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-
-    //simulate process
-    let result = confirm(
-      `Are you sure you want to approve this ${pageConfig.Single}?`,
-      "Confirm changes"
-    );
-
-    result.then((dialogResult) => {
-      if (dialogResult) {
-        submitPostingReview(
-          Assist.REVIEW_ACTION_APPROVE,
-          approvalComments,
-          "approved"
-        );
-      }
-    });
-
-    return;
-  };
-  const onFormRejectSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-
-    //simulate process
-
-    let result = confirm(
-      `Are you sure you want to reject this ${pageConfig.Single}?`,
-      "Confirm changes"
-    );
-    result.then((dialogResult) => {
-      if (dialogResult) {
-        submitPostingReview(
-          Assist.REVIEW_ACTION_REJECT,
-          rejectionReason,
-          "rejected"
-        );
-      }
-    });
-  };
-
-  const submitPostingReview = (
-    action: number,
-    reviewComments: string,
-    verb: string
-  ) => {
-    setSaving(true);
-
-    const postData = {
-      user_id: user.userid,
-      review_action: action,
-      comments: reviewComments,
-    };
-
-    setTimeout(() => {
-      Assist.postPutData(pageConfig.Title, pageConfig.updateUrl, postData, 1)
-        .then((data) => {
-          setSaving(false);
-
-          Assist.showMessage(
-            `You have successfully ${verb} the ${pageConfig.Single}!`,
-            "success"
-          );
-
-          navigate(`/admin/meetings/list`);
-        })
-        .catch((message) => {
-          setSaving(false);
-          console.log(message);
-
-          Assist.showMessage(message, "error");
-        });
-    }, Assist.DEV_DELAY);
   };
 
   const unsubmitButton = () => {
@@ -203,7 +110,7 @@ const AdminMeeting = () => {
 
   const onFormUnsubmit = () => {
     let result = confirm(
-      "Are you sure you want to unsubmit this meeting?",
+      `Are you sure you want to unsubmit this ${pageConfig.Single}?`,
       "Confirm submission"
     );
     result.then((dialogResult) => {
@@ -224,7 +131,7 @@ const AdminMeeting = () => {
     setTimeout(() => {
       Assist.postPutData(
         pageConfig.Title,
-        `meetings/update/${eId}`,
+        `member-queries/update/${eId}`,
         postData,
         1
       )
@@ -232,11 +139,11 @@ const AdminMeeting = () => {
           setSaving(false);
 
           Assist.showMessage(
-            "You have successfully unsubmitted the meeting!",
+            `You have successfully unsubmitted the ${pageConfig.Single}!`,
             "success"
           );
 
-          navigate(`/admin/meetings/list`);
+          navigate(`/my/member-queries/list`);
         })
         .catch((message) => {
           setSaving(false);
@@ -268,111 +175,13 @@ const AdminMeeting = () => {
       <Row>
         <Col sz={12} sm={12} lg={7}>
           {meetingDetail != null && (
-            <MeetingDetail
-              meeting={meetingDetail}
-              attendanceList={attendanceList}
+            <MemberQueryDetail
+              memberQuery={meetingDetail}
               unsubmitComponent={unsubmitButton()}
             />
           )}
         </Col>
         <Col sz={12} sm={12} lg={5}>
-          {requiresApproval() && (
-            <Card title="Rejection" showHeader={true}>
-              <div className="form">
-                <form id="formMain" onSubmit={onFormRejectSubmit}>
-                  <div className="dx-fieldset">
-                    <div className="dx-fieldset-header">Submission</div>
-                    <div className="dx-field">
-                      <div className="dx-field-label">Rejection Reason</div>
-                      <TextArea
-                        className="dx-field-value"
-                        placeholder="Rejection Reason"
-                        disabled={error || saving || saving}
-                        height={80}
-                        value={rejectionReason}
-                        onValueChange={(value) => setRejectionReason(value)}
-                      >
-                        <Validator validationGroup="Reject">
-                          <RequiredRule message="Rejection reason required" />
-                        </Validator>
-                      </TextArea>
-                    </div>
-                  </div>
-                  <div className="dx-field">
-                    <ValidationSummary
-                      id="summaryReject"
-                      validationGroup="Reject"
-                    />
-                  </div>
-                  <div className="dx-field">
-                    <div className="dx-field-label"></div>
-                    <Button
-                      width="100%"
-                      useSubmitBehavior={true}
-                      validationGroup="Reject"
-                      type={saving ? "normal" : "danger"}
-                      disabled={loading || error || saving}
-                    >
-                      <LoadIndicator
-                        className="button-indicator"
-                        visible={saving}
-                      />
-                      <span className="dx-button-text">
-                        Reject {pageConfig.Single}
-                      </span>
-                    </Button>
-                  </div>
-                </form>
-              </div>
-            </Card>
-          )}
-          {requiresApproval() && (
-            <Card title="Approval" showHeader={true}>
-              <div className="form">
-                <form id="formMain" onSubmit={onFormApproveSubmit}>
-                  <div className="dx-fieldset">
-                    <div className="dx-fieldset-header">Submission</div>
-                    <div className="dx-field">
-                      <div className="dx-field-label">Comments (Optional)</div>
-                      <TextArea
-                        className="dx-field-value"
-                        placeholder="Comments"
-                        disabled={error || saving || saving}
-                        height={80}
-                        value={approvalComments}
-                        onValueChange={(value) => setApprovalComments(value)}
-                      ></TextArea>
-                    </div>
-                  </div>
-
-                  <div className="dx-field">
-                    <ValidationSummary
-                      id="summaryApprove"
-                      validationGroup="Approve"
-                    />
-                  </div>
-                  <div className="dx-field">
-                    <div className="dx-field-label"></div>
-                    <Button
-                      width="100%"
-                      useSubmitBehavior={true}
-                      type={saving ? "normal" : "success"}
-                      disabled={loading || error || saving}
-                      validationGroup="Approve"
-                    >
-                      <LoadIndicator
-                        className="button-indicator"
-                        visible={saving}
-                      />
-                      <span className="dx-button-text">
-                        Approve {pageConfig.Single}
-                      </span>
-                    </Button>
-                  </div>
-                </form>
-              </div>
-            </Card>
-          )}
           {isReviewed() && (
             <Card title="Review" showHeader={true}>
               <div className="form">
@@ -460,4 +269,4 @@ const AdminMeeting = () => {
   );
 };
 
-export default AdminMeeting;
+export default MyMemberQuery;

@@ -38,20 +38,25 @@ export { default as AdminMonthlyPostingPage } from './admin/monthly-posting/mont
 //annoucement
 export { default as AdminAnnouncementsPage } from './admin/announcements/announcement_list'
 export { default as AdminAnnouncementEditPage } from './admin/announcements/announcement_edit'
-
+export { default as AdminAnnouncementPage } from './admin/announcements/announcement'
 //meetings
 export { default as AdminMeetingsPage } from './admin/meetings/meeting_list'
 export { default as AdminMeetingsEditPage } from './admin/meetings/meeting_edit'
 export { default as AdminMeetingPage } from './admin/meetings/meeting'
 //member queries
 export { default as AdminMemberQueriesPage } from './admin/member-queries/query_list'
+export { default as AdminMemberQueryPage } from './admin/member-queries/query'
 //knowledge-base
 export { default as AdminKnowledgebaseArticlesPage } from './admin/knowledge-base/article_list'
+export { default as AdminKnowledgebaseArticlePage } from './admin/knowledge-base/article'
 export { default as AdminKnowledgebaseArticleEditPage } from './admin/knowledge-base/article_edit'
 export { default as AdminKnowledgebaseCategoriesPage } from './admin/knowledge-base/category_list'
 export { default as AdminKnowledgebaseCategoryEditPage } from './admin/knowledge-base/category_edit'
 //users
-export { default as UsersPendingPage} from './admin/users/users_pending'
+export { default as AdminMembersPage} from './admin/members/member_list'
+export { default as AdminMembersSubmittedPage} from './admin/members/member_submitted'
+export { default as AdminMemberPage} from './admin/members/member'
+
 //config
 export { default as ConfigurationSACCOPage} from './admin/configuration/sacco'
 
@@ -67,6 +72,7 @@ export { default as MonthlyPostingApprovalsPage} from './my/month_posting_approv
 export { default as MonthlyPostingPOPUploadPage} from './my/month_posting_pop_upload'
 export { default as MemberQueriesPage} from './my/query_list'
 export { default as MemberQuerySubmitPage} from './my/query_edit'
+export { default as MemberQueryPage} from './my/query'
 export { default as MemberSavingsPage} from './my/savings'
 export { default as MemberSocialFundsPage} from './my/social'
 export { default as MemberPenaltiesPage} from './my/penalties'

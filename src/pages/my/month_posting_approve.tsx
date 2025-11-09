@@ -71,7 +71,7 @@ const MyMonthlyPosting = ({ props }: any) => {
     setStatus(res.status.status_name);
     setStage(res.stage.stage_name);
     setApprovalLevels(res.approval_levels);
-    setGuarantorUserId(res.guarantor_user_id);
+    setGuarantorUserId(res.guarantor_user_email);
     setName(`${res.user.fname} ${res.user.lname}`)
   };
 
@@ -88,7 +88,7 @@ const MyMonthlyPosting = ({ props }: any) => {
       if (dialogResult) {
 
         submitPostingReview(
-          2,
+          Assist.RESPONSE_YES,
           approvalComments,
           "approved"
         );
@@ -118,7 +118,7 @@ const MyMonthlyPosting = ({ props }: any) => {
     if (
       status == "Submitted" &&
       stage == "Guarantor Approval" &&
-      guarantorUserId == user.userid
+      guarantorUserId == user.sub
     ) {
       return true;
     } else {

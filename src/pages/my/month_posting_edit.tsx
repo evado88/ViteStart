@@ -60,7 +60,7 @@ const PostMonthly = () => {
   const [postingPayNumber, setPostingPayNumber] = useState<string | null>(null);
   const [postingPayName, setPostingPayName] = useState<string | null>(null);
 
-  const [postingMemberId, setPostingMemberId] = useState<string | null>(null);
+  const [postingMember, setPostingMember] = useState<any | null>(null);
   //interest payment - minimum 10% if not yet paid on loan
   const [postingLoanInterestPayment, setPostingLoanInterestPayment] = useState<
     number | null
@@ -109,6 +109,7 @@ const PostMonthly = () => {
 
   //new loan loan application
   const [loanSavingsRatio, setLoanSavingsRatio] = useState<number | null>(null);
+  const [loanApplyLimit, setLoanApplyLimit] = useState<number | null>(null);
 
   //additional
   const [latePostingFee, setLatePostingFee] = useState<number | null>(null);
@@ -211,7 +212,7 @@ const PostMonthly = () => {
     }
   };
   const updateVaues = (data: any) => {
-    setPostingMemberId(data.member.id);
+    setPostingMember(data.member);
     setPostingPayNumber(data.member.mobile2);
     setPostingPayName(`${data.member.fname} ${data.member.lname}`);
 
@@ -228,6 +229,7 @@ const PostMonthly = () => {
     setLoanInterestPercent(data.config.loan_interest_rate);
     setLoanPaymentPercent(data.config.loan_repayment_rate);
     setLoanSavingsRatio(data.config.loan_saving_ratio);
+    setLoanApplyLimit(data.config.loan_apply_limit);
 
     setLatePostingFee(data.config.late_posting_rate);
     setLateMeetingFee(data.config.late_meeting_rate);
@@ -317,9 +319,12 @@ const PostMonthly = () => {
     const totalContributions = getContributions();
 
     const postData = {
+      type: 1,
       user_id: user.userid,
-      member_id: postingMemberId,
+      user_action_id: user.userid,
+      member_id: postingMember.id,
       period_id: periodId,
+      attendance_id: Assist.NOTIFY_WAITING,
       date: `${postingDate} ${Assist.getCurrentTime()}`,
       saving: postingSavings,
       shares: postingShares,
@@ -328,6 +333,10 @@ const PostMonthly = () => {
       loan_interest: postingLoanInterestPayment,
       loan_month_repayment: postingLoanMonthPayment,
       loan_application: postingLoanApplication,
+      guarantor_required: requireGuarantor()
+        ? Assist.RESPONSE_YES
+        : Assist.RESPONSE_NO,
+      guarantor_user_email:postingMember.guar_email,
       late_post_penalty: islatePosting() ? latePostingFee : 0,
       status_id: Assist.STATUS_SUBMITTED,
       approval_levels: approvalLevels,
@@ -375,6 +384,11 @@ const PostMonthly = () => {
     } else {
       return false;
     }
+  };
+
+  const requireGuarantor = () => {
+    //check if loan requires guarantor
+    return postingLoanApplication! >= loanApplyLimit!;
   };
 
   const isMobileMoney = () => {
@@ -907,6 +921,20 @@ const PostMonthly = () => {
                         </strong>
                       </div>
                     )}
+                  </div>
+                  <div className="dx-field">
+                    <div className="dx-field-label">
+                      Require Guarantor Approval
+                    </div>
+                    <div className="dx-field-value-static">
+                      <strong>
+                        {requireGuarantor()
+                          ? `Yes, ${Assist.formatCurrency(
+                              loanApplyLimit!
+                            )} and above`
+                          : "No"}
+                      </strong>
+                    </div>
                   </div>
                 </div>
                 <div className="dx-fieldset">
