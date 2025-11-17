@@ -138,7 +138,7 @@ const MyDashboard = () => {
       ></Titlebar>
       {/* start widget */}
       <Row>
-        <Col xl={3} lg={3}>
+        <Col xl={2} lg={2}>
           <Ticker
             title={"Savings"}
             value={savings}
@@ -146,7 +146,7 @@ const MyDashboard = () => {
             percent={80}
           ></Ticker>
         </Col>
-        <Col xl={3} lg={3}>
+        <Col xl={2} lg={2}>
           <Ticker
             title={"Loans"}
             value={loan}
@@ -154,39 +154,23 @@ const MyDashboard = () => {
             percent={40}
           ></Ticker>
         </Col>
-        <Col xl={3} lg={3}>
+        <Col xl={2} lg={2}>
           <Ticker
-            title={"Interest Charged"}
+            title={"Interest"}
             value={interest}
             color={"orange"}
             percent={70}
           ></Ticker>
         </Col>
-        <Col xl={3} lg={3}>
+        <Col xl={2} lg={2}>
           <Ticker
-            title={"Interest Paid"}
-            value={interest}
-            color={"orange"}
-            percent={70}
-          ></Ticker>
-        </Col>
-        <Col xl={3} lg={3}>
-          <Ticker
-            title={"Penalty Charged"}
+            title={"Penalty"}
             value={penalty}
             color={"red"}
             percent={90}
           ></Ticker>
         </Col>
-        <Col xl={3} lg={3}>
-          <Ticker
-            title={"Penalty Paid"}
-            value={penalty}
-            color={"red"}
-            percent={90}
-          ></Ticker>
-        </Col>
-        <Col xl={3} lg={3}>
+        <Col xl={2} lg={2}>
           <Ticker
             title={"Share"}
             value={share}
@@ -194,7 +178,7 @@ const MyDashboard = () => {
             percent={90}
           ></Ticker>
         </Col>
-        <Col xl={3} lg={3}>
+        <Col xl={2} lg={2}>
           <Ticker
             title={"Social"}
             value={social}

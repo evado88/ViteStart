@@ -1,5 +1,7 @@
 import React from "react";
 import Assist from "../classes/assist";
+import './ticker.css'
+
 export const Ticker = ({ title, value, color, percent }) => {
 
   return (

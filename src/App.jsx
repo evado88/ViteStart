@@ -64,6 +64,7 @@ import {
   AdminKnowledgebaseArticlePage,
   MemberQueryPage,
   AdminMemberQueryPage,
+  MemberInterestSharingPage,
 
 } from "./pages";
 import { BrowserRouter } from "react-router-dom";
@@ -92,8 +93,9 @@ function App() {
           {/* Dashboards */}
           <Route path="/" element={<MemberDashboardPage></MemberDashboardPage>} />
           {/* Reports */}
-          <Route path="/admin/reports/member-summary" element={<AdminMemberSummaryPage/>} />
-          <Route path="/admin/reports/monthly-summary" element={<AdminMonthlySummaryPage/>} />
+          <Route path="/reports/member-summary" element={<AdminMemberSummaryPage/>} />
+          <Route path="/reports/monthly-summary" element={<AdminMonthlySummaryPage/>} />
+          <Route path="/reports/interest-sharing" element={<MemberInterestSharingPage/>} />
           {/* Dictionaries */}
           <Route path="/admin/dictionairies/statuses" element={<StatusesPage></StatusesPage>} />
           <Route path="/admin/dictionairies/transaction-sources" element={<TransactionSourcesPage></TransactionSourcesPage>} />

@@ -13,13 +13,9 @@ import { LoadPanel } from "devextreme-react/load-panel";
 import Toolbar, { Item } from "devextreme-react/toolbar";
 import { Validator, RequiredRule } from "devextreme-react/validator";
 import DateBox from "devextreme-react/date-box";
-import { useTheme } from "../context/ThemeContext";
-import { useAuth } from "../context/AuthContext";
 import { TestComponent } from '../components/TestComponent'
 
 const NotFound = () => {
-  const { theme, toggleTheme } = useTheme();
-  const { user, login, logout } = useAuth();
 
   const [name, setName] = useState("Evans");
 
@@ -41,54 +37,6 @@ const NotFound = () => {
 
       {/* chart start */}
       <Row>
-        <Col sz={12} sm={12} lg={6}>
-          <Card title={"Card 1"}>
-            <form onSubmit={onFormSubmit}>
-              <div className="dx-fieldset">
-                <div className="dx-fieldset-header">Properties</div>
-
-                <div className="dx-field">
-                  <div className="dx-field-label">Name</div>
-                  <div className="dx-field-value">
-                    <TextBox
-                      value={name}
-                      onValueChange={(text) => setName(text)}
-                    >
-                      <Validator>
-                        <RequiredRule message="Item name is required" />
-                      </Validator>
-                    </TextBox>
-                  </div>
-                </div>
-              </div>
-
-              <div className="dx-fieldset">
-                <ValidationSummary id="summary" />
-                <br></br>
-                <Button
-              
-                  width="100%"
-                  id="button"
-                  text="Save"
-                  type="danger"
-                  useSubmitBehavior={true}
-                  onClick={toggleTheme}
-                />
-              </div>
-            </form>
-          </Card>
-        </Col>
-        <Col sz={12} sm={12} lg={6}>
-          <Card title={"Card 2"}>
-            <TestComponent linkClikced={(e) => {
-              e.preventDefault();
-         
-            
-              console.log('Link clicked!', e);
-
-            }}></TestComponent>
-          </Card>
-        </Col>
       </Row>
     </div>
   );

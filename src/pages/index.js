@@ -12,8 +12,9 @@ export { default as SignupPage } from '../auth/signup'
 //dahsboard
 
 //reports
-export { default as AdminMemberSummaryPage } from './admin/reports/member_summary'
-export { default as AdminMonthlySummaryPage } from './admin/reports/monthly_summary'
+export { default as AdminMemberSummaryPage } from './reports/member_summary'
+export { default as AdminMonthlySummaryPage } from './reports/monthly_summary'
+export { default as MemberInterestSharingPage } from './reports/member_interest_sharing'
 //posting period
 export { default as AdminPostingPeriodsPage } from './admin/posting-periods/posting_period_list'
 export { default as AdminPostingSubmittedPeriodsPage } from './admin/posting-periods/posting_period_submitted'

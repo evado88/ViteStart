@@ -1,19 +1,19 @@
-import react, { useState, useEffect, useContext, createContext } from "react";
+import React, { createContext, useContext, useState } from "react";
 
-const TestContext = createContext();
+const ThemeContext = createContext();
 
-export function TestProvider({ children }) {
-  const [value, setValue] = useState(100);
+export function ThemeProvider({ children }){
+  const [theme, setTheme] = useState("Dark");
 
-  const UpdateValue = (newValue) => setValue(newValue);
+  const toggle = () => setTheme((prev) => prev == 'Dark' ? 'Light': 'Dark');
 
   return (
-    <TestContext.Provider value={{ value, UpdateValue }}>
+    <ThemeContext.Provider value={{ theme, toggle}}>
       {children}
-    </TestContext.Provider>
+    </ThemeContext.Provider>
   );
-}
+};
 
-export function useValue(){
-    return useContext(TestContext);
+export function useTheme(){
+  return useContext(ThemeContext);
 }

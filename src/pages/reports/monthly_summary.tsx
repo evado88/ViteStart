@@ -1,10 +1,10 @@
 import React, { useState, useEffect, useMemo } from "react";
-import { Ticker } from "../../../components/ticker.jsx";
-import { Titlebar } from "../../../components/titlebar.js";
-import { Card } from "../../../components/card.js";
-import { Row } from "../../../components/row.jsx";
-import { Col } from "../../../components/column.js";
-import { NotificationList } from "../../../components/notificationList.jsx";
+import { Ticker } from "../../components/ticker.jsx";
+import { Titlebar } from "../../components/titlebar.js";
+import { Card } from "../../components/card.js";
+import { Row } from "../../components/row.jsx";
+import { Col } from "../../components/column.js";
+import { NotificationList } from "../../components/notificationList.jsx";
 import {
   Chart,
   Series,
@@ -15,9 +15,9 @@ import {
   Export,
 } from "devextreme-react/chart";
 import { LoadPanel } from "devextreme-react/load-panel";
-import { useAuth } from "../../../context/AuthContext.jsx";
-import PageConfig from "../../../classes/page-config.js";
-import Assist from "../../../classes/assist.js";
+import { useAuth } from "../../context/AuthContext.jsx";
+import PageConfig from "../../classes/page-config.js";
+import Assist from "../../classes/assist.js";
 import DataGrid, {
   Column,
   Pager,
@@ -139,7 +139,9 @@ const MonthlySummary = () => {
       },
       {
         dataField: "period",
+        dataType: "date",
         area: "column",
+        groupInterval: "month",
       },
       {
         caption: "Amount",
@@ -172,7 +174,7 @@ const MonthlySummary = () => {
       ></Titlebar>
       {/* start widget */}
       <Row>
-        <Col xl={3} lg={3}>
+        <Col xl={2} lg={2}>
           <Ticker
             title={"Savings"}
             value={savings}
@@ -180,7 +182,7 @@ const MonthlySummary = () => {
             percent={80}
           ></Ticker>
         </Col>
-        <Col xl={3} lg={3}>
+        <Col xl={2} lg={2}>
           <Ticker
             title={"Loans"}
             value={loan}
@@ -188,7 +190,7 @@ const MonthlySummary = () => {
             percent={40}
           ></Ticker>
         </Col>
-        <Col xl={3} lg={3}>
+        <Col xl={2} lg={2}>
           <Ticker
             title={"Interest Charged"}
             value={interest}
@@ -196,15 +198,7 @@ const MonthlySummary = () => {
             percent={70}
           ></Ticker>
         </Col>
-        <Col xl={3} lg={3}>
-          <Ticker
-            title={"Interest Paid"}
-            value={interest}
-            color={"orange"}
-            percent={70}
-          ></Ticker>
-        </Col>
-        <Col xl={3} lg={3}>
+        <Col xl={2} lg={2}>
           <Ticker
             title={"Penalty Charged"}
             value={penalty}
@@ -212,15 +206,7 @@ const MonthlySummary = () => {
             percent={90}
           ></Ticker>
         </Col>
-        <Col xl={3} lg={3}>
-          <Ticker
-            title={"Penalty Paid"}
-            value={penalty}
-            color={"red"}
-            percent={90}
-          ></Ticker>
-        </Col>
-        <Col xl={3} lg={3}>
+        <Col xl={2} lg={2}>
           <Ticker
             title={"Share"}
             value={share}
@@ -228,7 +214,7 @@ const MonthlySummary = () => {
             percent={90}
           ></Ticker>
         </Col>
-        <Col xl={3} lg={3}>
+        <Col xl={2} lg={2}>
           <Ticker
             title={"Social"}
             value={social}
