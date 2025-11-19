@@ -15,6 +15,7 @@ export { default as SignupPage } from '../auth/signup'
 export { default as AdminMemberSummaryPage } from './reports/member_summary'
 export { default as AdminMonthlySummaryPage } from './reports/monthly_summary'
 export { default as MemberInterestSharingPage } from './reports/member_interest_sharing'
+export { default as MemberTimeValueSummaryPage } from './reports/member_time_value_summary'
 //posting period
 export { default as AdminPostingPeriodsPage } from './admin/posting-periods/posting_period_list'
 export { default as AdminPostingSubmittedPeriodsPage } from './admin/posting-periods/posting_period_submitted'

@@ -148,7 +148,7 @@ const MemberSummary = () => {
         <Col xl={2} lg={2}>
           <Ticker
             title={"Savings"}
-            value={savings}
+            value={Assist.formatCurrency(savings) }
             color={"green"}
             percent={80}
           ></Ticker>
@@ -156,7 +156,7 @@ const MemberSummary = () => {
         <Col xl={2} lg={2}>
           <Ticker
             title={"Loans"}
-            value={loan}
+            value={Assist.formatCurrency(loan)}
             color={"red"}
             percent={40}
           ></Ticker>
@@ -164,7 +164,7 @@ const MemberSummary = () => {
         <Col xl={2} lg={2}>
           <Ticker
             title={"Interest"}
-            value={interest}
+            value={Assist.formatCurrency(interest)}
             color={"orange"}
             percent={70}
           ></Ticker>
@@ -172,7 +172,7 @@ const MemberSummary = () => {
         <Col xl={2} lg={2}>
           <Ticker
             title={"Penalty"}
-            value={penalty}
+            value={Assist.formatCurrency(penalty)}
             color={"red"}
             percent={90}
           ></Ticker>
@@ -180,7 +180,7 @@ const MemberSummary = () => {
         <Col xl={2} lg={2}>
           <Ticker
             title={"Share"}
-            value={share}
+            value={Assist.formatCurrency(share)}
             color={"blue"}
             percent={90}
           ></Ticker>
@@ -188,7 +188,7 @@ const MemberSummary = () => {
         <Col xl={2} lg={2}>
           <Ticker
             title={"Social"}
-            value={social}
+            value={Assist.formatCurrency(social)}
             color={"green"}
             percent={90}
           ></Ticker>

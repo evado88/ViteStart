@@ -18,12 +18,14 @@ interface MonthlyTotalArgs {
   loadingText: string;
   addButtonOptions?: any;
   filterComponent?: React.ReactElement | null;
+  showId?: boolean;
 }
 export const MonthlyTotalList = ({
   data,
   loadingText,
   addButtonOptions,
   filterComponent,
+  showId,
 }: MonthlyTotalArgs) => {
   return (
     /* start title */
@@ -53,6 +55,11 @@ export const MonthlyTotalList = ({
         <Toolbar>
           <Item name="columnChooserButton" />
         </Toolbar>
+        {showId != false && <Column
+          dataField={`id`}
+          caption="ID"
+          hidingPriority={14}
+        ></Column>}
         <Column
           dataField={`m1`}
           caption="Jan"

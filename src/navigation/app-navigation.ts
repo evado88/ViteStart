@@ -180,6 +180,14 @@ export const navigation: MenuItem[] = [
         roles: [1, 2],
         items: [],
       },
+      {
+        key: "time-value",
+        text: "Time value",
+        icon: "",
+        path: "/reports/time-value-summary",
+        roles: [1, 2],
+        items: [],
+      },
     ],
   },
   {

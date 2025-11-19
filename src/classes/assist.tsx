@@ -105,10 +105,19 @@ class Assist {
     maximumFractionDigits: 2,
   });
 
+  static numberFormatter = new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "ZMW",
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  });
+
   static formatCurrency(value: number): string {
     return this.currencyFormatter.format(value);
   }
-
+  static formatNumber(value: number): string {
+    return this.numberFormatter.format(value);
+  }
   static getPostingPeriodText(mysqlDate: string): string {
     const date = new Date(mysqlDate);
     const friendly = date.toLocaleString("en-US", {

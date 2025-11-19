@@ -14,7 +14,7 @@ export const Ticker = ({ title, value, color, percent }) => {
               <h4 className="info-box-title">{title}</h4>
             </div>
             <h3 className={`mt-1 mb-3 info-box-title col-${color}`}>
-              {Assist.formatCurrency(value)}
+              {value}
             </h3>
             <div className="progress">
               <div

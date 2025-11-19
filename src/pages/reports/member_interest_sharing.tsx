@@ -39,11 +39,11 @@ import { MemberMonthlySavingsList } from "../../components/memberMonthlySavingsL
 const employees = [
   {
     id: 0,
-    text: "Member Monthly Interest Sharing",
+    text: "Monthly Interest Sharing",
   },
   {
     id: 1,
-    text: "Member Monthly Savings",
+    text: "Monthly Savings",
   },
   {
     id: 2,
@@ -55,7 +55,7 @@ const employees = [
   },
   {
     id: 4,
-    text: "Total Monthly  Interest",
+    text: "Total Monthly Interest",
   },
   {
     id: 5,
@@ -261,10 +261,7 @@ const MemberInterestSharing = () => {
             <InterestSharingList data={data} loadingText={loadingText} />
           )}
           {selectedItem.id == 1 && (
-            <MemberMonthlySavingsList
-              data={data}
-              loadingText={loadingText}
-            />
+            <MemberMonthlySavingsList data={data} loadingText={loadingText} />
           )}
           {selectedItem.id == 2 && (
             <MonthlyTotalList data={savingsData} loadingText={loadingText} />
