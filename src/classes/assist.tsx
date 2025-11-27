@@ -5,6 +5,8 @@ import TaskResult from "./task-result.js";
 import { jwtDecode } from "jwt-decode";
 
 class Assist {
+  static POSTING_BEHALF = 2;
+
   static DEV_DELAY: number = 1000;
   static UX_DELAY: number = 500;
 
@@ -135,7 +137,14 @@ class Assist {
       return date.toString();
     }
   }
-
+  static getDateDay(mysqlDate: string): number {
+    if (mysqlDate == null) {
+      return 0;
+    } else {
+      const date = new Date(mysqlDate);
+      return date.getDate();
+    }
+  }
   static toMySQLFormat(date: Date, includeTime: boolean) {
     return date
       .toISOString()
@@ -143,6 +152,13 @@ class Assist {
       .replace("T", " ");
   }
 
+  static getCurrrentPeriodFormat() {
+    const date = new Date();
+    return date
+      .toISOString()
+      .slice(0, 7)
+      .replace("-", "");
+  }
   static getMonthName(monthNumber: number): string {
     // Month numbers are 1-indexed (1 for January, 12 for December)
     // Date objects use 0-indexed months, so we subtract 1.
@@ -219,8 +235,40 @@ class Assist {
         message: message,
       },
       type,
-      4000
+      6000
     );
+  }
+
+  static async downloadExcel(name: string, dataArray: any) {
+    const endPoint = "data/export-excel";
+    //const jsonArray = JSON.stringify(dataArray);
+    const postData = { filename: name, jsonArray: dataArray };
+
+    axios({
+      method: "post",
+      url: `${AppInfo.apiUrl}${endPoint}`,
+      data: postData,
+      headers: { "Content-Type": "application/json" },
+      responseType: "blob",
+    })
+      .then((response) => {
+        // create file link in browser's memory
+        const href = URL.createObjectURL(response.data);
+
+        // create "a" HTML element with href to file & click
+        const link = document.createElement("a");
+        link.href = href;
+        link.setAttribute("download", `${name}.xlsx`); //or any other extension
+        document.body.appendChild(link);
+        link.click();
+
+        // clean up "a" element & remove ObjectURL
+        document.body.removeChild(link);
+        URL.revokeObjectURL(href);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
   }
 
   /**

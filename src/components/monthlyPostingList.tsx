@@ -23,6 +23,7 @@ interface MonthlyPostArgs {
   addButtonOptions?: any;
   filterComponent?: React.ReactElement | null;
   isMember: boolean;
+  title: string;
 }
 export const MonthlyPostingsList = ({
   data,
@@ -30,6 +31,7 @@ export const MonthlyPostingsList = ({
   addButtonOptions,
   filterComponent,
   isMember,
+  title,
 }: MonthlyPostArgs) => {
   return (
     /* start title */
@@ -72,14 +74,25 @@ export const MonthlyPostingsList = ({
             </Item>
           )}
           <Item name="columnChooserButton" />
+          <Item
+            location="after"
+            locateInMenu="auto"
+            showText="always"
+            widget="dxButton"
+            options={{
+              icon: "save",
+              text: " Excel Export",
+              onClick: () => Assist.downloadExcel(title, data),
+            }}
+          />
         </Toolbar>
-        <Column dataField="id" caption="ID" hidingPriority={13}></Column>
+        <Column dataField="id" caption="ID" hidingPriority={17}></Column>
         <Column
           dataField="date"
           caption="Name"
           dataType="date"
           format={"MMMM yyy"}
-          hidingPriority={15}
+          hidingPriority={16}
           cellRender={(e) => {
             const getLink = () => {
               const viewAdminLink = `/admin/monthly-postings/view/${e.data.id}`;
@@ -116,12 +129,12 @@ export const MonthlyPostingsList = ({
         <Column
           dataField="stage.stage_name"
           caption="Stage"
-          hidingPriority={141}
+          hidingPriority={15}
         ></Column>
         <Column
           dataField="status.status_name"
           caption="Status"
-          hidingPriority={13}
+          hidingPriority={14}
         ></Column>
         <Column
           dataField="contribution_total"
@@ -133,43 +146,58 @@ export const MonthlyPostingsList = ({
           dataField="deposit_total"
           caption="Deposit Total"
           format={",##0.###"}
-          hidingPriority={11}
+          hidingPriority={13}
         ></Column>
         <Column
           dataField="receive_total"
           caption="Receive Total"
           format={",##0.###"}
-          hidingPriority={11}
+          hidingPriority={12}
         ></Column>
         <Column
           dataField="saving"
           caption="Saving"
           format={",##0.###"}
-          hidingPriority={10}
+          hidingPriority={11}
         ></Column>
         <Column
           dataField="shares"
           caption="Shares"
           format={",##0.###"}
-          hidingPriority={9}
+          hidingPriority={10}
         ></Column>
         <Column
           dataField="social"
           caption="Social"
           format={",##0.###"}
+          hidingPriority={9}
+        ></Column>
+        <Column
+          dataField="missed_meeting_penalty"
+          caption="Meeting Penalty"
+          format={",##0.###"}
           hidingPriority={8}
+          visible={false}
+        ></Column>
+        <Column
+          dataField="late_post_penalty"
+          caption="Late Penalty"
+          format={",##0.###"}
+          hidingPriority={7}
+          visible={false}
         ></Column>
         <Column
           dataField="penalty"
-          caption="Penalty"
+          caption="Penalty Other"
           format={",##0.###"}
-          hidingPriority={7}
+          hidingPriority={6}
+          visible={false}
         ></Column>
         <Column
           dataField="loan_interest"
           caption="Interest"
           format={",##0.###"}
-          hidingPriority={6}
+          hidingPriority={5}
         ></Column>
         <Column
           dataField="loan_month_repayment"
@@ -229,6 +257,18 @@ export const MonthlyPostingsList = ({
           />
           <TotalItem
             column="social"
+            summaryType="sum"
+            valueFormat={",##0.###"}
+            displayFormat="{0}"
+          />
+          <TotalItem
+            column="missed_meeting_penalty"
+            summaryType="sum"
+            valueFormat={",##0.###"}
+            displayFormat="{0}"
+          />
+          <TotalItem
+            column="late_post_penalty"
             summaryType="sum"
             valueFormat={",##0.###"}
             displayFormat="{0}"

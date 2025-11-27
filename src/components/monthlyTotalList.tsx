@@ -12,6 +12,7 @@ import DataGrid, {
   Summary,
   TotalItem,
 } from "devextreme-react/data-grid";
+import Assist from "../classes/assist";
 
 interface MonthlyTotalArgs {
   data: any;
@@ -19,6 +20,7 @@ interface MonthlyTotalArgs {
   addButtonOptions?: any;
   filterComponent?: React.ReactElement | null;
   showId?: boolean;
+  title: string;
 }
 export const MonthlyTotalList = ({
   data,
@@ -26,6 +28,7 @@ export const MonthlyTotalList = ({
   addButtonOptions,
   filterComponent,
   showId,
+  title,
 }: MonthlyTotalArgs) => {
   return (
     /* start title */
@@ -54,12 +57,21 @@ export const MonthlyTotalList = ({
         <ColumnChooser enabled={true} mode="select"></ColumnChooser>
         <Toolbar>
           <Item name="columnChooserButton" />
+          <Item
+            location="after"
+            locateInMenu="auto"
+            showText="always"
+            widget="dxButton"
+            options={{
+              icon: "save",
+              text: " Excel Export",
+              onClick: () => Assist.downloadExcel(title, data),
+            }}
+          />
         </Toolbar>
-        {showId != false && <Column
-          dataField={`id`}
-          caption="ID"
-          hidingPriority={14}
-        ></Column>}
+        {showId != false && (
+          <Column dataField={`id`} caption="ID" hidingPriority={14}></Column>
+        )}
         <Column
           dataField={`m1`}
           caption="Jan"

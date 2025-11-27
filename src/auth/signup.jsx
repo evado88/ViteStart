@@ -22,6 +22,15 @@ import { LoadPanel } from "devextreme-react/load-panel";
 import PageConfig from "../classes/page-config";
 import { confirm } from "devextreme/ui/dialog";
 import AppInfo from "../classes/app-info";
+import FileUploader from "devextreme-react/file-uploader";
+import DataGrid, {
+  Column,
+  Pager,
+  Paging,
+  Summary,
+  GroupItem,
+  TotalItem,
+} from "devextreme-react/data-grid";
 
 const Signup = () => {
   const { user, login } = useAuth();
@@ -45,6 +54,9 @@ const Signup = () => {
   const [email, setEmail] = useState(null);
   const [idType, setIdType] = useState(null);
   const [idNo, setIdNo] = useState(null);
+
+  const [attachmentID, setAttachmentID] = useState(null);
+  const [uploadedFiles, setUploadedFiles] = useState([]);
   //guarantor details
   const [guarantorFirstname, setGuarantorFirstname] = useState(null);
   const [guarantorLastname, setGuarantorLastname] = useState(null);
@@ -113,6 +125,16 @@ const Signup = () => {
     }, Assist.UX_DELAY);
   };
 
+  const onFormSubmitIDAttachment = async (e) => {
+    e.preventDefault();
+
+    setLoading(true);
+    setTimeout(() => {
+      setLoading(false);
+      setStage(4);
+    }, Assist.UX_DELAY);
+  };
+
   const onFormSubmitMobile = async (e) => {
     e.preventDefault();
 
@@ -126,7 +148,7 @@ const Signup = () => {
       setLoading(true);
       setTimeout(() => {
         setLoading(false);
-        setStage(5);
+        setStage(6);
       }, Assist.UX_DELAY);
     }
   };
@@ -137,7 +159,7 @@ const Signup = () => {
     setLoading(true);
     setTimeout(() => {
       setLoading(false);
-      setStage(6);
+      setStage(7);
     }, Assist.UX_DELAY);
   };
 
@@ -147,7 +169,7 @@ const Signup = () => {
     setLoading(true);
     setTimeout(() => {
       setLoading(false);
-      setStage(7);
+      setStage(8);
     }, Assist.UX_DELAY);
   };
   const showMessge = (msg, type = "info") => {
@@ -167,83 +189,49 @@ const Signup = () => {
 
     setOTP(newCode);
 
-    const state = 3;
+    const state = 55;
 
-    if (state === 4) {
+    if (state === 5) {
       setLoading(true);
       setTimeout(() => {
         setLoading(false);
-        setStage(4);
+        setStage(5);
       }, Assist.UX_DELAY);
       return;
     }
 
-    const config = {
-      headers: {
-        "Content-Type": "application/json",
-        Authorization:
-          "App 05704a467eaab51ea1bd2aabaa652517-c006af8e-55e6-4254-aa46-440344a6e040",
-        Accept: "application/json",
-      },
-    };
-
-    const axParams = {
-      messages: [
-        {
-          from: "12098869548",
-          to: mobile2FA,
-          messageId: uuidv4(),
-          content: {
-            templateName: "auth",
-            templateData: {
-              body: {
-                placeholders: [newCode],
-              },
-              buttons: [
-                {
-                  type: "URL",
-                  parameter: "Copy",
-                },
-              ],
-            },
-            language: "en",
-          },
-        },
-      ],
-    };
-
     setLoading(true);
-    axios
-      .post(
-        "https://xk85nl.api.infobip.com/whatsapp/1/message/template",
-        axParams,
-        config
-      )
-      .then((res) => {
-        setLoading(false);
 
-        if (res.status === 200) {
-          console.log("OTP Success:", res.data);
+    const postData = {
+      mobile: mobile2FA,
+      code: newCode,
+    };
+
+    setTimeout(() => {
+      Assist.postPutData(
+        "WhatsApp Code",
+        `whatsapp/send-infobip-auth-message`,
+        postData,
+        0
+      )
+        .then((data) => {
+          console.log(data);
+          setLoading(false);
           showMessge(
             `The OTP has been successfully sent to ${mobile2FA}`,
             "success"
           );
-          setStage(4);
-        } else {
-          console.warn("OTP Unexpected Status:", res.status);
+          setStage(5);
+        })
+        .catch((message) => {
+          console.log(message);
+          setLoading(false);
           showMessge(
-            `Unable to send OTP to ${mobile2FA}. Please try again`,
-            "warn"
+            `Error sending OTP to ${mobile2FA}. Please try again`,
+            "error"
           );
-        }
-      })
-      .catch((err) => {
-        setLoading(false);
-        showMessge(
-          `Error sending OTP to ${mobile2FA}. Please try again`,
-          "error"
-        );
-      });
+        });
+    }, Assist.DEV_DELAY);
   };
 
   const onFormSubmit = async (e) => {
@@ -260,6 +248,30 @@ const Signup = () => {
     });
   };
 
+  const notifyMemberRegistered = async (mem) => {
+    //check if member has been approved or rejected
+
+    const postData = {
+      id: mem.id,
+      action: 'registered'
+    };
+
+    setTimeout(() => {
+      Assist.postPutData(
+        "WhatsApp Registered Notification",
+        "whatsapp/send-infobip-register-message",
+        postData,
+        0
+      )
+        .then((data) => {
+          console.log("Account registered notification sent", data);
+        })
+        .catch((message) => {
+          console.log("Account registered notification error", message);
+        });
+    }, Assist.DEV_DELAY);
+  };
+
   const registerAccount = () => {
     setSaving(true);
 
@@ -272,7 +284,7 @@ const Signup = () => {
       // id
       id_type: idType,
       id_no: idNo,
-      id_attachment: 2,
+      id_attachment: attachmentID,
       // contact details
       email: email,
       mobile1: mobile2FA,
@@ -300,7 +312,8 @@ const Signup = () => {
 
     setTimeout(() => {
       Assist.postPutData(pageConfig.Title, pageConfig.updateUrl, postData, 0)
-        .then((data) => {
+        .then(async (data) => {
+          await notifyMemberRegistered(data);
           setSaving(false);
 
           Assist.showMessage(
@@ -405,7 +418,7 @@ const Signup = () => {
                       value={dateOfBirthText}
                       onValueChange={(text) => {
                         setDateOfBirthText(text);
-                        setDateOfBirthValue(Assist.toMySQLFormat(text, false))
+                        setDateOfBirthValue(Assist.toMySQLFormat(text, false));
                       }}
                     >
                       {" "}
@@ -512,6 +525,117 @@ const Signup = () => {
             {stage == 3 && (
               <form
                 className="register-form"
+                id="formID"
+                onSubmit={onFormSubmitIDAttachment}
+              >
+                <p>Please attach a scanned copy of your identity document</p>
+                <div className="dx-fieldset">
+                  <div className="dx-fieldset-header">Submission</div>
+                  <div className="dx-field">
+                    <div className="dx-field-label">Upload File (5MB Max)</div>
+                    <FileUploader
+                      className="dx-field-value"
+                      multiple={false}
+                      accept="*"
+                      name="file"
+                      uploadMode="instantly"
+                      onUploaded={(e) => {
+                        if (e.request.status === 200) {
+                          const res = JSON.parse(e.request.response);
+
+                          console.log("runq", res);
+
+                          if (res === null) {
+                            Assist.showMessage(
+                              `The response from the server is invalid. Please try again`,
+                              "error"
+                            );
+                          } else {
+                            setUploadedFiles([res.attachment]);
+                            setAttachmentID(res.attachment.id);
+                          }
+                        } else {
+                          Assist.showMessage(
+                            `Unable to upload attachment. Please try again`,
+                            "error"
+                          );
+                        }
+                      }}
+                      uploadUrl={`${AppInfo.apiUrl}attachments/create/type/member/parent/0`}
+                    />
+                  </div>
+                  <div className="dx-field">
+                    <DataGrid
+                      className={"dx-card wide-card"}
+                      dataSource={uploadedFiles}
+                      keyExpr={"id"}
+                      noDataText={"No attachment uploaded"}
+                      showBorders={false}
+                      focusedRowEnabled={false}
+                      defaultFocusedRowIndex={0}
+                      columnAutoWidth={true}
+                      columnHidingEnabled={true}
+                    >
+                      <Paging defaultPageSize={10} />
+                      <Pager showPageSizeSelector={true} showInfo={true} />
+                      <Column
+                        dataField="id"
+                        caption="ID"
+                        hidingPriority={7}
+                        visible={false}
+                      ></Column>
+                      <Column
+                        dataField="name"
+                        caption="Name"
+                        hidingPriority={4}
+                        cellRender={(e) => {
+                          return (
+                            <a
+                              href={encodeURI(
+                                `${AppInfo.apiUrl}static/${e.data.path}`
+                              )}
+                              target="_null"
+                            >
+                              {e.text}
+                            </a>
+                          );
+                        }}
+                      ></Column>
+                      <Column
+                        dataField="filesize"
+                        caption="Size"
+                        format={",##0.###"}
+                        hidingPriority={4}
+                      ></Column>
+                      <Column
+                        dataField="filetype"
+                        caption="Type"
+                        hidingPriority={5}
+                        visible={false}
+                      ></Column>
+                    </DataGrid>
+                  </div>
+                </div>
+                <div className="form-group form-button">
+                  <Button
+                    width="100%"
+                    type="default"
+                    text="Next"
+                    useSubmitBehavior={true}
+                  />
+                  <a
+                    to={"#"}
+                    className="signup-image-link"
+                    onClick={setPreviousStage}
+                  >
+                    Identity Details
+                  </a>
+                </div>
+              </form>
+            )}
+            {stage == 4 && (
+              <form
+                className="register-form"
                 id="formMobile"
                 onSubmit={onFormSubmitMobile}
               >
@@ -570,7 +694,7 @@ const Signup = () => {
                 </div>
               </form>
             )}
-            {stage == 4 && (
+            {stage == 5 && (
               <form
                 className="register-form"
                 id="formVerifyMobile"
@@ -618,7 +742,7 @@ const Signup = () => {
                 </div>
               </form>
             )}
-            {stage == 5 && (
+            {stage == 6 && (
               <form
                 className="register-form"
                 id="form2"
@@ -695,7 +819,7 @@ const Signup = () => {
                 </div>
               </form>
             )}
-            {stage == 6 && (
+            {stage == 7 && (
               <form
                 className="register-form"
                 id="form3"
@@ -797,7 +921,7 @@ const Signup = () => {
                 </div>
               </form>
             )}
-            {stage == 7 && (
+            {stage == 8 && (
               <form
                 className="register-form"
                 id="form3"
@@ -851,12 +975,12 @@ const Signup = () => {
                   <Button
                     width="100%"
                     type={saving ? "normal" : "default"}
-                    disabled={saving}
+                    disabled={loading || error || saving}
                     useSubmitBehavior={true}
                   >
                     <LoadIndicator
                       className="button-indicator"
-                      visible={loading}
+                      visible={saving}
                     />
                     <span className="dx-button-text">Register</span>
                   </Button>

@@ -66,6 +66,7 @@ import {
   AdminMemberQueryPage,
   MemberInterestSharingPage,
   MemberTimeValueSummaryPage,
+  AdminPostingPeriodEditPage,
 
 } from "./pages";
 import { BrowserRouter } from "react-router-dom";
@@ -117,6 +118,7 @@ function App() {
           <Route path="/admin/posting-periods/approved" element={<AdminPostingApprovedPeriodsPage/>} />
           <Route path="/admin/posting-periods/rejected" element={<AdminPostingRejectedPeriodsPage/>} />
           <Route path="/admin/posting-periods/view/:eId" element={<AdminPostingPeriodPage/>} />
+          <Route path="/admin/posting-periods/edit/:eId" element={<AdminPostingPeriodEditPage/>} />
           {/* Users */}
           <Route path="/admin/members/list" element={<AdminMembersPage/>} />
           <Route path="/admin/members/submitted" element={<AdminMembersSubmittedPage/>} />

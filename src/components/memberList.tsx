@@ -21,12 +21,14 @@ interface MonthlyPostArgs {
   loadingText: string;
   addButtonOptions?: any;
   filterComponent?: React.ReactElement | null;
+  title: string
 }
 export const MemberList = ({
   data,
   loadingText,
   addButtonOptions,
   filterComponent,
+  title
 }: MonthlyPostArgs) => {
   return (
     /* start title */
@@ -69,6 +71,17 @@ export const MemberList = ({
             </Item>
           )}
           <Item name="columnChooserButton" />
+          <Item
+            location="after"
+            locateInMenu="auto"
+            showText="always"
+            widget="dxButton"
+            options={{
+              icon: "save",
+              text: " Excel Export",
+              onClick: () => Assist.downloadExcel(title, data),
+            }}
+          />
         </Toolbar>
         <Column dataField="id" caption="ID" hidingPriority={22}></Column>
         <Column

@@ -21,10 +21,12 @@ interface InterestSharingArgs {
   data: any;
   loadingText: string;
   showSavings?: boolean;
+  title: string
 }
 export const InterestSharingList = ({
   data,
   loadingText,
+  title
 }: InterestSharingArgs) => {
   return (
     /* start title */
@@ -53,6 +55,17 @@ export const InterestSharingList = ({
         <ColumnChooser enabled={true} mode="select"></ColumnChooser>
         <Toolbar>
           <Item name="columnChooserButton" />
+          <Item
+            location="after"
+            locateInMenu="auto"
+            showText="always"
+            widget="dxButton"
+            options={{
+              icon: "save",
+              text: " Excel Export",
+              onClick: () => Assist.downloadExcel(title, data),
+            }}
+          />
         </Toolbar>
         <Column
           dataField="id"

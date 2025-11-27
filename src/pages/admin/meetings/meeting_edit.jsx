@@ -61,6 +61,8 @@ const MeetingEdit = () => {
                 setLoading(false);
                 setError(true);
                 Assist.showMessage(message, "error");
+
+                console.log(message);
               });
           } else {
             setLoading(false);
@@ -72,6 +74,8 @@ const MeetingEdit = () => {
           setLoading(false);
           setError(true);
           Assist.showMessage(message, "error");
+
+          console.log(message);
         });
     }, Assist.DEV_DELAY);
   }, []);
@@ -120,6 +124,8 @@ const MeetingEdit = () => {
       stage_id: Assist.STAGE_SUBMITTED,
       approval_levels: config.approval_levels,
     };
+
+    console.log(postData);
 
     setTimeout(() => {
       Assist.postPutData(
@@ -201,8 +207,8 @@ const MeetingEdit = () => {
                       displayFormat={"dd MMMM yyyy"}
                       value={date}
                       disabled={error || saving}
-                      >
                       onValueChange={(text) => setDate(text)}
+                    >
                       <Validator>
                         <RequiredRule message="Meeting date is required" />
                       </Validator>
@@ -223,8 +229,6 @@ const MeetingEdit = () => {
                         if (e.request.status === 200) {
                           const res = JSON.parse(e.request.response);
 
-                          console.log("runq", res);
-
                           if (res === null) {
                             Assist.showMessage(
                               `The response from the server is invalid. Please try again`,
@@ -242,6 +246,11 @@ const MeetingEdit = () => {
                         }
                       }}
                       uploadUrl={`${AppInfo.apiUrl}attachments/create/type/AttendanceList/parent/0`}
+                      onUploadError={(e) => {
+                        const error = JSON.parse(e.error.response);
+
+                        Assist.showMessage(error.detail, "error");
+                      }}
                     />
                   </div>
                   <div className="dx-field">
@@ -311,24 +320,36 @@ const MeetingEdit = () => {
                       <Paging defaultPageSize={10} />
                       <Pager showPageSizeSelector={true} showInfo={true} />
                       <Column
+                        dataField="id"
+                        caption="User ID"
+                        hidingPriority={6}
+                      ></Column>
+                      <Column
                         dataField="user"
                         caption="Member"
-                        hidingPriority={3}
+                        hidingPriority={5}
                       ></Column>
                       <Column
                         dataField="type"
                         caption="Type"
-                        hidingPriority={2}
+                        hidingPriority={4}
                       ></Column>
                       <Column
                         dataField="typeId"
                         caption="Type ID"
-                        hidingPriority={2}
+                        hidingPriority={3}
+                        visible={false}
                       ></Column>
                       <Column
                         dataField="penalty"
                         format={",##0.###"}
                         caption="Penalty"
+                        hidingPriority={2}
+                      />
+                      <Column
+                        dataField="penaltyId"
+                        format={",##0.###"}
+                        caption="Penalty ID"
                         hidingPriority={1}
                       />
                     </DataGrid>

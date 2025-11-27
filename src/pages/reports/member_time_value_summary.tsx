@@ -138,7 +138,7 @@ const MemberTimeValueSummary = () => {
         </Col>
         <Col xl={2} lg={2}>
           <Ticker
-            title={"Proportional Final Share"}
+            title={"Proportional Share"}
             value={Assist.formatCurrency(proportionalFinalShare)}
             color={"orange"}
             percent={70}

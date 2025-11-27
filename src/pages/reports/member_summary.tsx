@@ -148,7 +148,7 @@ const MemberSummary = () => {
         <Col xl={2} lg={2}>
           <Ticker
             title={"Savings"}
-            value={Assist.formatCurrency(savings) }
+            value={Assist.formatCurrency(savings)}
             color={"green"}
             percent={80}
           ></Ticker>
@@ -231,6 +231,18 @@ const MemberSummary = () => {
                     options={addButtonOptions}
                   />
                   <Item name="columnChooserButton" />
+                  <Item
+                    location="after"
+                    locateInMenu="auto"
+                    showText="always"
+                    widget="dxButton"
+                    options={{
+                      icon: "save",
+                      text: " Excel Export",
+                      onClick: () =>
+                        Assist.downloadExcel(pageConfig.Title, data),
+                    }}
+                  />
                 </Toolbar>
                 <Column
                   dataField="id"

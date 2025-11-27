@@ -97,6 +97,17 @@ const MonthlyPostingApprovals = () => {
               <ColumnChooser enabled={true} mode="select"></ColumnChooser>
               <Toolbar>
                 <Item name="columnChooserButton" />
+                <Item
+                  location="after"
+                  locateInMenu="auto"
+                  showText="always"
+                  widget="dxButton"
+                  options={{
+                    icon: "save",
+                    text: " Excel Export",
+                    onClick: () => Assist.downloadExcel(pageConfig.Title, data),
+                  }}
+                />
               </Toolbar>
               <Column dataField="id" caption="ID" hidingPriority={13}></Column>
               <Column

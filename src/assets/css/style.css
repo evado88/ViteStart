@@ -478,7 +478,7 @@ h4.vew-mail-header b {
 .theme-color a[data-theme="logo-indigo"] .head:after,
 .theme-color a[data-theme="header-indigo"] .head:before,
 .theme-color a[data-theme="header-indigo"] .head:after {
-  background: #6673fc;
+  background: #111faf;
 }
 .theme-color a[data-theme="cyan"] .cont:after,
 .theme-color a[data-theme="cyan"] .head:after,
@@ -518,7 +518,7 @@ h4.vew-mail-header b {
   background: #ffffff;
 }
 .layout-theme a[data-theme="light"] .head:after {
-  background: #6673fc;
+  background: #111faf;
 }
 
 .theme-color a .head {

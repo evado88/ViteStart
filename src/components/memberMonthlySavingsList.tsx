@@ -1,3 +1,4 @@
+import Assist from "../classes/assist";
 import { Card } from "./card";
 import DataGrid, {
   Column,
@@ -15,10 +16,12 @@ import DataGrid, {
 interface MemberMonthlySavingsArgs {
   data: any;
   loadingText: string;
+  title: string;
 }
 export const MemberMonthlySavingsList = ({
   data,
   loadingText,
+  title,
 }: MemberMonthlySavingsArgs) => {
   return (
     /* start title */
@@ -47,6 +50,17 @@ export const MemberMonthlySavingsList = ({
         <ColumnChooser enabled={true} mode="select"></ColumnChooser>
         <Toolbar>
           <Item name="columnChooserButton" />
+          <Item
+            location="after"
+            locateInMenu="auto"
+            showText="always"
+            widget="dxButton"
+            options={{
+              icon: "save",
+              text: " Excel Export",
+              onClick: () => Assist.downloadExcel(title, data),
+            }}
+          />
         </Toolbar>
         <Column
           dataField="id"

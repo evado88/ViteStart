@@ -42,7 +42,7 @@ export const PostingPeriodingsList = ({
         columnAutoWidth={true}
         columnHidingEnabled={true}
       >
-        <Paging defaultPageSize={10} />
+        <Paging defaultPageSize={12} />
         <Editing
           mode="row"
           allowUpdating={false}
@@ -61,12 +61,7 @@ export const PostingPeriodingsList = ({
           )}
           <Item name="columnChooserButton" />
         </Toolbar>
-        <Column
-          dataField="id"
-          caption="ID"
-          hidingPriority={12}
-          sortOrder="asc"
-        ></Column>
+        <Column dataField="id" caption="ID" hidingPriority={12} sortOrder="asc"></Column>
         <Column
           dataField="name"
           caption="Name"
@@ -74,9 +69,15 @@ export const PostingPeriodingsList = ({
           format={"MMMM yyy"}
           hidingPriority={11}
           cellRender={(e) => {
-            return (
-              <a href={`/admin/posting-periods/view/${e.data.id}`}>{e.text}</a>
-            );
+            const getLink = () => {
+              if (e.data.status == "Draft") {
+                return `/admin/posting-periods/edit/${e.data.id}`;
+              } else {
+                return `/admin/posting-periods/view/${e.data.id}`;
+              }
+            };
+
+            return <a href={getLink()}>{e.text}</a>;
           }}
         ></Column>
         <Column
@@ -84,13 +85,10 @@ export const PostingPeriodingsList = ({
           caption="Status"
           hidingPriority={10}
           cellRender={(e) => {
-
             if (e.data.status == "Approved") {
               //draft
               return (
-                <a
-                  href={`/admin/monthly-postings/ddac-report/${e.data.id}`}
-                >
+                <a href={`/admin/monthly-postings/ddac-report/${e.data.id}`}>
                   {e.text}, View DDAC
                 </a>
               );

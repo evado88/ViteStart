@@ -74,6 +74,8 @@ const MonthlyPostings = () => {
             loadingText={loadingText}
             addButtonOptions={addButtonOptions}
             isLoan={false}
+            isPenalty={false}
+            title={pageConfig.Title}
           />
         </Col>
       </Row>

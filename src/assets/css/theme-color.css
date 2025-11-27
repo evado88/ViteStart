@@ -10,7 +10,7 @@
   --sidebar-color: #ffffff;
   --sidebar-font-color: #4680ff;
   --logo-color: #222c3c;
-  --header-color: #6673fc;
+  --header-color: #111faf;
 }
 
 /*
@@ -1056,7 +1056,7 @@
 
 /* Indigo sidebar color */
 .indigo-sidebar-color .sidemenu-container {
-  background-color: #6673fc;
+  background-color: #111faf;
 }
 .indigo-sidebar-color .sidemenu-container .sidemenu > li.active.open > a,
 .indigo-sidebar-color .sidemenu-container .sidemenu > li.active > a,
@@ -1106,7 +1106,7 @@
   .sidemenu
   > li:hover
   > a {
-  background-color: #6673fc;
+  background-color: #111faf;
   color: #fff;
 }
 .indigo-sidebar-color
@@ -1294,7 +1294,7 @@
   color: #fff;
 }
 .indigo-sidebar-color .page-container {
-  background-color: #6673fc;
+  background-color: #111faf;
 }
 .indigo-sidebar-color .sidemenu-container .sidemenu > li.heading > h3,
 .indigo-sidebar-color
@@ -2072,7 +2072,7 @@
   background: #1880c9;
 }
 .logo-indigo .page-header.navbar .page-logo {
-  background: #6673fc;
+  background: #111faf;
 }
 .logo-cyan .page-header.navbar .page-logo {
   background: #4abad2;
@@ -2618,7 +2618,7 @@
 
 /* Header Indigo */
 .header-indigo .page-header.navbar {
-  background-color: #6673fc;
+  background-color: #111faf;
 }
 .header-indigo form.search-form-opened .btn.submit {
   color: #fff;

@@ -61,6 +61,9 @@ const PostMonthly = () => {
   const [postingPayName, setPostingPayName] = useState<string | null>(null);
 
   const [postingMember, setPostingMember] = useState<any | null>(null);
+  const [postingAttendanceType, setPostingAttendanceType] = useState<
+    string | null
+  >(null);
   //interest payment - minimum 10% if not yet paid on loan
   const [postingLoanInterestPayment, setPostingLoanInterestPayment] = useState<
     number | null
@@ -183,6 +186,7 @@ const PostMonthly = () => {
     postingLoanInterestPayment,
     postingLoanMonthPayment,
     postingLoanApplication,
+    postingAttendanceType,
     postingDate,
     latePostingStartDate,
   ]);
@@ -324,7 +328,7 @@ const PostMonthly = () => {
       user_action_id: user.userid,
       member_id: postingMember.id,
       period_id: periodId,
-      attendance_id: Assist.NOTIFY_WAITING,
+      missed_meeting_penalty: isAbsenteePosting() ? missedMeetingFee : 0,
       date: `${postingDate} ${Assist.getCurrentTime()}`,
       saving: postingSavings,
       shares: postingShares,
@@ -336,7 +340,7 @@ const PostMonthly = () => {
       guarantor_required: requireGuarantor()
         ? Assist.RESPONSE_YES
         : Assist.RESPONSE_NO,
-      guarantor_user_email:postingMember.guar_email,
+      guarantor_user_email: postingMember.guar_email,
       late_post_penalty: islatePosting() ? latePostingFee : 0,
       status_id: Assist.STATUS_SUBMITTED,
       approval_levels: approvalLevels,
@@ -453,6 +457,11 @@ const PostMonthly = () => {
     return isLate;
   };
 
+  const isAbsenteePosting = () => {
+    const isAbsentee = postingAttendanceType == "No";
+    return isAbsentee;
+  };
+
   const getContributions = () => {
     let total =
       postingSavings! +
@@ -539,6 +548,14 @@ const PostMonthly = () => {
       });
     }
 
+    if (isAbsenteePosting()) {
+      summaryItems.push({
+        id: 13,
+        name: "Meeting Absence Fee",
+        type: "Contribution",
+        amount: missedMeetingFee ?? 0,
+      });
+    }
     //loan interest
 
     summaryItems.push({
@@ -593,7 +610,9 @@ const PostMonthly = () => {
         <Col sz={12} sm={12} lg={12}>
           <Card title="Applicant" showHeader={false}>
             <MemberHeader title={user.name} description="Monthly Posting" />
-            <h4 className="font-bold text-success">ZMW {totalSavingsAmount}</h4>
+            <h4 className="font-bold text-success">
+              {Assist.formatCurrency(totalSavingsAmount!)}
+            </h4>
           </Card>
         </Col>
       </Row>
@@ -938,6 +957,35 @@ const PostMonthly = () => {
                   </div>
                 </div>
                 <div className="dx-fieldset">
+                  <div className="dx-fieldset-header">Meeting Attendance</div>
+                  <div className="dx-field">
+                    <div className="dx-field-label">Attending Meeting</div>
+                    <SelectBox
+                      className="dx-field-value"
+                      placeholder="Meeting Attendance"
+                      dataSource={AppInfo.yesNoList}
+                      onValueChange={(value) => setPostingAttendanceType(value)}
+                      validationMessagePosition="left"
+                      value={postingAttendanceType}
+                      disabled={error}
+                    >
+                      <Validator>
+                        <RequiredRule message="Meeting attendance is required" />
+                      </Validator>
+                    </SelectBox>
+                  </div>
+                  {isAbsenteePosting() && (
+                    <div className="dx-field">
+                      <div className="dx-field-label">Meeting Absence Fee</div>
+                      <div className="dx-field-value-static">
+                        <strong className="text-danger">
+                          {Assist.formatCurrency(missedMeetingFee!)}
+                        </strong>
+                      </div>
+                    </div>
+                  )}
+                </div>
+                <div className="dx-fieldset">
                   <div className="dx-fieldset-header">Comments & feedback</div>
                   <div className="dx-field">
                     <div className="dx-field-label">Comments</div>
@@ -1101,8 +1149,8 @@ const PostMonthly = () => {
                     columnAutoWidth={true}
                     columnHidingEnabled={true}
                   >
-                    <Paging defaultPageSize={10} />
-                    <Pager showPageSizeSelector={true} showInfo={true} />
+                    <Paging defaultPageSize={15} />
+                    <Pager showPageSizeSelector={false} showInfo={true} />
                     <Column
                       dataField="id"
                       caption="ID"

@@ -43,7 +43,12 @@ const MyDashboard = () => {
   const [loan, setLoan] = useState(0);
 
   const [loading, setLoading] = useState(false);
-  const [data, setData] = useState([]);
+
+  const [statisticsData, setStatisticsData] = useState([]);
+  const [announcementsData, setAnnouncementData] = useState([]);
+  const [loadingAnnouncements, setLoadingAnnouncements] = useState(false);
+  const [articlesData, setArticleData] = useState([]);
+  const [loadingArticles, setLoadingArticles] = useState(false);
   const [loadingText, setLoadingText] = useState("Loading data...");
 
   const pageConfig = new PageConfig(
@@ -62,11 +67,37 @@ const MyDashboard = () => {
     setTimeout(() => {
       Assist.loadData("Dashboard", pageConfig.Url)
         .then((data: any) => {
-          setLoading(false);
           updateValues(data);
+          setLoading(false);
         })
         .catch((message) => {
           setLoading(false);
+          Assist.showMessage(message, "error");
+        });
+    }, Assist.DEV_DELAY);
+
+    setLoadingAnnouncements(true);
+    setTimeout(() => {
+      Assist.loadData("Annnocements", "announcements/recent")
+        .then((data: any) => {
+          setLoadingAnnouncements(false);
+          setAnnouncementData(data);
+        })
+        .catch((message) => {
+          setLoadingAnnouncements(false);
+          Assist.showMessage(message, "error");
+        });
+    }, Assist.DEV_DELAY);
+
+    setLoadingArticles(true);
+    setTimeout(() => {
+      Assist.loadData("How tos", "knowledge-base-articles/recent")
+        .then((data: any) => {
+          setLoadingArticles(false);
+          setArticleData(data);
+        })
+        .catch((message) => {
+          setLoadingArticles(false);
           Assist.showMessage(message, "error");
         });
     }, Assist.DEV_DELAY);
@@ -141,7 +172,7 @@ const MyDashboard = () => {
         <Col xl={2} lg={2}>
           <Ticker
             title={"Savings"}
-            value={savings}
+            value={Assist.formatCurrency(savings)}
             color={"green"}
             percent={80}
           ></Ticker>
@@ -149,7 +180,7 @@ const MyDashboard = () => {
         <Col xl={2} lg={2}>
           <Ticker
             title={"Loans"}
-            value={loan}
+            value={Assist.formatCurrency(loan)}
             color={"red"}
             percent={40}
           ></Ticker>
@@ -157,7 +188,7 @@ const MyDashboard = () => {
         <Col xl={2} lg={2}>
           <Ticker
             title={"Interest"}
-            value={interest}
+            value={Assist.formatCurrency(interest)}
             color={"orange"}
             percent={70}
           ></Ticker>
@@ -165,7 +196,7 @@ const MyDashboard = () => {
         <Col xl={2} lg={2}>
           <Ticker
             title={"Penalty"}
-            value={penalty}
+            value={Assist.formatCurrency(penalty)}
             color={"red"}
             percent={90}
           ></Ticker>
@@ -173,7 +204,7 @@ const MyDashboard = () => {
         <Col xl={2} lg={2}>
           <Ticker
             title={"Share"}
-            value={share}
+            value={Assist.formatCurrency(share)}
             color={"blue"}
             percent={90}
           ></Ticker>
@@ -181,7 +212,7 @@ const MyDashboard = () => {
         <Col xl={2} lg={2}>
           <Ticker
             title={"Social"}
-            value={social}
+            value={Assist.formatCurrency(social)}
             color={"green"}
             percent={90}
           ></Ticker>
@@ -196,12 +227,12 @@ const MyDashboard = () => {
             <Card showHeader={false}>
               <DataGrid
                 className={"dx-card wide-card"}
-                dataSource={data}
+                dataSource={announcementsData}
                 showColumnHeaders={false}
                 keyExpr={"id"}
-                noDataText={'No accouncements added yet'}
+                noDataText={"No accouncements added yet"}
                 showBorders={false}
-                focusedRowEnabled={true}
+                focusedRowEnabled={false}
                 defaultFocusedRowIndex={0}
                 columnAutoWidth={true}
                 columnHidingEnabled={true}
@@ -217,99 +248,43 @@ const MyDashboard = () => {
                 <Column
                   dataField="id"
                   caption="ID"
-                  hidingPriority={13}
-                ></Column>
-                <Column
-                  dataField="fname"
-                  caption="First Name"
-                  hidingPriority={12}
-                ></Column>
-                <Column
-                  dataField="lname"
-                  caption="Last name"
-                  hidingPriority={11}
-                ></Column>
-                <Column
-                  dataField="email"
-                  caption="Email"
+                  hidingPriority={3}
                   visible={false}
-                  hidingPriority={11}
                 ></Column>
                 <Column
-                  dataField="phone"
-                  caption="Phone"
-                  visible={false}
-                  hidingPriority={11}
+                  dataField="title"
+                  caption="Title"
+                  hidingPriority={2}
+                  cellRender={(e) => {
+                    return (
+                      <a href={`/announcements/view/id/${e.data.id}`}>
+                        {e.text}
+                      </a>
+                    );
+                  }}
                 ></Column>
                 <Column
-                  dataField={`tid${Assist.TRANSACTION_SAVINGS}`}
-                  caption="Savings"
-                  format={",##0.###"}
-                  hidingPriority={10}
-                ></Column>
-                <Column
-                  dataField={`tid${Assist.TRANSACTION_SHARE}`}
-                  caption="Shares"
-                  format={",##0.###"}
-                  hidingPriority={10}
-                ></Column>
-                <Column
-                  dataField={`tid${Assist.TRANSACTION_LOAN}`}
-                  caption="Loans"
-                  format={",##0.###"}
-                  hidingPriority={10}
-                ></Column>
-                <Column
-                  dataField={`tid${Assist.TRANSACTION_LOAN_PAYMENT}`}
-                  caption="Loan Payment"
-                  format={",##0.###"}
-                  hidingPriority={10}
-                ></Column>
-                <Column
-                  dataField={`tid${Assist.TRANSACTION_INTEREST_CHARGED}`}
-                  caption="Interest Charged"
-                  format={",##0.###"}
-                  hidingPriority={10}
-                ></Column>
-                <Column
-                  dataField={`tid${Assist.TRANSACTION_INTEREST_PAID}`}
-                  caption="Interest Paid"
-                  format={",##0.###"}
-                  hidingPriority={10}
-                ></Column>
-                <Column
-                  dataField={`tid${Assist.TRANSACTION_SOCIAL_FUND}`}
-                  caption="Social Fund"
-                  format={",##0.###"}
-                  hidingPriority={10}
-                ></Column>
-                <Column
-                  dataField={`tid${Assist.TRANSACTION_PENALTY_CHARGED}`}
-                  caption="Penalty Charged"
-                  format={",##0.###"}
-                  hidingPriority={10}
-                ></Column>
-                <Column
-                  dataField={`tid${Assist.TRANSACTION_PENALTY_PAID}`}
-                  caption="Penalty Paid"
-                  format={",##0.###"}
-                  hidingPriority={10}
+                  dataField="created_at"
+                  caption="Date"
+                  dataType="date"
+                  format={"dd MMMM yyy HH:mm"}
+                  hidingPriority={1}
                 ></Column>
               </DataGrid>
             </Card>
           </Card>
         </Col>
         <Col sz={12} sm={12} lg={6}>
-          <Card title={"How To's"} showHeader={true}>
+          <Card title={"Knowledgebase"} showHeader={true}>
             <Card showHeader={false}>
               <DataGrid
                 className={"dx-card wide-card"}
-                dataSource={data}
+                dataSource={articlesData}
                 keyExpr={"id"}
                 showColumnHeaders={false}
                 noDataText={`No How To's added yet`}
                 showBorders={false}
-                focusedRowEnabled={true}
+                focusedRowEnabled={false}
                 defaultFocusedRowIndex={0}
                 columnAutoWidth={true}
                 columnHidingEnabled={true}
@@ -326,83 +301,27 @@ const MyDashboard = () => {
                 <Column
                   dataField="id"
                   caption="ID"
-                  hidingPriority={13}
-                ></Column>
-                <Column
-                  dataField="fname"
-                  caption="First Name"
-                  hidingPriority={12}
-                ></Column>
-                <Column
-                  dataField="lname"
-                  caption="Last name"
-                  hidingPriority={11}
-                ></Column>
-                <Column
-                  dataField="email"
-                  caption="Email"
+                  hidingPriority={3}
                   visible={false}
-                  hidingPriority={11}
                 ></Column>
                 <Column
-                  dataField="phone"
-                  caption="Phone"
-                  visible={false}
-                  hidingPriority={11}
+                  dataField="title"
+                  caption="Title"
+                  hidingPriority={2}
+                  cellRender={(e) => {
+                    return (
+                      <a href={`/knowledge-base/article/view/id/${e.data.id}`}>
+                        {e.text}
+                      </a>
+                    );
+                  }}
                 ></Column>
                 <Column
-                  dataField={`tid${Assist.TRANSACTION_SAVINGS}`}
-                  caption="Savings"
-                  format={",##0.###"}
-                  hidingPriority={10}
-                ></Column>
-                <Column
-                  dataField={`tid${Assist.TRANSACTION_SHARE}`}
-                  caption="Shares"
-                  format={",##0.###"}
-                  hidingPriority={10}
-                ></Column>
-                <Column
-                  dataField={`tid${Assist.TRANSACTION_LOAN}`}
-                  caption="Loans"
-                  format={",##0.###"}
-                  hidingPriority={10}
-                ></Column>
-                <Column
-                  dataField={`tid${Assist.TRANSACTION_LOAN_PAYMENT}`}
-                  caption="Loan Payment"
-                  format={",##0.###"}
-                  hidingPriority={10}
-                ></Column>
-                <Column
-                  dataField={`tid${Assist.TRANSACTION_INTEREST_CHARGED}`}
-                  caption="Interest Charged"
-                  format={",##0.###"}
-                  hidingPriority={10}
-                ></Column>
-                <Column
-                  dataField={`tid${Assist.TRANSACTION_INTEREST_PAID}`}
-                  caption="Interest Paid"
-                  format={",##0.###"}
-                  hidingPriority={10}
-                ></Column>
-                <Column
-                  dataField={`tid${Assist.TRANSACTION_SOCIAL_FUND}`}
-                  caption="Social Fund"
-                  format={",##0.###"}
-                  hidingPriority={10}
-                ></Column>
-                <Column
-                  dataField={`tid${Assist.TRANSACTION_PENALTY_CHARGED}`}
-                  caption="Penalty Charged"
-                  format={",##0.###"}
-                  hidingPriority={10}
-                ></Column>
-                <Column
-                  dataField={`tid${Assist.TRANSACTION_PENALTY_PAID}`}
-                  caption="Penalty Paid"
-                  format={",##0.###"}
-                  hidingPriority={10}
+                  dataField="created_at"
+                  caption="Date"
+                  dataType="date"
+                  format={"dd MMMM yyy HH:mm"}
+                  hidingPriority={1}
                 ></Column>
               </DataGrid>
             </Card>

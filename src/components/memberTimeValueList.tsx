@@ -197,7 +197,7 @@ export const MemberTimeValueList = ({
           <TotalItem
             column="payout_balance"
             summaryType="sum"
-            valueFormat={",##0.###"}
+            valueFormat={",##0.##"}
             displayFormat="{0}"
           />
         </Summary>

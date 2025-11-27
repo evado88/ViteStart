@@ -9,9 +9,13 @@
   height: 100vh; /* full screen height */
   /*background-color: #1e1e1e;*/
   color: #fff;
-  padding: 1rem;
+  padding-left: 1rem;
+  padding-right: 1rem;
+  padding-top: 1rem;
+  padding-bottom: 5rem;
   overflow-y: auto; /* enables vertical scrolling */
   scrollbar-width: thin; /* Firefox */
+  margin-bottom: 200px;
 }
 
 .sidemenu {

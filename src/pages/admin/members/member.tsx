@@ -144,6 +144,30 @@ const AdminMember = () => {
     });
   };
 
+  const checkMemberStatus = async (mem: any) => {
+    //check if member has been approved or rejected
+    if (mem.status_id == Assist.STATUS_APPROVED) {
+      const postData = {
+        id: mem.id,
+      };
+
+      setTimeout(() => {
+        Assist.postPutData(
+          'WhatsApp Approved Notification',
+          "whatsapp/send-infobip-account-approved-message",
+          postData,
+          0
+        )
+          .then((data) => {
+            console.log("Account approved notification sent", data);
+          })
+          .catch((message) => {
+            console.log("Account approved notification error", message);
+          });
+      }, Assist.DEV_DELAY);
+    }
+  };
+
   const submitPostingReview = (
     action: number,
     reviewComments: string,
@@ -159,7 +183,8 @@ const AdminMember = () => {
 
     setTimeout(() => {
       Assist.postPutData(pageConfig.Title, pageConfig.updateUrl, postData, 1)
-        .then((data) => {
+        .then(async (data) => {
+          await checkMemberStatus(data);
           setSaving(false);
 
           Assist.showMessage(
@@ -177,7 +202,6 @@ const AdminMember = () => {
         });
     }, Assist.DEV_DELAY);
   };
-
 
   return (
     <div id="pageRoot" className="page-content">
@@ -201,11 +225,7 @@ const AdminMember = () => {
       {/* chart start */}
       <Row>
         <Col sz={12} sm={12} lg={7}>
-          {memberDetail != null && (
-            <MemberDetail
-              member={memberDetail}
-            />
-          )}
+          {memberDetail != null && <MemberDetail member={memberDetail} />}
         </Col>
         <Col sz={12} sm={12} lg={5}>
           {requiresApproval() && (

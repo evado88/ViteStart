@@ -111,6 +111,17 @@ const MemberQueries = () => {
                   options={addButtonOptions}
                 />
                 <Item name="columnChooserButton" />
+                <Item
+                  location="after"
+                  locateInMenu="auto"
+                  showText="always"
+                  widget="dxButton"
+                  options={{
+                    icon: "save",
+                    text: " Excel Export",
+                    onClick: () => Assist.downloadExcel(pageConfig.Title, data),
+                  }}
+                />
               </Toolbar>
               <Column dataField="id" caption="ID" hidingPriority={6}></Column>
               <Column

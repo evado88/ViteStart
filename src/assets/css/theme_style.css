@@ -584,7 +584,7 @@ body {
 .page-header.navbar .page-logo {
   float: left;
   display: block;
-  width: 235px;
+  width: 265px;
   height: 60px;
   padding: 10px 20px 0px 30px;
   background: #222c3c;
@@ -2354,7 +2354,7 @@ form.search-form-opened .btn.submit {
   > li.classic-menu-dropdown
   .dropdown-menu {
   min-width: 195px;
-  max-width: 235px;
+  max-width: 265px;
 }
 .page-header.navbar
   .hor-menu

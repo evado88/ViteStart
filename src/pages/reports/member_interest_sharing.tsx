@@ -200,7 +200,7 @@ const MemberInterestSharing = () => {
         <Col xl={2} lg={2}>
           <Ticker
             title={"Savings"}
-            value={savings}
+            value={Assist.formatCurrency(savings)}
             color={"green"}
             percent={80}
           ></Ticker>
@@ -208,7 +208,7 @@ const MemberInterestSharing = () => {
         <Col xl={2} lg={2}>
           <Ticker
             title={"Loans"}
-            value={loan}
+            value={Assist.formatCurrency(loan)}
             color={"red"}
             percent={40}
           ></Ticker>
@@ -216,7 +216,7 @@ const MemberInterestSharing = () => {
         <Col xl={2} lg={2}>
           <Ticker
             title={"Interest"}
-            value={interest}
+            value={Assist.formatCurrency(interest)}
             color={"orange"}
             percent={70}
           ></Ticker>
@@ -224,7 +224,7 @@ const MemberInterestSharing = () => {
         <Col xl={2} lg={2}>
           <Ticker
             title={"Penalty"}
-            value={penalty}
+            value={Assist.formatCurrency(penalty)}
             color={"red"}
             percent={90}
           ></Ticker>
@@ -232,7 +232,7 @@ const MemberInterestSharing = () => {
         <Col xl={2} lg={2}>
           <Ticker
             title={"Share"}
-            value={share}
+            value={Assist.formatCurrency(share)}
             color={"blue"}
             percent={90}
           ></Ticker>
@@ -240,7 +240,7 @@ const MemberInterestSharing = () => {
         <Col xl={2} lg={2}>
           <Ticker
             title={"Social"}
-            value={social}
+            value={Assist.formatCurrency(social)}
             color={"green"}
             percent={90}
           ></Ticker>
@@ -258,30 +258,52 @@ const MemberInterestSharing = () => {
           />
 
           {selectedItem.id == 0 && (
-            <InterestSharingList data={data} loadingText={loadingText} />
+            <InterestSharingList
+              data={data}
+              loadingText={loadingText}
+              title={pageConfig.Title}
+            />
           )}
           {selectedItem.id == 1 && (
-            <MemberMonthlySavingsList data={data} loadingText={loadingText} />
+            <MemberMonthlySavingsList
+              data={data}
+              loadingText={loadingText}
+              title={pageConfig.Title}
+            />
           )}
           {selectedItem.id == 2 && (
-            <MonthlyTotalList data={savingsData} loadingText={loadingText} />
+            <MonthlyTotalList
+              data={savingsData}
+              loadingText={loadingText}
+              title={pageConfig.Title}
+            />
           )}
           {selectedItem.id == 3 && (
-            <MonthlyTotalList data={loansData} loadingText={loadingText} />
+            <MonthlyTotalList
+              data={loansData}
+              loadingText={loadingText}
+              title={pageConfig.Title}
+            />
           )}
           {selectedItem.id == 4 && (
-            <MonthlyTotalList data={interestData} loadingText={loadingText} />
+            <MonthlyTotalList
+              data={interestData}
+              loadingText={loadingText}
+              title={pageConfig.Title}
+            />
           )}
           {selectedItem.id == 5 && (
             <MonthlyTotalList
               data={savingProportionData}
               loadingText={loadingText}
+              title={pageConfig.Title}
             />
           )}
           {selectedItem.id == 6 && (
             <MonthlyTotalList
               data={interestRatesData}
               loadingText={loadingText}
+              title={pageConfig.Title}
             />
           )}
         </Col>

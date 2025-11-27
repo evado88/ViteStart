@@ -60,14 +60,16 @@ const AdminPostingPeriod = ({ props }: any) => {
       Assist.loadData(pageConfig.Title, pageConfig.Url)
         .then((res: any) => {
           //load postings
-          Assist.loadData(pageConfig.Title, `monthly-posting/period/${eId}`)
+          const url = `monthly-posting/period/${eId}`;
+
+          Assist.loadData(pageConfig.Title, url)
             .then((data: any) => {
               setLoading(false);
               updateVaues(res);
               setPostingsData(data);
               setPostingPeriod(res);
               setError(false);
-
+           
               if (res.length === 0) {
                 setLoadingText("No Data");
               } else {
@@ -75,6 +77,7 @@ const AdminPostingPeriod = ({ props }: any) => {
               }
             })
             .catch((ex) => {
+              console.log(ex);
               setLoading(false);
               setError(true);
               setLoadingText("Could not show information");

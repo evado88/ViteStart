@@ -56,8 +56,6 @@ const MonthlyPostings = () => {
     []
   );
 
-
-
   return (
     <div className="page-content" style={{ minHeight: "862px" }}>
       <Titlebar
@@ -76,6 +74,7 @@ const MonthlyPostings = () => {
             loadingText={loadingText}
             addButtonOptions={addButtonOptions}
             isMember={true}
+            title={pageConfig.Title}
           />
         </Col>
       </Row>

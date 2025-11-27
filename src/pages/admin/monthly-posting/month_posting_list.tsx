@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import { Titlebar } from "../../../components/titlebar";
 import { Row } from "../../../components/row";
 import { Col } from "../../../components/column";
@@ -8,13 +8,14 @@ import PageConfig from "../../../classes/page-config";
 import { MonthlyPostingsList } from "../../../components/monthlyPostingList";
 import SelectBox, { SelectBoxTypes } from "devextreme-react/select-box";
 import { usePeriod } from "../../../context/PeriodContext";
+import { useNavigate } from "react-router-dom";
 
 const AdminMonthlyPostings = () => {
+  const navigate = useNavigate();
   const [data, setData] = useState([]);
-  const { period, periodData ,  updateSelectedPeriod} = usePeriod();
+  const { period, periodData, updateSelectedPeriod } = usePeriod();
   const [loadingText, setLoadingText] = useState("Loading data...");
   const [loading, setLoading] = useState(true);
-
 
   const pageConfig = new PageConfig(
     "All Monthly Postings",
@@ -85,6 +86,7 @@ const AdminMonthlyPostings = () => {
             loadingText={loadingText}
             filterComponent={periodFilterComponent()}
             isMember={false}
+            title={pageConfig.Title}
           />
         </Col>
       </Row>

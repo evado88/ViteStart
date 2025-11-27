@@ -1,3 +1,4 @@
+import Assist from "../classes/assist";
 import { Card } from "./card";
 import DataGrid, {
   Column,
@@ -15,12 +16,16 @@ interface MonthlyPostArgs {
   loadingText: string;
   addButtonOptions: any;
   isLoan: boolean;
+  isPenalty: boolean;
+  title: string
 }
 export const TransactionList = ({
   data,
   loadingText,
   addButtonOptions,
   isLoan,
+  isPenalty,
+  title
 }: MonthlyPostArgs) => {
   return (
     /* start title */
@@ -56,6 +61,17 @@ export const TransactionList = ({
             options={addButtonOptions}
           />
           <Item name="columnChooserButton" />
+          <Item
+            location="after"
+            locateInMenu="auto"
+            showText="always"
+            widget="dxButton"
+            options={{
+              icon: "save",
+              text: " Excel Export",
+              onClick: () => Assist.downloadExcel(title, data),
+            }}
+          />
         </Toolbar>
         <Column dataField="id" caption="ID" hidingPriority={13}></Column>
         <Column
@@ -75,6 +91,13 @@ export const TransactionList = ({
           caption="Type"
           hidingPriority={11}
         ></Column>
+        {isPenalty && (
+          <Column
+            dataField="ptype.type_name"
+            caption="Penalty Type"
+            hidingPriority={11}
+          ></Column>
+        )}
         <Column
           dataField="status.status_name"
           caption="Status"

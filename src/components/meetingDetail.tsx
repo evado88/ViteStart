@@ -98,25 +98,36 @@ export const MeetingDetail = ({
               <Paging defaultPageSize={10} />
               <Pager showPageSizeSelector={true} showInfo={true} />
               <Column
+                dataField="id"
+                caption="Member ID"
+                hidingPriority={6}
+              ></Column>
+              <Column
                 dataField="user"
                 caption="Member"
-                hidingPriority={3}
+                hidingPriority={5}
               ></Column>
               <Column
                 dataField="type"
                 caption="Type"
-                hidingPriority={2}
+                hidingPriority={4}
               ></Column>
               <Column
                 dataField="typeId"
                 caption="Type ID"
                 visible={false}
-                hidingPriority={2}
+                hidingPriority={3}
               ></Column>
               <Column
                 dataField="penalty"
                 format={",##0.###"}
                 caption="Penalty ZMW"
+                hidingPriority={2}
+              />
+              <Column
+                dataField="penaltyId"
+                format={",##0.###"}
+                caption="Penalty ID"
                 hidingPriority={1}
               />
             </DataGrid>

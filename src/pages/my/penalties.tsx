@@ -9,6 +9,7 @@ import PageConfig from "../../classes/page-config";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import { TransactionList } from "../../components/transactionList";
+import config from "devextreme/core/config";
 
 const MonthlyPostings = () => {
   const { user } = useAuth();
@@ -73,7 +74,9 @@ const MonthlyPostings = () => {
             data={data}
             loadingText={loadingText}
             addButtonOptions={addButtonOptions}
-            isLoan = {false}
+            isLoan={false}
+            isPenalty={true}
+            title={pageConfig.Title}
           />
         </Col>
       </Row>

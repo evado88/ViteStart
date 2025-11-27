@@ -17,6 +17,7 @@ export { default as AdminMonthlySummaryPage } from './reports/monthly_summary'
 export { default as MemberInterestSharingPage } from './reports/member_interest_sharing'
 export { default as MemberTimeValueSummaryPage } from './reports/member_time_value_summary'
 //posting period
+export { default as AdminPostingPeriodEditPage } from './admin/posting-periods/posting_period_edit'
 export { default as AdminPostingPeriodsPage } from './admin/posting-periods/posting_period_list'
 export { default as AdminPostingSubmittedPeriodsPage } from './admin/posting-periods/posting_period_submitted'
 export { default as AdminPostingApprovedPeriodsPage } from './admin/posting-periods/posting_period_approved'

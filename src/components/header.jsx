@@ -23,8 +23,8 @@ export const Header = ({ toggleSidebar }) => {
         {/* logo start */}
         <div className="page-logo">
           <Link to={'#'}>
-            <span className="logo-icon material-icons fa-rotate-45">
-              school
+            <span className="logo-icon material-icons">
+              people
             </span>
             <span className="logo-default">{AppInfo.appCode}</span>
           </Link>
