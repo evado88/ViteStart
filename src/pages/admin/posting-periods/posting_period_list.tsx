@@ -25,7 +25,14 @@ import { PostingPeriodingsList } from "../../../components/postingPeriodsList";
 const AdminPostingPeriods = () => {
   const navigate = useNavigate();
   const [data, setData] = useState([]);
-  const { period, periodData, updateSelectedPeriod } = usePeriod();
+  const {
+    periodYear,
+    periodMonth,
+    UpdatePeriodYear,
+    UpdatePeriodMonth,
+    periodYearData,
+    periodMonthData,
+  } = usePeriod();
   const [loadingText, setLoadingText] = useState("Loading data...");
   const [loading, setLoading] = useState(true);
 
@@ -51,29 +58,47 @@ const AdminPostingPeriods = () => {
   };
 
   useEffect(() => {
-    loadData(`posting-periods/current/${period}/status/0`);
-  }, []);
+    loadData(
+      `posting-periods/year/${periodYear}/month/${periodMonth}/status/0`
+    );
+  }, [periodYear, periodMonth]);
 
-  const changePostingPeriod = useCallback(
+  const changePostingYearPeriod = useCallback(
     (e: SelectBoxTypes.ValueChangedEvent) => {
-      updateSelectedPeriod(e.value);
-      loadData(`posting-periods/current/${e.value}`);
+      console.log("period year changed", e);
+      UpdatePeriodYear(e.value);
     },
     []
   );
 
-  const periodFilterComponent = () => {
+  const changePostingMonthPeriod = useCallback(
+    (e: SelectBoxTypes.ValueChangedEvent) => {
+      console.log("period month changed", e);
+      UpdatePeriodMonth(e.value);
+    },
+    []
+  );
+
+  const periodYearFilterComponent = () => {
     return (
       <SelectBox
-        dataSource={periodData}
-        displayExpr="text"
-        valueExpr="value"
-        value={period}
-        onValueChanged={changePostingPeriod}
+        dataSource={periodYearData}
+        value={periodYear}
+        onValueChanged={changePostingYearPeriod}
       />
     );
   };
-
+  const periodMonthFilterComponent = () => {
+    return (
+      <SelectBox
+        dataSource={periodMonthData}
+        displayExpr={"text"}
+        valueExpr={"value"}
+        value={periodMonth}
+        onValueChanged={changePostingMonthPeriod}
+      />
+    );
+  };
   return (
     <div className="page-content" style={{ minHeight: "862px" }}>
       <Titlebar
@@ -90,7 +115,8 @@ const AdminPostingPeriods = () => {
           <PostingPeriodingsList
             data={data}
             loadingText={loadingText}
-            filterComponent={periodFilterComponent()}
+            filterYearComponent={periodYearFilterComponent()}
+            filterMonthComponent={periodMonthFilterComponent()}
             isMember={false}
           />
         </Col>

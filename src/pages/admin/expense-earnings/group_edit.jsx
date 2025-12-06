@@ -32,36 +32,24 @@ import HtmlEditor, {
 } from "devextreme-react/html-editor";
 import AppInfo from "../../../classes/app-info";
 
-const KnowledgebaseArticleEdit = () => {
+const ExpenseEarningGroupEdit = () => {
   //user
   const navigate = useNavigate();
   const { user } = useAuth();
   const { eId } = useParams(); // Destructure the parameter directly
 
   //posting
-  const [title, setTitle] = useState(null);
-  const [categories, setCategories] = useState([]);
-  const [category, setCategory] = useState(null);
-  const [content, setContent] = useState(null);
+  const [groupName, setGroupName] = useState(null);
+  const [groupDescription, setGroupDescription] = useState(null);
 
   //service
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState(false);
 
-  const pageConfig = new PageConfig("Article", "", "", "Article", "");
+  const pageConfig = new PageConfig("Expense Earning Group", "", "", "Expense Earning Group", "");
 
   pageConfig.id = eId == undefined ? 0 : Number(eId);
-
-  useEffect(() => {
-    Assist.loadData("Categories", "knowledge-base-categories/list")
-      .then((res) => {
-        setCategories(res);
-      })
-      .catch((ex) => {
-        Assist.showMessage(ex.Message, "error");
-      });
-  }, []);
 
   useEffect(() => {
     //only load if updating item
@@ -69,13 +57,10 @@ const KnowledgebaseArticleEdit = () => {
       setLoading(true);
 
       setTimeout(() => {
-        Assist.loadData(
-          pageConfig.Title,
-          `knowledge-base-articles/id/${pageConfig.id}`
-        )
+        Assist.loadData(pageConfig.Title, `transaction-groups/id/${pageConfig.id}`)
           .then((data) => {
             setLoading(false);
-            updateVaues(data, true);
+            updateVaues(data);
             setError(false);
           })
           .catch((message) => {
@@ -87,11 +72,9 @@ const KnowledgebaseArticleEdit = () => {
     }
   }, []);
 
-  const updateVaues = (data, isLoading) => {
-    console.log("data", data);
-    setTitle(data.title);
-    setCategory(isLoading ? data.category.id : data.cat_id);
-    setContent(data.content);
+  const updateVaues = (data) => {
+    setGroupName(data.group_name);
+    setGroupDescription(data.description);
   };
 
   const onFormSubmit = (e) => {
@@ -100,27 +83,28 @@ const KnowledgebaseArticleEdit = () => {
     e.preventDefault();
 
     const postData = {
-      cat_id: category,
       user_id: user.userid,
-      title: title,
-      content: content,
-      status_id: 1,
-      stage_id: 1,
-      approval_levels: 1,
+      group_name: groupName,
+      description: groupDescription,
     };
+
+    console.log('pd', postData);
+
+
+    const url = pageConfig.id == 0
+          ? `transaction-groups/create`
+          : `transaction-groups/update/${pageConfig.id}`;
 
     setTimeout(() => {
       Assist.postPutData(
         pageConfig.Title,
-        pageConfig.id == 0
-          ? `knowledge-base-articles/create`
-          : `knowledge-base-articles/update/${pageConfig.id}`,
+        url,
         postData,
         pageConfig.id
       )
         .then((data) => {
           setSaving(false);
-          updateVaues(data, false);
+          updateVaues(data);
 
           Assist.showMessage(
             `You have successfully updated the ${pageConfig.Title}!`,
@@ -129,7 +113,7 @@ const KnowledgebaseArticleEdit = () => {
 
           if (pageConfig.id == 0) {
             //navigate
-            navigate(`/admin/knowledge-base/article/${data.id}`);
+            navigate(`/admin/expense-earning/group/edit/${data.id}`);
           }
         })
         .catch((message) => {
@@ -169,52 +153,35 @@ const KnowledgebaseArticleEdit = () => {
             <form id="formMain" onSubmit={onFormSubmit}>
               <div className="form">
                 <div className="dx-fieldset">
-                  <div className="dx-fieldset-header">Title</div>
+                  <div className="dx-fieldset-header">Name</div>
                   <div className="dx-field">
-                    <div className="dx-field-label">Title</div>
+                    <div className="dx-field-label">Group Name</div>
                     <TextBox
                       className="dx-field-value"
-                      placeholder="Title"
-                      value={title}
+                      placeholder="Name"
+                      value={groupName}
                       disabled={error || saving}
-                      onValueChange={(text) => setTitle(text)}
+                      onValueChange={(text) => setGroupName(text)}
                     >
                       <Validator>
-                        <RequiredRule message="Title is required" />
+                        <RequiredRule message="Name is required" />
                       </Validator>
                     </TextBox>
                   </div>
-                  <div className="dx-field">
-                    <div className="dx-field-label">Category</div>
-                    <SelectBox
-                      className="dx-field-value"
-                      dataSource={categories}
-                      onValueChange={(value) => setCategory(value)}
-                      validationMessagePosition="left"
-                      value={category}
-                      disabled={error}
-                      valueExpr={"id"}
-                      displayExpr={"cat_name"}
-                    >
-                      <Validator>
-                        <RequiredRule message="Category is required" />
-                      </Validator>
-                    </SelectBox>
-                  </div>
                 </div>
                 <div className="dx-fieldset">
-                  <div className="dx-fieldset-header">Content</div>
+                  <div className="dx-fieldset-header">Description</div>
                   <div className="dx-field">
                     <HtmlEditor
                       height="525px"
-                      defaultValue={content}
-                      value={content}
+                      defaultValue={groupDescription}
+                      value={groupDescription}
                       toolbar={toolbar}
-                      onValueChanged={(e) => setContent(e.value)}
+                      onValueChanged={(e) => setGroupDescription(e.value)}
                     >
                       <MediaResizing enabled={true} />
                       <Validator>
-                        <RequiredRule message="Content is required" />
+                        <RequiredRule message="Description is required" />
                       </Validator>
                     </HtmlEditor>
                   </div>
@@ -250,4 +217,4 @@ const KnowledgebaseArticleEdit = () => {
   );
 };
 
-export default KnowledgebaseArticleEdit;
+export default ExpenseEarningGroupEdit;

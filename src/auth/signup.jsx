@@ -14,7 +14,7 @@ import { useAuth } from "../context/AuthContext";
 import { useNavigate, Link } from "react-router-dom";
 import notify from "devextreme/ui/notify";
 import axios from "axios";
-import { DateBox } from "devextreme-react";
+import { DateBox, NumberBox } from "devextreme-react";
 import SelectBox from "devextreme-react/select-box";
 import { v4 as uuidv4 } from "uuid";
 import Assist from "../classes/assist";
@@ -31,6 +31,7 @@ import DataGrid, {
   GroupItem,
   TotalItem,
 } from "devextreme-react/data-grid";
+import Box, { Item } from "devextreme-react/box";
 
 const Signup = () => {
   const { user, login } = useAuth();
@@ -45,7 +46,9 @@ const Signup = () => {
   const [lastname, setLastname] = useState(null);
   const [dateOfBirthText, setDateOfBirthText] = useState(null);
   const [dateOfBirthValue, setDateOfBirthValue] = useState(null);
+  const [mobile2FACode, setMobile2FACode] = useState("+260");
   const [mobile2FA, setMobile2FA] = useState(null);
+  const [mobileMoneyCode, setMobileMoneyCode] = useState("+260");
   const [mobileMoney, setMobileMoney] = useState(null);
 
   const [otp, setOTP] = useState("");
@@ -60,6 +63,7 @@ const Signup = () => {
   //guarantor details
   const [guarantorFirstname, setGuarantorFirstname] = useState(null);
   const [guarantorLastname, setGuarantorLastname] = useState(null);
+  const [guarantorMobileCode, setGuarantorMobileCode] = useState("+260");
   const [guarantorMobile, setGuarantorMobile] = useState(null);
   const [guarantorEmail, setGuarantorEmail] = useState(null);
 
@@ -121,7 +125,7 @@ const Signup = () => {
     setLoading(true);
     setTimeout(() => {
       setLoading(false);
-      setStage(3);
+      setStage(4);
     }, Assist.UX_DELAY);
   };
 
@@ -172,20 +176,12 @@ const Signup = () => {
       setStage(8);
     }, Assist.UX_DELAY);
   };
-  const showMessge = (msg, type = "info") => {
-    notify(
-      {
-        message: msg,
-      },
-      type,
-      4000
-    );
-  };
 
   const sendWhatsappOTP = (e) => {
     const newCode = Math.floor(100000 + Math.random() * 900000);
+    const userPhone = Assist.setMobile(mobile2FACode, mobile2FA);
 
-    console.log(`Now sending OTP ${newCode} to client ${mobile2FA}`);
+    console.log(`Now sending OTP ${newCode} to client ${userPhone}`);
 
     setOTP(newCode);
 
@@ -203,7 +199,7 @@ const Signup = () => {
     setLoading(true);
 
     const postData = {
-      mobile: mobile2FA,
+      mobile: userPhone,
       code: newCode,
     };
 
@@ -217,8 +213,8 @@ const Signup = () => {
         .then((data) => {
           console.log(data);
           setLoading(false);
-          showMessge(
-            `The OTP has been successfully sent to ${mobile2FA}`,
+          Assist.showMessage(
+            `The OTP has been successfully sent to ${userPhone}`,
             "success"
           );
           setStage(5);
@@ -226,8 +222,8 @@ const Signup = () => {
         .catch((message) => {
           console.log(message);
           setLoading(false);
-          showMessge(
-            `Error sending OTP to ${mobile2FA}. Please try again`,
+          Assist.showMessage(
+            `Error sending OTP to ${userPhone}. Please try again`,
             "error"
           );
         });
@@ -253,7 +249,7 @@ const Signup = () => {
 
     const postData = {
       id: mem.id,
-      action: 'registered'
+      action: "registered",
     };
 
     setTimeout(() => {
@@ -287,12 +283,12 @@ const Signup = () => {
       id_attachment: attachmentID,
       // contact details
       email: email,
-      mobile1: mobile2FA,
-      mobile2: mobileMoney,
+      mobile1: Assist.setMobile(mobile2FACode, mobile2FA),
+      mobile2: Assist.setMobile(mobileMoneyCode, mobileMoney),
       // guarantor
       guar_fname: guarantorFirstname,
       guar_lname: guarantorLastname,
-      guar_mobile: guarantorMobile,
+      guar_mobile: Assist.setMobile(guarantorMobileCode, guarantorMobile),
       guar_email: guarantorEmail,
       // banking
       bank_name: bank,
@@ -515,7 +511,7 @@ const Signup = () => {
                   <a
                     to={"#"}
                     className="signup-image-link"
-                    onClick={setPreviousStage}
+                    onClick={() => setPreviousStage}
                   >
                     Personal Details
                   </a>
@@ -626,7 +622,7 @@ const Signup = () => {
                   <a
                     to={"#"}
                     className="signup-image-link"
-                    onClick={setPreviousStage}
+                    onClick={() => setPreviousStage}
                   >
                     Identity Details
                   </a>
@@ -644,12 +640,31 @@ const Signup = () => {
                   verification
                 </p>
                 <div className="dx-fieldset">
-                  <div className="dx-fieldset-header">Mobile phone</div>
+                  <div className="dx-fieldset-header">Verification</div>
                   <div className="dx-field">
-                    <div className="dx-field-label">Verification</div>
+                    <div className="dx-field-label">Country Code</div>
+                    <SelectBox
+                      className="dx-field-value"
+                      placeholder="Country Code"
+                      displayExpr="dial_code"
+                      valueExpr="dial_code"
+                      value={mobile2FACode}
+                      itemTemplate={(item) => `${item.name} ${item.dial_code}`}
+                      dataSource={AppInfo.countryCodes}
+                      onValueChange={(value) => setMobile2FACode(value)}
+                      validationMessagePosition="left"
+                      disabled={error}
+                    >
+                      <Validator>
+                        <RequiredRule message="Country code is required" />
+                      </Validator>
+                    </SelectBox>
+                  </div>
+                  <div className="dx-field">
+                    <div className="dx-field-label">Phone</div>
                     <TextBox
                       className="dx-field-value"
-                      placeholder="Mobile i.e. 260977123456"
+                      placeholder="977123456"
                       value={mobile2FA}
                       onValueChange={(text) => setMobile2FA(text)}
                     >
@@ -659,17 +674,39 @@ const Signup = () => {
                       </Validator>
                     </TextBox>
                   </div>
+                </div>
+                <div className="dx-fieldset">
+                  <div className="dx-fieldset-header">Mobile money</div>
                   <div className="dx-field">
-                    <div className="dx-field-label">Mobile money</div>
+                    <div className="dx-field-label">Country Code</div>
+                    <SelectBox
+                      className="dx-field-value"
+                      placeholder="Country Code"
+                      displayExpr="dial_code"
+                      valueExpr="dial_code"
+                      itemTemplate={(item) => `${item.name} ${item.dial_code}`}
+                      dataSource={AppInfo.countryCodes}
+                      value={mobileMoneyCode}
+                      onValueChange={(value) => setMobileMoneyCode(value)}
+                      validationMessagePosition="left"
+                      disabled={error}
+                    >
+                      <Validator>
+                        <RequiredRule message=" Prefered payment method is required" />
+                      </Validator>
+                    </SelectBox>
+                  </div>
+                  <div className="dx-field">
+                    <div className="dx-field-label">Phone</div>
                     <TextBox
                       className="dx-field-value"
-                      placeholder="Mobile i.e. 260977123456"
+                      placeholder="977123456"
                       value={mobileMoney}
                       onValueChange={(text) => setMobileMoney(text)}
                     >
                       {" "}
                       <Validator>
-                        <RequiredRule message="Mobile phone for mobile money required" />
+                        <RequiredRule message="Country code is required" />
                       </Validator>
                     </TextBox>
                   </div>
@@ -684,11 +721,7 @@ const Signup = () => {
                     text="Next"
                     useSubmitBehavior={true}
                   />
-                  <a
-                    to={"#"}
-                    className="signup-image-link"
-                    onClick={setPreviousStage}
-                  >
+                  <a className="signup-image-link" onClick={() => setStage(2)}>
                     Identity Details
                   </a>
                 </div>
@@ -777,6 +810,25 @@ const Signup = () => {
                         <RequiredRule message="Gurantor last name is required" />
                       </Validator>
                     </TextBox>
+                  </div>
+                  <div className="dx-field">
+                    <div className="dx-field-label">Country Code</div>
+                    <SelectBox
+                      className="dx-field-value"
+                      placeholder="Country Code"
+                      displayExpr="dial_code"
+                      valueExpr="dial_code"
+                      value={guarantorMobileCode}
+                      itemTemplate={(item) => `${item.name} ${item.dial_code}`}
+                      dataSource={AppInfo.countryCodes}
+                      onValueChange={(value) => setGuarantorMobileCode(value)}
+                      validationMessagePosition="left"
+                      disabled={error}
+                    >
+                      <Validator>
+                        <RequiredRule message="Country code is required" />
+                      </Validator>
+                    </SelectBox>
                   </div>
                   <div className="dx-field">
                     <div className="dx-field-label">Mobile</div>
@@ -914,7 +966,7 @@ const Signup = () => {
                   <a
                     to={"#"}
                     className="signup-image-link"
-                    onClick={setPreviousStage}
+                    onClick={() => setPreviousStage}
                   >
                     Guarantor Details
                   </a>
@@ -987,7 +1039,7 @@ const Signup = () => {
                   <a
                     to={"#"}
                     className="signup-image-link"
-                    onClick={setPreviousStage}
+                    onClick={() => setPreviousStage}
                   >
                     Bank Details
                   </a>

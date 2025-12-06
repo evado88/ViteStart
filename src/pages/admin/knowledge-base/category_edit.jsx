@@ -86,7 +86,6 @@ const KnowledgebaseCategoryEdit = () => {
       user_id: user.userid,
       cat_name: categoryName,
       description: categoryDescription,
-      created_by: 'admin'
     };
 
 

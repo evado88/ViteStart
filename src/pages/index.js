@@ -10,10 +10,14 @@ export { default as SignupPage } from '../auth/signup'
 
 //ADMIN
 //dahsboard
-
+//user
+export { default as AdminUsersPage } from './admin/users/user_list'
+export { default as AdminUserEditPage } from './admin/users/user_edit'
+export { default as AdminUserPage } from './admin/users/user'
 //reports
 export { default as AdminMemberSummaryPage } from './reports/member_summary'
 export { default as AdminMonthlySummaryPage } from './reports/monthly_summary'
+export { default as AdminMonthlyExpenseEarningsSummaryPage } from './reports/expense_earning_summary'
 export { default as MemberInterestSharingPage } from './reports/member_interest_sharing'
 export { default as MemberTimeValueSummaryPage } from './reports/member_time_value_summary'
 //posting period
@@ -38,6 +42,16 @@ export { default as AdminMonthlyApprovedPostingsPage } from './admin/monthly-pos
 export { default as AdminMonthlyRejectedPostingsPage } from './admin/monthly-posting/month_posting_rejected'
 export { default as AdminMonthlyPostingsDDACPage } from './admin/monthly-posting/month_posting_ddac'
 export { default as AdminMonthlyPostingPage } from './admin/monthly-posting/month_posting'
+
+//expense and earnings
+export { default as AdminExpenseEarningGroupsPage } from './admin/expense-earnings/group_list'
+export { default as AdminExpenseEarningGroupsEditPage } from './admin/expense-earnings/group_edit'
+export { default as AdminExpenseEarningsPage } from './admin/expense-earnings/expense_earning_list'
+export { default as AdminExpenseEarningsSubmittedPage } from './admin/expense-earnings/expense_earning_submitted'
+export { default as AdminExpenseEarningsApprovedPage } from './admin/expense-earnings/expense_earning_approved'
+export { default as AdminExpenseEarningsRejectedPage } from './admin/expense-earnings/expense_earning_rejected'
+export { default as AdminExpenseEarningsEditPage } from './admin/expense-earnings/expense_earning_edit'
+export { default as AdminExpenseEarningPage } from './admin/expense-earnings/expense_earning'
 //annoucement
 export { default as AdminAnnouncementsPage } from './admin/announcements/announcement_list'
 export { default as AdminAnnouncementEditPage } from './admin/announcements/announcement_edit'
@@ -81,3 +95,9 @@ export { default as MemberSocialFundsPage} from './my/social'
 export { default as MemberPenaltiesPage} from './my/penalties'
 export { default as MemberSharesPage} from './my/shares'
 export { default as MemberLoansPage} from './my/loans'
+export { default as GuarantorsPage} from './my/guarantors'
+export { default as GuarantorSubmitPage} from './my/guarantor_edit'
+export { default as GuarantorPage} from './my/guarantor'
+export { default as PaymentMethodsPage} from './my/payment_methods'
+export { default as PaymentMethodSubmitPage} from './my/payment_method_edit'
+export { default as PaymentMethodPage} from './my/payment_method'

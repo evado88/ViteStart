@@ -1,6 +1,6 @@
 import { useState } from "react";
 import "./App.css";
-import "devextreme/dist/css/dx.light.css";
+import "devextreme/dist/css/dx.greenmist.css";
 import MainLayout from "./components/MainLayout";
 import AuthLayout from "./components/AuthLayout";
 import PrivateRoute from "./auth/PrivateRoute";
@@ -67,6 +67,24 @@ import {
   MemberInterestSharingPage,
   MemberTimeValueSummaryPage,
   AdminPostingPeriodEditPage,
+  AdminExpenseEarningGroupsPage,
+  AdminExpenseEarningGroupsEditPage,
+  AdminExpenseEarningsSubmittedPage,
+  AdminExpenseEarningsEditPage,
+  AdminExpenseEarningsRejectedPage,
+  AdminExpenseEarningsApprovedPage,
+  AdminExpenseEarningPage,
+  AdminExpenseEarningsPage,
+  AdminMonthlyExpenseEarningsSummaryPage,
+  GuarantorsPage,
+  PaymentMethodsPage,
+  GuarantorSubmitPage,
+  GuarantorPage,
+  PaymentMethodSubmitPage,
+  PaymentMethodPage,
+  AdminUsersPage,
+  AdminUserEditPage,
+  AdminUserPage,
 
 } from "./pages";
 import { BrowserRouter } from "react-router-dom";
@@ -92,11 +110,18 @@ function App() {
           <Route path="/about" element={<AboutPage></AboutPage>} />
           <Route path="/contact" element={<ContactPage></ContactPage>} />
           {/* ADMIN */}
+          {/* users */}
+          <Route path="/admin/users/list" element={<AdminUsersPage/>} />
+          <Route path="/admin/users/edit/:eId" element={<AdminUserEditPage/>} />
+          <Route path="/admin/users/add" element={<AdminUserEditPage/>} />
+          <Route path="/admin/users/view/:eId" element={<AdminUserPage/>} />
+          <Route path="/users/view/id/:eId" element={<AdminUserPage/>} />
           {/* Dashboards */}
           <Route path="/" element={<MemberDashboardPage></MemberDashboardPage>} />
           {/* Reports */}
           <Route path="/reports/member-summary" element={<AdminMemberSummaryPage/>} />
           <Route path="/reports/monthly-summary" element={<AdminMonthlySummaryPage/>} />
+          <Route path="/reports/expense-earnings-summary" element={<AdminMonthlyExpenseEarningsSummaryPage/>} />
           <Route path="/reports/interest-sharing" element={<MemberInterestSharingPage/>} />
           <Route path="/reports/time-value-summary" element={<MemberTimeValueSummaryPage/>} />
           {/* Dictionaries */}
@@ -112,6 +137,17 @@ function App() {
           <Route path="/admin/monthly-postings/rejected" element={<AdminMonthlyRejectedPostingsPage/>} />
           <Route path="/admin/monthly-postings/ddac-report/:eId" element={<AdminMonthlyPostingsDDACPage/>} />
           <Route path="/admin/monthly-postings/view/:eId" element={<AdminMonthlyPostingPage/>} />
+          {/*expense and earnings*/}
+          <Route path="/admin/expense-earning/group/list" element={<AdminExpenseEarningGroupsPage/>} />
+          <Route path="/admin/expense-earning/group/add" element={<AdminExpenseEarningGroupsEditPage/>} />
+          <Route path="/admin/expense-earning/group/edit/:eId" element={<AdminExpenseEarningGroupsEditPage/>} />
+           <Route path="/admin/expenses-earnings/list" element={<AdminExpenseEarningsPage/>} />
+          <Route path="/admin/expenses-earnings/submitted" element={<AdminExpenseEarningsSubmittedPage/>} />
+          <Route path="/admin/expenses-earnings/approved" element={<AdminExpenseEarningsApprovedPage/>} />
+          <Route path="/admin/expenses-earnings/rejected" element={<AdminExpenseEarningsRejectedPage/>} />
+          <Route path="/admin/expenses-earnings/add" element={<AdminExpenseEarningsEditPage/>} />
+          <Route path="/admin/expenses-earnings/edit/:eId" element={<AdminExpenseEarningsEditPage/>} />
+          <Route path="/admin/expenses-earnings/view/:eId" element={<AdminExpenseEarningPage/>} />
           {/* posting periods */}
           <Route path="/admin/posting-periods/list" element={<AdminPostingPeriodsPage/>} />
           <Route path="/admin/posting-periods/submitted" element={<AdminPostingSubmittedPeriodsPage/>} />
@@ -119,7 +155,7 @@ function App() {
           <Route path="/admin/posting-periods/rejected" element={<AdminPostingRejectedPeriodsPage/>} />
           <Route path="/admin/posting-periods/view/:eId" element={<AdminPostingPeriodPage/>} />
           <Route path="/admin/posting-periods/edit/:eId" element={<AdminPostingPeriodEditPage/>} />
-          {/* Users */}
+          {/* Members */}
           <Route path="/admin/members/list" element={<AdminMembersPage/>} />
           <Route path="/admin/members/submitted" element={<AdminMembersSubmittedPage/>} />
           <Route path="/admin/members/approved" element={<AdminMembersApproved/>} />
@@ -132,6 +168,7 @@ function App() {
           <Route path="/admin/announcements/edit/:eId" element={<AdminAnnouncementEditPage/>} />
           <Route path="/admin/announcements/add" element={<AdminAnnouncementEditPage/>} />
           <Route path="/admin/announcements/view/:eId" element={<AdminAnnouncementPage/>} />
+          <Route path="/announcements/view/id/:eId" element={<AdminAnnouncementPage/>} />
           {/* meetings */}
           <Route path="/admin/meetings/list" element={<AdminMeetingsPage/>} />
           <Route path="/admin/meetings/view/:eId" element={<AdminMeetingPage/>} />
@@ -148,6 +185,7 @@ function App() {
           <Route path="/admin/knowledge-base/article/edit/:eId" element={<AdminKnowledgebaseArticleEditPage/>} />
           <Route path="/admin/knowledge-base/article/view/:eId" element={<AdminKnowledgebaseArticlePage/>} />
           <Route path="/admin/knowledge-base/article/add" element={<AdminKnowledgebaseArticleEditPage/>} />
+          <Route path="/knowledge-base/article/view/id/:eId" element={<AdminKnowledgebaseArticlePage/>} />
           {/* MEMBER */}
           {/* My */}
           <Route path="/" element={<MemberDashboardPage></MemberDashboardPage>} />
@@ -167,6 +205,14 @@ function App() {
           <Route path="/my/penalties/list" element={<MemberPenaltiesPage/>} />
           <Route path="/my/shares/list" element={<MemberSharesPage/>} />
           <Route path="/my/loans/list" element={<MemberLoansPage/>} />
+          <Route path="/my/guarantors/list" element={<GuarantorsPage/>} />
+          <Route path="/my/guarantors/submit" element={<GuarantorSubmitPage/>} />
+          <Route path="/my/guarantors/edit/:eId" element={<GuarantorSubmitPage/>} />
+          <Route path="/my/guarantors/view/:eId" element={<GuarantorPage/>} />
+          <Route path="/my/payment-methods/list" element={<PaymentMethodsPage/>} />
+          <Route path="/my/payment-methods/add" element={<PaymentMethodSubmitPage/>} />
+          <Route path="/my/payment-methods/edit/:eId" element={<PaymentMethodSubmitPage/>} />
+          <Route path="/my/payment-methods/view/:eId" element={<PaymentMethodPage/>} />
           {/* Error */}   
           <Route path="*" element={<NotFoundPage></NotFoundPage>} />
         </Route>

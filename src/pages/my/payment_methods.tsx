@@ -1,8 +1,8 @@
 import { useState, useEffect, useMemo } from "react";
-import { Titlebar } from "../../../components/titlebar";
-import { Card } from "../../../components/card";
-import { Row } from "../../../components/row";
-import { Col } from "../../../components/column";
+import { Titlebar } from "../../components/titlebar";
+import { Card } from "../../components/card";
+import { Row } from "../../components/row";
+import { Col } from "../../components/column";
 import DataGrid, {
   Column,
   Pager,
@@ -15,21 +15,25 @@ import DataGrid, {
   Item,
 } from "devextreme-react/data-grid";
 
-import Assist from "../../../classes/assist";
-import PageConfig from "../../../classes/page-config";
+import Assist from "../../classes/assist";
+import PageConfig from "../../classes/page-config";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../../context/AuthContext";
 
-const AdminAnnouncements = () => {
+const MemberQueries = () => {
+  //user
+  const { user } = useAuth();
+  //other
   const navigate = useNavigate();
   const [data, setData] = useState([]);
   const [loadingText, setLoadingText] = useState("Loading data...");
   const [loading, setLoading] = useState(true);
 
   const pageConfig = new PageConfig(
-    "Annoucements",
-    "announcements/list",
+    "Payment Methods",
+    `paymentmethods/user/${user.userid}/list`,
     "",
-    "Annoucements",
+    "Payment Method",
     ""
   );
 
@@ -42,7 +46,7 @@ const AdminAnnouncements = () => {
         setLoading(false);
 
         if (res.length === 0) {
-          setLoadingText("No announcements added for now");
+          setLoadingText("No Data");
         } else {
           setLoadingText("");
         }
@@ -56,8 +60,8 @@ const AdminAnnouncements = () => {
   const addButtonOptions = useMemo(
     () => ({
       icon: "add",
-      text: "New Annoucement",
-      onClick: () => navigate("/admin/announcements/add"),
+      text: "New Payment Method",
+      onClick: () => navigate("/my/payment-methods/add"),
     }),
     []
   );
@@ -102,30 +106,80 @@ const AdminAnnouncements = () => {
                 <Item
                   location="before"
                   locateInMenu="auto"
-                  showText="inMenu"
+                  showText="always"
                   widget="dxButton"
                   options={addButtonOptions}
                 />
                 <Item name="columnChooserButton" />
+                <Item
+                  location="after"
+                  locateInMenu="auto"
+                  showText="always"
+                  widget="dxButton"
+                  options={{
+                    icon: "save",
+                    text: " Excel Export",
+                    onClick: () => Assist.downloadExcel(pageConfig.Title, data),
+                  }}
+                />
               </Toolbar>
               <Column dataField="id" caption="ID" hidingPriority={6}></Column>
               <Column
-                dataField="title"
-                caption="Title"
-                dataType="date"
-                format={"dd MMMM yyy"}
-                hidingPriority={5}
+                dataField="name"
+                caption="Name"
+                hidingPriority={6}
                 cellRender={(e) => {
                   const getLink = () => {
                     if (e.data.status.status_name == "Draft") {
-                      return `/admin/announcements/edit/${e.data.id}`;
+                      return `/my/payment-methods/edit/${e.data.id}`;
                     } else {
-                      return `/admin/announcements/view/${e.data.id}`;
+                      return `/my/payment-methods/view/${e.data.id}`;
                     }
                   };
 
                   return <a href={getLink()}>{e.text}</a>;
                 }}
+              ></Column>
+              <Column
+                dataField="type"
+                caption="Type"
+                hidingPriority={5}
+              ></Column>
+              <Column
+                dataField="method_number"
+                caption="Pay Number"
+                hidingPriority={5}
+              ></Column>
+              <Column
+                dataField="bank_name"
+                caption="Bank Name"
+                hidingPriority={5}
+              ></Column>
+              <Column
+                dataField="bank_branch_name"
+                caption="Branch Name"
+                hidingPriority={4}
+                visible={false}
+              ></Column>
+              <Column
+                dataField="bank_branch_code"
+                caption="Branch Code"
+                hidingPriority={3}
+              ></Column>
+              <Column
+                dataField="bank_account_name"
+                caption="Account Name"
+                hidingPriority={2}
+              ></Column>
+              <Column
+                dataField="bank_account_no"
+                caption="Account No"
+                hidingPriority={2}
+              ></Column>
+              <Column
+                dataField="method_name"
+                caption="Pay Name"
+                hidingPriority={5}
               ></Column>
               <Column
                 dataField="status.status_name"
@@ -158,4 +212,4 @@ const AdminAnnouncements = () => {
   );
 };
 
-export default AdminAnnouncements;
+export default MemberQueries;

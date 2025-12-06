@@ -18,14 +18,16 @@ interface PostingPeriodArgs {
   data: any;
   loadingText: string;
   addButtonOptions?: any;
-  filterComponent?: React.ReactElement | null;
+  filterYearComponent?: React.ReactElement | null;
+  filterMonthComponent?: React.ReactElement | null;
   isMember: boolean;
 }
 export const PostingPeriodingsList = ({
   data,
   loadingText,
   addButtonOptions,
-  filterComponent,
+  filterYearComponent,
+  filterMonthComponent,
   isMember,
 }: PostingPeriodArgs) => {
   return (
@@ -54,14 +56,24 @@ export const PostingPeriodingsList = ({
         <LoadPanel enabled={true} />
         <ColumnChooser enabled={true} mode="select"></ColumnChooser>
         <Toolbar>
-          {filterComponent != null && (
+          {filterYearComponent != null && (
             <Item location="before" locateInMenu="auto">
-              {filterComponent}
+              {filterYearComponent}
+            </Item>
+          )}
+          {filterMonthComponent != null && (
+            <Item location="before" locateInMenu="auto">
+              {filterMonthComponent}
             </Item>
           )}
           <Item name="columnChooserButton" />
         </Toolbar>
-        <Column dataField="id" caption="ID" hidingPriority={12} sortOrder="asc"></Column>
+        <Column
+          dataField="id"
+          caption="ID"
+          hidingPriority={12}
+          sortOrder="asc"
+        ></Column>
         <Column
           dataField="name"
           caption="Name"

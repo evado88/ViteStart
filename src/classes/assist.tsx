@@ -33,6 +33,8 @@ class Assist {
   static TRANSACTION_SOCIAL_FUND = 7;
   static TRANSACTION_PENALTY_CHARGED = 8;
   static TRANSACTION_PENALTY_PAID = 9;
+  static TRANSACTION_GROUP_EARNING = 10;
+  static TRANSACTION_GROUP_EXPENSE = 11;
 
   static STATE_OPEN = 1;
   static STATE_CLOSED = 2;
@@ -129,6 +131,14 @@ class Assist {
     return friendly;
   }
 
+  static setMobile(code: string, phone: string): string {
+   
+    const safeCode = `${code.substring(1)}${phone}`;
+
+    return safeCode;
+
+  }
+
   static getDateText(mysqlDate: string): string {
     if (mysqlDate == null) {
       return "";
@@ -146,19 +156,39 @@ class Assist {
     }
   }
   static toMySQLFormat(date: Date, includeTime: boolean) {
-    return date
+    const value = date
       .toISOString()
       .slice(0, includeTime ? 19 : 10)
       .replace("T", " ");
+
+    return value;
   }
 
-  static getCurrrentPeriodFormat() {
+  static getCurrentPeriodId(): string {
     const date = new Date();
-    return date
-      .toISOString()
-      .slice(0, 7)
-      .replace("-", "");
+    const periodId = date.toISOString().slice(0, 7).replace("-", "");
+    return periodId;
   }
+
+  static getPeriodId(year: number, month: number): string {
+    const date = new Date(year, month);
+    const periodId = date.toISOString().slice(0, 7).replace("-", "");
+    return periodId;
+  }
+
+  static getCurrentPeriodYear(): number {
+    const date = new Date();
+    const periodId = date.getFullYear();
+    return periodId;
+  }
+
+  static getCurrentPeriodMonth(): number {
+    const date = new Date();
+    const periodId = date.getMonth() + 1;
+
+    return periodId;
+  }
+
   static getMonthName(monthNumber: number): string {
     // Month numbers are 1-indexed (1 for January, 12 for December)
     // Date objects use 0-indexed months, so we subtract 1.
@@ -189,7 +219,7 @@ class Assist {
     }
   }
 
-  static getTokenDetails(token: string) {
+  static getTokenDetails(token: string): any {
     try {
       const decoded = jwtDecode(token);
       return decoded;

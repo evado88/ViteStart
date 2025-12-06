@@ -14,10 +14,11 @@ import DataGrid, {
 interface MonthlyPostArgs {
   data: any;
   loadingText: string;
-  addButtonOptions: any;
+  addButtonOptions?: any;
   isLoan: boolean;
   isPenalty: boolean;
-  title: string
+  isExpenseEarning?: boolean;
+  title: string;
 }
 export const TransactionList = ({
   data,
@@ -25,7 +26,8 @@ export const TransactionList = ({
   addButtonOptions,
   isLoan,
   isPenalty,
-  title
+  isExpenseEarning,
+  title,
 }: MonthlyPostArgs) => {
   return (
     /* start title */
@@ -53,13 +55,15 @@ export const TransactionList = ({
         <LoadPanel enabled={true} />
         <ColumnChooser enabled={true} mode="select"></ColumnChooser>
         <Toolbar>
-          <Item
-            location="before"
-            locateInMenu="auto"
-            showText="always"
-            widget="dxButton"
-            options={addButtonOptions}
-          />
+          {addButtonOptions != null && (
+            <Item
+              location="before"
+              locateInMenu="auto"
+              showText="always"
+              widget="dxButton"
+              options={addButtonOptions}
+            />
+          )}
           <Item name="columnChooserButton" />
           <Item
             location="after"
@@ -80,6 +84,21 @@ export const TransactionList = ({
           dataType="date"
           format={"dd MMMM yyy"}
           hidingPriority={12}
+          cellRender={(e) => {
+            if (isExpenseEarning) {
+              const getLink = () => {
+                if (e.data.status.status_name == "Draft") {
+                  return `/admin/expenses-earnings/edit/${e.data.id}`;
+                } else {
+                  return `/admin/expenses-earnings/view/${e.data.id}`;
+                }
+              };
+
+              return <a href={getLink()}>{e.text}</a>;
+            } else {
+              return e.text;
+            }
+          }}
         ></Column>
         <Column
           dataField="post.period_id"
@@ -91,6 +110,13 @@ export const TransactionList = ({
           caption="Type"
           hidingPriority={11}
         ></Column>
+        {isExpenseEarning && (
+          <Column
+            dataField="group.group_name"
+            caption="Group"
+            hidingPriority={11}
+          ></Column>
+        )}
         {isPenalty && (
           <Column
             dataField="ptype.type_name"
@@ -98,6 +124,11 @@ export const TransactionList = ({
             hidingPriority={11}
           ></Column>
         )}
+        <Column
+          dataField="stage.stage_name"
+          caption="Stage"
+          hidingPriority={11}
+        ></Column>
         <Column
           dataField="status.status_name"
           caption="Status"

@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { Titlebar } from "../../../components/titlebar";
 import { Card } from "../../../components/card";
 import { Row } from "../../../components/row";
@@ -11,17 +11,27 @@ import DataGrid, {
   LoadPanel,
   ColumnChooser,
   Editing,
+  Toolbar,
+  Item,
 } from "devextreme-react/data-grid";
 
 import Assist from "../../../classes/assist";
 import PageConfig from "../../../classes/page-config";
+import { useNavigate } from "react-router-dom";
 
-const TransactionTypes = () => {
+const AdminUsers = () => {
+  const navigate = useNavigate();
   const [data, setData] = useState([]);
   const [loadingText, setLoadingText] = useState("Loading data...");
   const [loading, setLoading] = useState(true);
 
-  const pageConfig = new PageConfig("Transaction Types", "transaction-types/", "", "Type", "");
+  const pageConfig = new PageConfig(
+    "Users",
+    "users/list",
+    "",
+    "Users",
+    ""
+  );
 
   useEffect(() => {
     setLoading(true);
@@ -32,7 +42,7 @@ const TransactionTypes = () => {
         setLoading(false);
 
         if (res.length === 0) {
-          setLoadingText("No Data");
+          setLoadingText("No announcements added for now");
         } else {
           setLoadingText("");
         }
@@ -43,12 +53,21 @@ const TransactionTypes = () => {
       });
   }, []);
 
+  const addButtonOptions = useMemo(
+    () => ({
+      icon: "add",
+      text: "New User",
+      onClick: () => navigate("/admin/users/add"),
+    }),
+    []
+  );
+
   return (
     <div className="page-content" style={{ minHeight: "862px" }}>
       <Titlebar
         title={pageConfig.Title}
         section={"Administration"}
-        icon={"home"}
+        icon={"cubes"}
         url="/"
       ></Titlebar>
       {/* end widget */}
@@ -68,7 +87,7 @@ const TransactionTypes = () => {
               columnAutoWidth={true}
               columnHidingEnabled={true}
             >
-              <Paging defaultPageSize={20} />
+              <Paging defaultPageSize={10} />
               <Editing
                 mode="row"
                 allowUpdating={false}
@@ -79,37 +98,71 @@ const TransactionTypes = () => {
               <FilterRow visible={true} />
               <LoadPanel enabled={loading} />
               <ColumnChooser enabled={true} mode="select"></ColumnChooser>
-              <Column dataField="id" caption="ID" hidingPriority={4}></Column>
+              <Toolbar>
+                <Item
+                  location="before"
+                  locateInMenu="auto"
+                  showText="inMenu"
+                  widget="dxButton"
+                  options={addButtonOptions}
+                />
+                <Item name="columnChooserButton" />
+              </Toolbar>
+              <Column dataField="id" caption="ID" hidingPriority={6}></Column>
               <Column
-                dataField="type_name"
-                caption="Name"
-                hidingPriority={2}
+                dataField="fname"
+                caption="First Name"
+                hidingPriority={5}
                 cellRender={(e) => {
-                  return (
-                    <a href={`#/admin-department/edit/${e.data.id}`}>
-                      {e.data.type_name}
-                    </a>
-                  );
+                  const getLink = () => {
+                    if (e.data.status.status_name == "Draft") {
+                      return `/admin/users/edit/${e.data.id}`;
+                    } else {
+                      return `/admin/users/edit/${e.data.id}`;
+                    }
+                  };
+
+                  return <a href={getLink()}>{e.text}</a>;
                 }}
               ></Column>
               <Column
-                dataField="description"
-                caption="Description"
-                sortOrder="asc"
-                hidingPriority={1}
+                dataField="lname"
+                caption="Last Name"
+                hidingPriority={4}
+              ></Column>
+              <Column
+                dataField="mobile"
+                caption="Mobile"
+                hidingPriority={4}
+              ></Column>
+              <Column
+                dataField="email"
+                caption="Email"
+                hidingPriority={4}
+              ></Column>
+              <Column
+                dataField="status.status_name"
+                caption="Status"
+                hidingPriority={4}
+              ></Column>
+              <Column
+                dataField="stage.stage_name"
+                caption="Stage"
+                hidingPriority={3}
               ></Column>
               <Column
                 dataField="created_by"
                 caption="User"
                 minWidth={120}
-                hidingPriority={3}
+                hidingPriority={2}
+                visible={false}
               ></Column>
               <Column
                 dataField="created_at"
                 caption="Date"
                 dataType="date"
                 format="dd MMM yyy HH:MM"
-                hidingPriority={2}
+                hidingPriority={1}
               ></Column>
             </DataGrid>
           </Card>
@@ -119,4 +172,4 @@ const TransactionTypes = () => {
   );
 };
 
-export default TransactionTypes;
+export default AdminUsers;

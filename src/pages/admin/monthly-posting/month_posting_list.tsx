@@ -13,13 +13,23 @@ import { useNavigate } from "react-router-dom";
 const AdminMonthlyPostings = () => {
   const navigate = useNavigate();
   const [data, setData] = useState([]);
-  const { period, periodData, updateSelectedPeriod } = usePeriod();
+  const {
+    periodYear,
+    periodMonth,
+    UpdatePeriodYear,
+    UpdatePeriodMonth,
+    periodYearData,
+    periodMonthData,
+    periodId,
+    periodData,
+    UpdatePeriodId,
+  } = usePeriod();
   const [loadingText, setLoadingText] = useState("Loading data...");
   const [loading, setLoading] = useState(true);
 
   const pageConfig = new PageConfig(
     "All Monthly Postings",
-    `monthly-posting/period/${period}`,
+    `monthly-posting/period/${periodId}`,
     "",
     "Monthly Posting",
     ""
@@ -45,12 +55,12 @@ const AdminMonthlyPostings = () => {
   };
 
   useEffect(() => {
-    loadData(`monthly-posting/period/${period}`);
+    loadData(`monthly-posting/period/${periodId}`);
   }, []);
 
   const changePostingPeriod = useCallback(
     (e: SelectBoxTypes.ValueChangedEvent) => {
-      updateSelectedPeriod(e.value);
+      UpdatePeriodId(e.value);
       loadData(`monthly-posting/period/${e.value}`);
     },
     []
@@ -62,7 +72,7 @@ const AdminMonthlyPostings = () => {
         dataSource={periodData}
         displayExpr="text"
         valueExpr="value"
-        value={period}
+        value={periodId}
         onValueChanged={changePostingPeriod}
       />
     );

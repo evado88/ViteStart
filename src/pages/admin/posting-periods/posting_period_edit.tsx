@@ -29,36 +29,41 @@ const PostingPeriodEdit = () => {
   const { eId } = useParams(); // Destructure the parameter directly
 
   //posting
-  const [name, setName] = useState(null);
-  const [year, setYear] = useState(null);
-  const [month, setMonth] = useState(null);
-  const [description, setDescription] = useState(null);
-  const [uploadedFiles, setUploadedFiles] = useState([]);
+  const [name, setName] = useState<string | null>(null);
+  const [year, setYear] = useState<number | null>(null);
+  const [month, setMonth] = useState<number | null>(null);
+  const [description, setDescription] = useState<string | null>(null);
+  const [uploadedFiles, setUploadedFiles] = useState<Array<any>>([]);
   //config
-  const [config, setConfig] = useState(null);
+  const [config, setConfig] = useState<any | any>(null);
 
   //posting
-  const [maxPostDate, setMaxPostDate] = useState(null);
-  const [cashAtBank, setCashAtBank] = useState(null);
-  const [savingsMultiple, setSavingsMultiple] = useState(null);
-  const [sharesMultiple, setSharesMultiple] = useState(null);
-  const [socialMin, setSocialMin] = useState(null);
+  const [latePostDate, setLatePostDate] = useState<string | null>(null);
+  const [maxPostDate, setMaxPostDate] = useState<string | null>(null);
+  const [minPostDate, setMinPostDate] = useState<string | null>(null);
+  const [cashAtBank, setCashAtBank] = useState<number | null>(null);
+  const [savingsMultiple, setSavingsMultiple] = useState<number | null>(null);
+  const [sharesMultiple, setSharesMultiple] = useState<number | null>(null);
+  const [socialMin, setSocialMin] = useState<number | null>(null);
 
   //interest payment - minimum 10% if not yet paid on loan
-  const [loanInterestPercent, setLoanInterestPercent] = useState(null);
+  const [loanInterestPercent, setLoanInterestPercent] = useState<number | null>(
+    null
+  );
 
   //loan payment -  minimum 10% if not yet paid on loan
-  const [loanPaymentPercent, setLoanPaymentPercent] = useState(null);
+  const [loanPaymentPercent, setLoanPaymentPercent] = useState<number | null>(
+    null
+  );
 
   //new loan loan application
-  const [loanSavingsRatio, setLoanSavingsRatio] = useState(null);
-  const [loanDuration, setLoanDuration] = useState(null);
-  const [approvalLevels, setApprovalLevels] = useState(null);
-  const [loanApplyLimit, setLoanApplyLimit] = useState(null);
+  const [loanSavingsRatio, setLoanSavingsRatio] = useState<number | null>(null);
+  const [loanDuration, setLoanDuration] = useState<number | null>(null);
+  const [loanApplyLimit, setLoanApplyLimit] = useState<number | null>(null);
   //additiona
-  const [latePostingFee, setLatePostingFee] = useState(null);
-  const [missedMeetingFee, setMissedMeetingFee] = useState(null);
-  const [lateMeetingFee, setLateMeetingFee] = useState(null);
+  const [latePostingFee, setLatePostingFee] = useState<number | null>(null);
+  const [missedMeetingFee, setMissedMeetingFee] = useState<number | null>(null);
+  const [lateMeetingFee, setLateMeetingFee] = useState<number | null>(null);
 
   //service
   const [loading, setLoading] = useState(false);
@@ -80,7 +85,7 @@ const PostingPeriodEdit = () => {
     setLoading(true);
     setTimeout(() => {
       Assist.loadData("Configuration", "sacco-config/1")
-        .then((data) => {
+        .then((data: any) => {
           updateConfigVaues(data);
           if (pageConfig.id != 0) {
             Assist.loadData(pageConfig.Single, `posting-periods/id/${eId}`)
@@ -112,36 +117,38 @@ const PostingPeriodEdit = () => {
     }, Assist.DEV_DELAY);
   }, []);
 
-  const updateConfigVaues = (data) => {
-
-    setMaxPostDate(data.late_posting_date_start);
-
+  const updateConfigVaues = (data: any) => {
     setSavingsMultiple(data.saving_multiple);
     setSharesMultiple(data.shares_multiple);
     setSocialMin(data.social_min);
 
-    setLoanInterestPercent(data.loan_interest_rate);
-    setLoanPaymentPercent(data.loan_repayment_rate);
+    //interest rates and duration should come from periods not config
+    //do not set here
     setLoanSavingsRatio(data.loan_saving_ratio);
-    setLoanDuration(data.loan_duration);
     setLoanApplyLimit(data.loan_apply_limit);
 
     setLatePostingFee(data.late_posting_rate);
     setLateMeetingFee(data.late_meeting_rate);
     setMissedMeetingFee(data.missed_meeting_rate);
-
-    setApprovalLevels(data.approval_levels);
   };
 
-  const updateVaues = (data) => {
+  const updateVaues = (data: any) => {
+    setMinPostDate(data.late_posting_date_min);
+    setMaxPostDate(data.late_posting_date_max);
+
     setName(data.name);
     setYear(data.year);
     setMonth(data.month);
     setDescription(data.description);
-    setCashAtBank(data.cash_at_bank);
+    setCashAtBank(data.cash_at_bank == 0 ? null : data.cash_at_bank);
+
+    //interest rates and duration should come from periods not config
+    setLoanInterestPercent(data.loan_interest_rate);
+    setLoanPaymentPercent(data.loan_repayment_rate);
+    setLoanDuration(data.loan_duration);
   };
 
-  const onFormSubmit = (e) => {
+  const onFormSubmit = (e: any) => {
     e.preventDefault();
 
     let result = confirm(
@@ -168,7 +175,9 @@ const PostingPeriodEdit = () => {
       //cash
       cash_at_bank: cashAtBank,
       //config
-      late_posting_date_start: maxPostDate,
+      late_posting_date_start: latePostDate,
+      late_posting_date_min: minPostDate,
+      late_posting_date_max: maxPostDate,
       saving_multiple: savingsMultiple,
       shares_multiple: sharesMultiple,
       social_min: socialMin,
@@ -180,14 +189,11 @@ const PostingPeriodEdit = () => {
       late_posting_rate: latePostingFee,
       missed_meeting_rate: missedMeetingFee,
       late_meeting_rate: lateMeetingFee,
-      approval_levels: approvalLevels,
       //service
       status_id: Assist.STATUS_SUBMITTED,
       stage_id: Assist.STAGE_SUBMITTED,
       approval_levels: config.approval_levels,
     };
-
-    console.log(postData);
 
     setTimeout(() => {
       Assist.postPutData(
@@ -216,7 +222,7 @@ const PostingPeriodEdit = () => {
     }, Assist.DEV_DELAY);
   };
 
-  const toolbar = useMemo(() => {
+  const toolbar: any = useMemo(() => {
     return AppInfo.htmlToolbar;
   }, []);
 
@@ -252,7 +258,7 @@ const PostingPeriodEdit = () => {
                     <TextBox
                       className="dx-field-value"
                       placeholder="Title"
-                      value={name}
+                      value={name!}
                       disabled={error || saving}
                       onValueChange={(text) => setName(text)}
                     >
@@ -282,7 +288,7 @@ const PostingPeriodEdit = () => {
                     </div>
                     <NumberBox
                       className="dx-field-value"
-                      value={cashAtBank}
+                      value={cashAtBank!}
                       disabled={error || saving}
                       placeholder="Cash At Bank"
                       onValueChange={(value) => setCashAtBank(value)}
@@ -304,7 +310,7 @@ const PostingPeriodEdit = () => {
                       accept="*"
                       name="file"
                       uploadMode="instantly"
-                      onUploaded={(e) => {
+                      onUploaded={(e: any) => {
                         if (e.request.status === 200) {
                           const res = JSON.parse(e.request.response);
 
@@ -403,40 +409,29 @@ const PostingPeriodEdit = () => {
                 <div className="dx-fieldset">
                   <div className="dx-fieldset-header">Posting Date</div>
                   <div className="dx-field">
-                    <div className="dx-field-label">Maximum Posting Date</div>
+                    <div className="dx-field-label">
+                      Late Posting Start Date
+                    </div>
                     <DateBox
                       className="dx-field-value"
-                      placeholder="Maximum Posting Date"
-                      displayFormat={"dd"}
-                      value={maxPostDate}
+                      displayFormat={"dd MMMM yyyy"}
+                      placeholder="Late Posting Start Date"
+                      dateSerializationFormat="yyyy-MM-dd"
+                      min={minPostDate!}
+                      max={maxPostDate!}
+                      value={latePostDate!}
                       disabled={error || saving}
-                      onValueChange={(text) => setMaxPostDate(text)}
+                      onValueChange={(date) => {
+                        console.log(date);
+                        setLatePostDate(date);
+                      }}
                     >
                       <Validator>
-                        <RequiredRule message="Maximum posting date required" />
+                        <RequiredRule message="Late Posting Start Date required" />
                       </Validator>
                     </DateBox>
                   </div>
                 </div>
-                <div className="dx-fieldset">
-                  <div className="dx-fieldset-header">Appprovals</div>
-                  <div className="dx-field">
-                    <div className="dx-field-label">Appproval level</div>
-                    <SelectBox
-                      className="dx-field-value"
-                      dataSource={[1, 2, 3]}
-                      onValueChange={(value) => setApprovalLevels(value)}
-                      validationMessagePosition="left"
-                      value={approvalLevels}
-                      disabled={error}
-                    >
-                      <Validator>
-                        <RequiredRule message="Appproval level is required" />
-                      </Validator>
-                    </SelectBox>
-                  </div>
-                </div>
-
                 <div className="dx-fieldset">
                   <div className="dx-fieldset-header">
                     Savings & Contributions Limits
@@ -445,7 +440,7 @@ const PostingPeriodEdit = () => {
                     <div className="dx-field-label">Savings Multiple</div>
                     <NumberBox
                       className="dx-field-value"
-                      value={savingsMultiple}
+                      value={savingsMultiple!}
                       placeholder="Savings Multiple"
                       disabled={error || saving}
                       onValueChange={(value) => setSavingsMultiple(value)}
@@ -460,7 +455,7 @@ const PostingPeriodEdit = () => {
                     <div className="dx-field-label">Shares Multiple</div>
                     <NumberBox
                       className="dx-field-value"
-                      value={sharesMultiple}
+                      value={sharesMultiple!}
                       placeholder="Shares Multiple"
                       disabled={error || saving}
                       onValueChange={(value) => setSharesMultiple(value)}
@@ -475,7 +470,7 @@ const PostingPeriodEdit = () => {
                     <div className="dx-field-label">Social Fund Minimum</div>
                     <NumberBox
                       className="dx-field-value"
-                      value={socialMin}
+                      value={socialMin!}
                       placeholder="Social Fund Minimum"
                       disabled={error || saving}
                       onValueChange={(value) => setSocialMin(value)}
@@ -495,7 +490,7 @@ const PostingPeriodEdit = () => {
                     </div>
                     <NumberBox
                       className="dx-field-value"
-                      value={loanInterestPercent}
+                      value={loanInterestPercent!}
                       placeholder="Loan Interest Percentage"
                       disabled={error || saving}
                       onValueChange={(value) => setLoanInterestPercent(value)}
@@ -515,7 +510,7 @@ const PostingPeriodEdit = () => {
                     </div>
                     <NumberBox
                       className="dx-field-value"
-                      value={loanPaymentPercent}
+                      value={loanPaymentPercent!}
                       disabled={error || saving}
                       placeholder="Loan Payment Percentage"
                       onValueChange={(value) => setLoanPaymentPercent(value)}
@@ -533,7 +528,7 @@ const PostingPeriodEdit = () => {
                     <div className="dx-field-label">Loan Savings Ratio </div>
                     <NumberBox
                       className="dx-field-value"
-                      value={loanSavingsRatio}
+                      value={loanSavingsRatio!}
                       placeholder="Loan Savings Ratio"
                       disabled={error || saving}
                       onValueChange={(value) => setLoanSavingsRatio(value)}
@@ -548,7 +543,7 @@ const PostingPeriodEdit = () => {
                     <div className="dx-field-label">Loan Duraton (Months) </div>
                     <NumberBox
                       className="dx-field-value"
-                      value={loanDuration}
+                      value={loanDuration!}
                       placeholder="Loan Duraton (Months)"
                       disabled={error || saving}
                       onValueChange={(value) => setLoanDuration(value)}
@@ -563,7 +558,7 @@ const PostingPeriodEdit = () => {
                     <div className="dx-field-label">Loan Guarantor Limit</div>
                     <NumberBox
                       className="dx-field-value"
-                      value={loanApplyLimit}
+                      value={loanApplyLimit!}
                       placeholder="Loan Guarantor Limit"
                       disabled={error || saving}
                       onValueChange={(value) => setLoanApplyLimit(value)}
@@ -581,7 +576,7 @@ const PostingPeriodEdit = () => {
                     <div className="dx-field-label">Late Posting Fee</div>
                     <NumberBox
                       className="dx-field-value"
-                      value={latePostingFee}
+                      value={latePostingFee!}
                       placeholder="Late Posting Fee"
                       disabled={error || saving}
                       onValueChange={(value) => setLatePostingFee(value)}
@@ -596,7 +591,7 @@ const PostingPeriodEdit = () => {
                     <div className="dx-field-label">Missed Meeting Fee</div>
                     <NumberBox
                       className="dx-field-value"
-                      value={missedMeetingFee}
+                      value={missedMeetingFee!}
                       placeholder="Missed Meeting Fee"
                       disabled={error || saving}
                       onValueChange={(value) => setMissedMeetingFee(value)}
@@ -613,7 +608,7 @@ const PostingPeriodEdit = () => {
                     </div>
                     <NumberBox
                       className="dx-field-value"
-                      value={lateMeetingFee}
+                      value={lateMeetingFee!}
                       placeholder="Late Meeting Attendance Fee"
                       disabled={error || saving}
                       onValueChange={(value) => setLateMeetingFee(value)}

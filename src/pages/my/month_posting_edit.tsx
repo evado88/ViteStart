@@ -39,18 +39,20 @@ const PostMonthly = () => {
   const { eId } = useParams(); // Destructure the parameter directly
 
   //posting
-  const [postingDate, setPostingDate] = useState("2025-05-18");
-  const [postingDateText, setPostingDateText] = useState(() => {
-    const friendly = Assist.getPostingPeriodText("2025-05-18");
-    return friendly;
-  });
-  //for production
-  /*
+  //for dev
+  //const [postingDate, setPostingDate] = useState("2025-05-18");
   const [postingDate, setPostingDate] = useState(() => {
     const today = new Date();
     const mysqlDate = today.toISOString().split("T")[0]; // "YYYY-MM-DD"
     return mysqlDate;
-  });*/
+    //return "2025-05-18";
+  });
+
+  const [postingDateText, setPostingDateText] = useState(() => {
+    const friendly = Assist.getPostingPeriodText("2025-05-18");
+    return friendly;
+  });
+
 
   const [postingSavings, setPostingSavings] = useState<number | null>(null);
   const [postingShares, setPostingShares] = useState<number | null>(null);
@@ -92,7 +94,9 @@ const PostMonthly = () => {
 
   //configuration
   //posting
-  const [latePostingStartDate, setLatePostingStartDate] = useState("");
+  const [latePostingStartDate, setLatePostingStartDate] = useState<
+    string | null
+  >(null);
   const [latePostingStartDay, setLatePostingStartDay] = useState(1);
 
   const [savingsMultiple, setSavingsMultiple] = useState<number | null>(null);
@@ -326,7 +330,6 @@ const PostMonthly = () => {
       type: 1,
       user_id: user.userid,
       user_action_id: user.userid,
-      member_id: postingMember.id,
       period_id: periodId,
       missed_meeting_penalty: isAbsenteePosting() ? missedMeetingFee : 0,
       date: `${postingDate} ${Assist.getCurrentTime()}`,
@@ -453,7 +456,7 @@ const PostMonthly = () => {
   };
 
   const islatePosting = () => {
-    const isLate = postingDate >= latePostingStartDate;
+    const isLate = postingDate >= latePostingStartDate!;
     return isLate;
   };
 
@@ -473,6 +476,9 @@ const PostMonthly = () => {
 
     if (islatePosting()) {
       total += latePostingFee!;
+    }
+    if (isAbsenteePosting()) {
+      total += missedMeetingFee!;
     }
     return total;
   };
@@ -630,7 +636,7 @@ const PostMonthly = () => {
                       placeholder="Period"
                       displayFormat={"dd MMM yyy"}
                       value={postingDate}
-                      disabled={error || saving || saving}
+                      disabled={true}
                       onValueChanged={(c) => console.log(c)}
                       onValueChange={(text) => {
                         setPostingDate(text);
@@ -689,9 +695,16 @@ const PostMonthly = () => {
                       <Validator>
                         <RequiredRule message="Savings amount required" />
                         <CustomRule
-                          validationCallback={(e) =>
-                            Number(e.value) % savingsMultiple! == 0
-                          }
+                          validationCallback={(e) => {
+                            if (
+                              Number(e.value) % savingsMultiple! == 0 &&
+                              Number(e.value) != 0
+                            ) {
+                              return true;
+                            } else {
+                              return false;
+                            }
+                          }}
                           message={`Savings amount must be in mutiples of ${savingsMultiple}`}
                         />
                       </Validator>
@@ -710,9 +723,16 @@ const PostMonthly = () => {
                       <Validator>
                         <RequiredRule message="Shares amount required" />
                         <CustomRule
-                          validationCallback={(e) =>
-                            Number(e.value) % sharesMultiple! == 0
-                          }
+                          validationCallback={(e) => {
+                            if (
+                              Number(e.value) % sharesMultiple! == 0 &&
+                              Number(e.value) != 0
+                            ) {
+                              return true;
+                            } else {
+                              return false;
+                            }
+                          }}
                           message={`Share amount must be in mutiples of ${sharesMultiple}`}
                         />
                       </Validator>

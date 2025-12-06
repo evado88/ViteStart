@@ -69,7 +69,7 @@ const AdminPostingPeriod = ({ props }: any) => {
               setPostingsData(data);
               setPostingPeriod(res);
               setError(false);
-           
+
               if (res.length === 0) {
                 setLoadingText("No Data");
               } else {
@@ -98,7 +98,7 @@ const AdminPostingPeriod = ({ props }: any) => {
   };
 
   const validatePostingApproval = () => {
-    if (stage == "Awaiting POP Approval") {
+    /*if (stage == "Awaiting POP Approvals") {
       if (postingPeriod.sid7 != postingsData.length) {
         Assist.showMessage(
           `You can only approve this posting period once all ${postingsData.length} monthly posting(s) have been approved`,
@@ -116,7 +116,9 @@ const AdminPostingPeriod = ({ props }: any) => {
       return false;
     } else {
       return true;
-    }
+    }*/
+
+    return true;
   };
 
   const onFormApproveSubmit = (e: React.FormEvent) => {

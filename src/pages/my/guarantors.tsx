@@ -1,8 +1,8 @@
 import { useState, useEffect, useMemo } from "react";
-import { Titlebar } from "../../../components/titlebar";
-import { Card } from "../../../components/card";
-import { Row } from "../../../components/row";
-import { Col } from "../../../components/column";
+import { Titlebar } from "../../components/titlebar";
+import { Card } from "../../components/card";
+import { Row } from "../../components/row";
+import { Col } from "../../components/column";
 import DataGrid, {
   Column,
   Pager,
@@ -15,21 +15,25 @@ import DataGrid, {
   Item,
 } from "devextreme-react/data-grid";
 
-import Assist from "../../../classes/assist";
-import PageConfig from "../../../classes/page-config";
+import Assist from "../../classes/assist";
+import PageConfig from "../../classes/page-config";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../../context/AuthContext";
 
-const AdminAnnouncements = () => {
+const MemberQueries = () => {
+  //user
+  const { user } = useAuth();
+  //other
   const navigate = useNavigate();
   const [data, setData] = useState([]);
   const [loadingText, setLoadingText] = useState("Loading data...");
   const [loading, setLoading] = useState(true);
 
   const pageConfig = new PageConfig(
-    "Annoucements",
-    "announcements/list",
+    "Guarantors",
+    `guarantors/user/${user.userid}/list`,
     "",
-    "Annoucements",
+    "Guarantor",
     ""
   );
 
@@ -42,7 +46,7 @@ const AdminAnnouncements = () => {
         setLoading(false);
 
         if (res.length === 0) {
-          setLoadingText("No announcements added for now");
+          setLoadingText("No Data");
         } else {
           setLoadingText("");
         }
@@ -56,8 +60,8 @@ const AdminAnnouncements = () => {
   const addButtonOptions = useMemo(
     () => ({
       icon: "add",
-      text: "New Annoucement",
-      onClick: () => navigate("/admin/announcements/add"),
+      text: "New Guarantor",
+      onClick: () => navigate("/my/guarantors/submit"),
     }),
     []
   );
@@ -102,30 +106,54 @@ const AdminAnnouncements = () => {
                 <Item
                   location="before"
                   locateInMenu="auto"
-                  showText="inMenu"
+                  showText="always"
                   widget="dxButton"
                   options={addButtonOptions}
                 />
                 <Item name="columnChooserButton" />
+                <Item
+                  location="after"
+                  locateInMenu="auto"
+                  showText="always"
+                  widget="dxButton"
+                  options={{
+                    icon: "save",
+                    text: " Excel Export",
+                    onClick: () => Assist.downloadExcel(pageConfig.Title, data),
+                  }}
+                />
               </Toolbar>
               <Column dataField="id" caption="ID" hidingPriority={6}></Column>
               <Column
-                dataField="title"
-                caption="Title"
-                dataType="date"
-                format={"dd MMMM yyy"}
-                hidingPriority={5}
+                dataField="guar_fname"
+                caption="First Name"
+                hidingPriority={9}
                 cellRender={(e) => {
                   const getLink = () => {
                     if (e.data.status.status_name == "Draft") {
-                      return `/admin/announcements/edit/${e.data.id}`;
+                      return `/my/guarantors/edit/${e.data.id}`;
                     } else {
-                      return `/admin/announcements/view/${e.data.id}`;
+                      return `/my/guarantors/view/${e.data.id}`;
                     }
                   };
 
                   return <a href={getLink()}>{e.text}</a>;
                 }}
+              ></Column>
+              <Column
+                dataField="guar_lname"
+                caption="Last Name"
+                hidingPriority={8}
+              ></Column>
+              <Column
+                dataField="guar_mobile"
+                caption="Mobile"
+                hidingPriority={7}
+              ></Column>
+              <Column
+                dataField="guar_email"
+                caption="Email"
+                hidingPriority={6}
               ></Column>
               <Column
                 dataField="status.status_name"
@@ -136,12 +164,6 @@ const AdminAnnouncements = () => {
                 dataField="stage.stage_name"
                 caption="Stage"
                 hidingPriority={3}
-              ></Column>
-              <Column
-                dataField="user.email"
-                caption="User"
-                minWidth={120}
-                hidingPriority={2}
               ></Column>
               <Column
                 dataField="created_at"
@@ -158,4 +180,4 @@ const AdminAnnouncements = () => {
   );
 };
 
-export default AdminAnnouncements;
+export default MemberQueries;

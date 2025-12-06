@@ -33,7 +33,6 @@ const Configuration = () => {
   const navigate = useNavigate();
 
   //posting
-  const [maxPostDate, setMaxPostDate] = useState(null);
   const [savingsMultiple, setSavingsMultiple] = useState<number | null>(null);
   const [sharesMultiple, setSharesMultiple] = useState<number | null>(null);
   const [socialMin, setSocialMin] = useState<number | null>(null);
@@ -89,8 +88,6 @@ const Configuration = () => {
   }, []);
 
   const updateVaues = (data: any) => {
-    setMaxPostDate(data.late_posting_date_start);
-
     setSavingsMultiple(data.saving_multiple);
     setSharesMultiple(data.shares_multiple);
     setSocialMin(data.social_min);
@@ -115,7 +112,6 @@ const Configuration = () => {
 
     const postData = {
       user_id: user.userid,
-      late_posting_date_start: maxPostDate,
       saving_multiple: savingsMultiple,
       shares_multiple: sharesMultiple,
       social_min: socialMin,
@@ -173,24 +169,6 @@ const Configuration = () => {
           <Card title="Properties" showHeader={true}>
             <form id="formMain" onSubmit={onFormSubmit}>
               <div className="form">
-                <div className="dx-fieldset">
-                  <div className="dx-fieldset-header">Posting Date</div>
-                  <div className="dx-field">
-                    <div className="dx-field-label">Late Posting Start Day</div>
-                    <DateBox
-                      className="dx-field-value"
-                      placeholder="Late Posting Start Day"
-                      displayFormat={"dd"}
-                      value={maxPostDate!}
-                      disabled={error || saving}
-                      onValueChange={(text) => setMaxPostDate(text)}
-                    >
-                      <Validator>
-                        <RequiredRule message="Late posting start day required" />
-                      </Validator>
-                    </DateBox>
-                  </div>
-                </div>
                 <div className="dx-fieldset">
                   <div className="dx-fieldset-header">Appprovals</div>
                   <div className="dx-field">

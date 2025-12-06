@@ -52,7 +52,7 @@ const AdminMembers = () => {
       {/* chart start */}
       <Row>
         <Col sz={12} sm={12} lg={12}>
-          <MemberList data={data} loadingText={loadingText} />
+          <MemberList data={data} loadingText={loadingText} title={""} />
         </Col>
       </Row>
     </div>
