@@ -1,6 +1,6 @@
 import { useState } from "react";
 import "./App.css";
-import "devextreme/dist/css/dx.greenmist.css";
+import "devextreme/dist/css/dx.greenmist.compact.css";
 import MainLayout from "./components/MainLayout";
 import AuthLayout from "./components/AuthLayout";
 import PrivateRoute from "./auth/PrivateRoute";
@@ -85,6 +85,10 @@ import {
   AdminUsersPage,
   AdminUserEditPage,
   AdminUserPage,
+  AdminPaymentMethodsPage,
+  AdminPaymentMethodPage,
+  AdminGuarantorPage,
+  AdminGuarantorsPage,
 
 } from "./pages";
 import { BrowserRouter } from "react-router-dom";
@@ -177,6 +181,12 @@ function App() {
           {/* member queries */}
           <Route path="/admin/member-queries/list" element={<AdminMemberQueriesPage/>} />
           <Route path="/admin/member-queries/view/:eId" element={<AdminMemberQueryPage/>} />
+          {/* payment-methods */}
+          <Route path="/admin/payment-methods/list" element={<AdminPaymentMethodsPage/>} />
+          <Route path="/admin/payment-methods/view/:eId" element={<AdminPaymentMethodPage/>} />
+          {/* guarantors */}
+          <Route path="/admin/guarantors/list" element={<AdminGuarantorsPage/>} />
+          <Route path="/admin/guarantors/view/:eId" element={<AdminGuarantorPage/>} />
           {/* knowledge-base */}
           <Route path="/admin/knowledge-base/category/list" element={<AdminKnowledgebaseCategoriesPage/>} />
           <Route path="/admin/knowledge-base/category/edit/:eId" element={<AdminKnowledgebaseCategoryEditPage/>} />

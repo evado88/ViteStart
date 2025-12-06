@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect } from "react";
 import { Titlebar } from "../../../components/titlebar";
 import { Card } from "../../../components/card";
 import { Row } from "../../../components/row";
@@ -11,25 +11,21 @@ import DataGrid, {
   LoadPanel,
   ColumnChooser,
   Editing,
-  Toolbar,
-  Item,
 } from "devextreme-react/data-grid";
 
 import Assist from "../../../classes/assist";
 import PageConfig from "../../../classes/page-config";
-import { useNavigate } from "react-router-dom";
 
-const AdminUsers = () => {
-  const navigate = useNavigate();
+const AdminMemberQueries = () => {
   const [data, setData] = useState([]);
   const [loadingText, setLoadingText] = useState("Loading data...");
   const [loading, setLoading] = useState(true);
 
   const pageConfig = new PageConfig(
-    "Users",
-    "users/list",
+    "Guarantors",
+    "guarantors/list",
     "",
-    "Users",
+    "Duarantor",
     ""
   );
 
@@ -42,7 +38,7 @@ const AdminUsers = () => {
         setLoading(false);
 
         if (res.length === 0) {
-          setLoadingText("No announcements added for now");
+          setLoadingText("No Data");
         } else {
           setLoadingText("");
         }
@@ -52,15 +48,6 @@ const AdminUsers = () => {
         setLoadingText("Could not show information");
       });
   }, []);
-
-  const addButtonOptions = useMemo(
-    () => ({
-      icon: "add",
-      text: "New User",
-      onClick: () => navigate("/admin/users/add"),
-    }),
-    []
-  );
 
   return (
     <div className="page-content" style={{ minHeight: "862px" }}>
@@ -98,47 +85,48 @@ const AdminUsers = () => {
               <FilterRow visible={true} />
               <LoadPanel enabled={loading} />
               <ColumnChooser enabled={true} mode="select"></ColumnChooser>
-              <Toolbar>
-                <Item
-                  location="before"
-                  locateInMenu="auto"
-                  showText="inMenu"
-                  widget="dxButton"
-                  options={addButtonOptions}
-                />
-                <Item name="columnChooserButton" />
-              </Toolbar>
               <Column dataField="id" caption="ID" hidingPriority={6}></Column>
               <Column
-                dataField="fname"
+                dataField="guar_lname"
                 caption="First Name"
                 hidingPriority={5}
                 cellRender={(e) => {
-                  const getLink = () => {
-                    if (e.data.status.status_name == "Draft") {
-                      return `/admin/users/edit/${e.data.id}`;
-                    } else {
-                      return `/admin/users/view/${e.data.id}`;
-                    }
-                  };
-
-                  return <a href={getLink()}>{e.text}</a>;
+                  return (
+                    <a href={`/admin/guarantors/view/${e.data.id}`}>
+                      {e.text}
+                    </a>
+                  );
                 }}
               ></Column>
               <Column
-                dataField="lname"
+                dataField="guar_lname"
                 caption="Last Name"
-                hidingPriority={4}
+                hidingPriority={8}
               ></Column>
               <Column
-                dataField="mobile"
+                dataField="guar_mobile"
                 caption="Mobile"
-                hidingPriority={4}
+                hidingPriority={7}
               ></Column>
               <Column
-                dataField="email"
+                dataField="guar_email"
                 caption="Email"
-                hidingPriority={4}
+                hidingPriority={6}
+              ></Column>
+              <Column
+                dataField="member.fname"
+                caption="Member First Mame"
+                hidingPriority={5}
+              ></Column>
+              <Column
+                dataField="member.lname"
+                caption="Member Last Name"
+                hidingPriority={5}
+              ></Column>
+              <Column
+                dataField="member.email"
+                caption="Member Email"
+                hidingPriority={5}
               ></Column>
               <Column
                 dataField="status.status_name"
@@ -151,11 +139,10 @@ const AdminUsers = () => {
                 hidingPriority={3}
               ></Column>
               <Column
-                dataField="created_by"
+                dataField="user.email"
                 caption="User"
                 minWidth={120}
                 hidingPriority={2}
-                visible={false}
               ></Column>
               <Column
                 dataField="created_at"
@@ -172,4 +159,4 @@ const AdminUsers = () => {
   );
 };
 
-export default AdminUsers;
+export default AdminMemberQueries;

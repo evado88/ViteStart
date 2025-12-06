@@ -60,6 +60,12 @@ export const GuarantorDetail = ({
             </div>
           </div>
           <div className="dx-field">
+            <div className="dx-field-label">Approval Levels</div>
+            <div className="dx-field-value-static">
+              <strong>{memberQuery.approval_levels}</strong>
+            </div>
+          </div>
+          <div className="dx-field">
             <div className="dx-field-label">Stage</div>
             <div className="dx-field-value-static">
               <strong>{memberQuery.stage.stage_name}</strong>

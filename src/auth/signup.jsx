@@ -992,7 +992,7 @@ const Signup = () => {
                     >
                       {" "}
                       <Validator>
-                        <RequiredRule message="Bank name is required" />
+                        <RequiredRule message="Password is required" />
                         <CustomRule
                           validationCallback={(e) => e.value == confirmPassword}
                           message={`Password does not match confirm password`}

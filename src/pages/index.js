@@ -63,6 +63,12 @@ export { default as AdminMeetingPage } from './admin/meetings/meeting'
 //member queries
 export { default as AdminMemberQueriesPage } from './admin/member-queries/query_list'
 export { default as AdminMemberQueryPage } from './admin/member-queries/query'
+//payment methods
+export { default as AdminPaymentMethodsPage } from './admin/payment-methods/payment_method_list'
+export { default as AdminPaymentMethodPage } from './admin/payment-methods/payment_method'
+//guarantors
+export { default as AdminGuarantorsPage } from './admin/guarantors/guarantor_list'
+export { default as AdminGuarantorPage } from './admin/guarantors/guarantor'
 //knowledge-base
 export { default as AdminKnowledgebaseArticlesPage } from './admin/knowledge-base/article_list'
 export { default as AdminKnowledgebaseArticlePage } from './admin/knowledge-base/article'

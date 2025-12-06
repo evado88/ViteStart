@@ -53,7 +53,6 @@ const PostMonthly = () => {
     return friendly;
   });
 
-
   const [postingSavings, setPostingSavings] = useState<number | null>(null);
   const [postingShares, setPostingShares] = useState<number | null>(null);
   const [postingSocial, setPostingSocial] = useState<number | null>(null);
@@ -625,7 +624,7 @@ const PostMonthly = () => {
       <form id="formMain" onSubmit={onFormSubmit}>
         <Row>
           <Col sz={12} sm={12} lg={7}>
-            <Card title="Details" showHeader={true}>
+            <Card title="Details" showHeader={false}>
               <div className="form">
                 <div className="dx-fieldset">
                   <div className="dx-fieldset-header">Period</div>
@@ -679,6 +678,10 @@ const PostMonthly = () => {
                     </div>
                   )}
                 </div>
+              </div>
+            </Card>
+            <Card title="Details" showHeader={false}>
+              <div className="form">
                 <div className="dx-fieldset">
                   <div className="dx-fieldset-header">
                     Savings & Contributions
@@ -824,6 +827,11 @@ const PostMonthly = () => {
                     </div>
                   )}
                 </div>
+              </div>
+            </Card>
+
+            <Card title="Details" showHeader={false}>
+              <div className="form">
                 <div className="dx-fieldset">
                   <div className="dx-fieldset-header">Interest</div>
                   <div className="dx-field">
@@ -976,6 +984,10 @@ const PostMonthly = () => {
                     </div>
                   </div>
                 </div>
+              </div>
+            </Card>
+            <Card title="Details" showHeader={false}>
+              <div className="form">
                 <div className="dx-fieldset">
                   <div className="dx-fieldset-header">Meeting Attendance</div>
                   <div className="dx-field">

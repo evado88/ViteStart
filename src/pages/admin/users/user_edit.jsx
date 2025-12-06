@@ -40,7 +40,7 @@ const UserEdit = () => {
   const [lastname, setLastname] = useState(null);
   const [mobileCode, setMobileCode] = useState("+260");
   const [mobile, setMobile] = useState(null);
-  const [Email, setEmail] = useState(null);
+  const [email, setEmail] = useState(null);
   const [position, setPosition] = useState(null);
   const [physicalAddress, setPhysicalAddress] = useState(null);
   const [postalAddress, setPostalAddress] = useState(null);
@@ -133,9 +133,17 @@ const UserEdit = () => {
 
     const postData = {
       user_id: user.userid,
-      attachment_id: uploadedFiles.length == 0 ? null : uploadedFiles[0].id,
-      title: title,
-      content: content,
+      type: 1,
+      fname: firstname,
+      lname: lastname,
+      mobile_code: mobileCode,
+      mobile: Assist.setMobile(mobileCode, mobile),
+      position: position,
+      address_physical: physicalAddress,
+      address_postal: postalAddress,
+      email: email,
+      role: 2,
+      password: password,
       status_id: Assist.STATUS_SUBMITTED,
       stage_id: Assist.STAGE_SUBMITTED,
       approval_levels: config.approval_levels,
@@ -271,7 +279,7 @@ const UserEdit = () => {
                     <TextBox
                       className="dx-field-value"
                       placeholder="Email"
-                      value={Email}
+                      value={email}
                       onValueChange={(text) => setEmail(text)}
                     >
                       {" "}
@@ -316,7 +324,7 @@ const UserEdit = () => {
                     >
                       {" "}
                       <Validator>
-                        <RequiredRule message="Bank name is required" />
+                        <RequiredRule message="Password is required" />
                         <CustomRule
                           validationCallback={(e) => e.value == confirmPassword}
                           message={`Password does not match confirm password`}
