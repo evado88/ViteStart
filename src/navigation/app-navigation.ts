@@ -49,6 +49,32 @@ export const navigation: MenuItem[] = [
     ],
   },
   {
+    key: "my-mid-month-postings",
+    text: "Mid-Month Posting",
+    icon: "fa fa-clock-o",
+    path: "",
+    roles: [1],
+    items: [
+            {
+        key: "mid-month-postings-post",
+        text: "New Mid-Month Posting",
+        icon: "",
+        path: "/my/mid-month-posting/post",
+        roles: [1],
+        items: [],
+      },
+      {
+        key: "mid-month-postings-list",
+        text: "My Mid-Month Postings",
+        icon: "",
+        path: "/my/mid-month-posting/list",
+        roles: [1],
+        items: [],
+      },
+
+    ],
+  },
+  {
     key: "savings",
     text: "Savings",
     icon: "fa fa-life-saver",
@@ -110,7 +136,7 @@ export const navigation: MenuItem[] = [
   {
     key: "messenger",
     text: "Penalties",
-    icon: "fa fa-money",
+    icon: "fa fa-warning",
     path: "#",
     roles: [1],
     items: [
@@ -149,10 +175,10 @@ export const navigation: MenuItem[] = [
       },
     ],
   },
-   {
+  {
     key: "guarantors",
     text: "Guarantors",
-    icon: "fa fa-money",
+    icon: "fa fa-user-circle",
     path: "#",
     roles: [1],
     items: [
@@ -166,7 +192,7 @@ export const navigation: MenuItem[] = [
       },
     ],
   },
-     {
+  {
     key: "pay-methods",
     text: "Payment Methods",
     icon: "fa fa-money",
@@ -223,6 +249,14 @@ export const navigation: MenuItem[] = [
         items: [],
       },
       {
+        key: "payout",
+        text: "Payout Summary",
+        icon: "",
+        path: "/reports/payout-summary",
+        roles: [1, 2],
+        items: [],
+      },
+      {
         key: "expense-earning-summary",
         text: "Expense Earnings",
         icon: "",
@@ -232,7 +266,7 @@ export const navigation: MenuItem[] = [
       },
     ],
   },
-    {
+  {
     key: "users",
     text: "Users",
     icon: "fa fa-bell",
@@ -749,7 +783,7 @@ export const navigation: MenuItem[] = [
       },
     ],
   },
-    {
+  {
     key: "admin-payment-methods",
     text: "Payment Methods",
     icon: "fa fa-question-circle",
@@ -790,7 +824,7 @@ export const navigation: MenuItem[] = [
       },
     ],
   },
-      {
+  {
     key: "admin-guarantors",
     text: "Guarantors",
     icon: "fa fa-question-circle",
@@ -892,14 +926,6 @@ export const navigation: MenuItem[] = [
         text: "SACCO",
         icon: "",
         path: "/admin/config/sacco",
-        roles: [2],
-        items: [],
-      },
-      {
-        key: "application",
-        text: "Application",
-        icon: "",
-        path: "/approved",
         roles: [2],
         items: [],
       },

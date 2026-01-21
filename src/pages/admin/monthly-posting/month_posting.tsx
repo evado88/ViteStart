@@ -50,7 +50,7 @@ const AdminMonthlyPosting = ({ props }: any) => {
     `monthly-posting/review-update/${eId}`
   );
 
-  pageConfig.id = eId == undefined ? 0 : Number(eId);
+  pageConfig.Id = eId == undefined ? 0 : Number(eId);
 
   useEffect(() => {
     setLoading(true);
@@ -159,7 +159,7 @@ const AdminMonthlyPosting = ({ props }: any) => {
     };
 
     setTimeout(() => {
-      Assist.postPutData(pageConfig.Title, pageConfig.updateUrl, postData, 1)
+      Assist.postPutData(pageConfig.Title, pageConfig.UpdateUrl, postData, 1)
         .then((data) => {
           setSaving(false);
 

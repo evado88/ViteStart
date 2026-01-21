@@ -1,33 +1,22 @@
-import React, { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { Titlebar } from "../../../components/titlebar";
 import { Card } from "../../../components/card";
 import { Row } from "../../../components/row";
 import { Col } from "../../../components/column";
-import SelectBox from "devextreme-react/select-box";
 import { TextBox } from "devextreme-react/text-box";
 import {
   Validator,
   RequiredRule,
-  AsyncRule,
-  CompareRule,
-  CustomRule,
 } from "devextreme-react/validator";
-import TextArea from "devextreme-react/text-area";
-import { NumberBox } from "devextreme-react/number-box";
 import Button from "devextreme-react/button";
 import ValidationSummary from "devextreme-react/validation-summary";
 import { LoadPanel } from "devextreme-react/load-panel";
-import DateBox from "devextreme-react/date-box";
-import { useTheme } from "../../../context/ThemeContext";
 import { useAuth } from "../../../context/AuthContext";
 import PageConfig from "../../../classes/page-config";
 import Assist from "../../../classes/assist";
-import axios from "axios";
 import { LoadIndicator } from "devextreme-react/load-indicator";
 import { useNavigate, useParams } from "react-router-dom";
 import HtmlEditor, {
-  Toolbar,
-  Item,
   MediaResizing,
 } from "devextreme-react/html-editor";
 import AppInfo from "../../../classes/app-info";
@@ -49,15 +38,15 @@ const KnowledgebaseCategoryEdit = () => {
 
   const pageConfig = new PageConfig("Knowledgebase Category", "", "", "Knowledgebase Category", "");
 
-  pageConfig.id = eId == undefined ? 0 : Number(eId);
+  pageConfig.Id = eId == undefined ? 0 : Number(eId);
 
   useEffect(() => {
     //only load if updating item
-    if (pageConfig.id != 0) {
+    if (pageConfig.Id != 0) {
       setLoading(true);
 
       setTimeout(() => {
-        Assist.loadData(pageConfig.Title, `knowledge-base-categories/id/${pageConfig.id}`)
+        Assist.loadData(pageConfig.Title, `knowledge-base-categories/id/${pageConfig.Id}`)
           .then((data) => {
             setLoading(false);
             updateVaues(data);
@@ -89,16 +78,16 @@ const KnowledgebaseCategoryEdit = () => {
     };
 
 
-    const url = pageConfig.id == 0
+    const url = pageConfig.Id == 0
           ? `knowledge-base-categories/create`
-          : `knowledge-base-categories/update/${pageConfig.id}`;
+          : `knowledge-base-categories/update/${pageConfig.Id}`;
 
     setTimeout(() => {
       Assist.postPutData(
         pageConfig.Title,
         url,
         postData,
-        pageConfig.id
+        pageConfig.Id
       )
         .then((data) => {
           setSaving(false);
@@ -109,7 +98,7 @@ const KnowledgebaseCategoryEdit = () => {
             "success"
           );
 
-          if (pageConfig.id == 0) {
+          if (pageConfig.Id == 0) {
             //navigate
             navigate(`/admin/knowledge-base/category/edit/${data.id}`);
           }

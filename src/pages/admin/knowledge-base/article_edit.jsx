@@ -43,7 +43,7 @@ const KnowledgebaseArticleEdit = () => {
 
   const pageConfig = new PageConfig(`New Article`, "", "", "Article", "");
 
-  pageConfig.id = eId == undefined ? 0 : Number(eId);
+  pageConfig.Id = eId == undefined ? 0 : Number(eId);
 
   useEffect(() => {
     Assist.loadData("Categories", "knowledge-base-categories/list")
@@ -61,7 +61,7 @@ const KnowledgebaseArticleEdit = () => {
     setTimeout(() => {
       Assist.loadData("Configuration", AppInfo.configApiUrl)
         .then((data) => {
-          if (pageConfig.id != 0) {
+          if (pageConfig.Id != 0) {
             Assist.loadData(
               pageConfig.Single,
               `knowledge-base-articles/id/${eId}`
@@ -128,11 +128,11 @@ const KnowledgebaseArticleEdit = () => {
     setTimeout(() => {
       Assist.postPutData(
         pageConfig.Title,
-        pageConfig.id == 0
+        pageConfig.Id == 0
           ? `knowledge-base-articles/create`
-          : `knowledge-base-articles/update/${pageConfig.id}`,
+          : `knowledge-base-articles/update/${pageConfig.Id}`,
         postData,
-        pageConfig.id
+        pageConfig.Id
       )
         .then((data) => {
           setSaving(false);

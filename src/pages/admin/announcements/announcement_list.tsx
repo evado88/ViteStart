@@ -30,7 +30,8 @@ const AdminAnnouncements = () => {
     "announcements/list",
     "",
     "Annoucements",
-    ""
+    "",
+    [2]
   );
 
   useEffect(() => {

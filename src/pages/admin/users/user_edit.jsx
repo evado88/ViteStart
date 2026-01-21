@@ -57,7 +57,7 @@ const UserEdit = () => {
 
   const pageConfig = new PageConfig(`New User`, "", "", "User", "");
 
-  pageConfig.id = eId == undefined ? 0 : Number(eId);
+  pageConfig.Id = eId == undefined ? 0 : Number(eId);
 
   useEffect(() => {
     //only load config for new items to get approval levels and other data
@@ -65,7 +65,7 @@ const UserEdit = () => {
     setTimeout(() => {
       Assist.loadData("Configuration", AppInfo.configApiUrl)
         .then((data) => {
-          if (pageConfig.id != 0) {
+          if (pageConfig.Id != 0) {
             Assist.loadData(pageConfig.Single, `users/id/${eId}`)
               .then((postData) => {
                 setLoading(false);
@@ -152,9 +152,9 @@ const UserEdit = () => {
     setTimeout(() => {
       Assist.postPutData(
         pageConfig.Title,
-        pageConfig.id == 0 ? `users/create` : `users/update/${pageConfig.id}`,
+        pageConfig.Id == 0 ? `users/create` : `users/update/${pageConfig.Id}`,
         postData,
-        pageConfig.id
+        pageConfig.Id
       )
         .then((data) => {
           setSaving(false);

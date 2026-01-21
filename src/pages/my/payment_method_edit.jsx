@@ -55,7 +55,7 @@ const MemberQueryEdit = () => {
     ""
   );
 
-  pageConfig.id = eId == undefined ? 0 : Number(eId);
+  pageConfig.Id = eId == undefined ? 0 : Number(eId);
 
   useEffect(() => {
     //only load config for new items to get approval levels and other data
@@ -63,7 +63,7 @@ const MemberQueryEdit = () => {
     setTimeout(() => {
       Assist.loadData("Configuration", AppInfo.configApiUrl)
         .then((data) => {
-          if (pageConfig.id != 0) {
+          if (pageConfig.Id != 0) {
             Assist.loadData(pageConfig.Single, `paymentmethods/id/${eId}`)
               .then((postData) => {
                 setLoading(false);
@@ -159,11 +159,11 @@ const MemberQueryEdit = () => {
     setTimeout(() => {
       Assist.postPutData(
         pageConfig.Title,
-        pageConfig.id == 0
+        pageConfig.Id == 0
           ? `paymentmethods/create`
-          : `paymentmethods/update/${pageConfig.id}`,
+          : `paymentmethods/update/${pageConfig.Id}`,
         postData,
-        pageConfig.id
+        pageConfig.Id
       )
         .then((data) => {
           setSaving(false);

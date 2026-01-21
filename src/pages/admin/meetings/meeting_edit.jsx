@@ -42,7 +42,7 @@ const MeetingEdit = () => {
 
   const pageConfig = new PageConfig(`New Meeting`, "", "", "Meeting", "");
 
-  pageConfig.id = eId == undefined ? 0 : Number(eId);
+  pageConfig.Id = eId == undefined ? 0 : Number(eId);
 
   useEffect(() => {
     //only load config for new items to get approval levels and other data
@@ -50,7 +50,7 @@ const MeetingEdit = () => {
     setTimeout(() => {
       Assist.loadData("Configuration", "sacco-config/1")
         .then((data) => {
-          if (pageConfig.id != 0) {
+          if (pageConfig.Id != 0) {
             Assist.loadData("Meeting", `meetings/id/${eId}`)
               .then((postData) => {
                 setLoading(false);
@@ -119,22 +119,22 @@ const MeetingEdit = () => {
       title: title,
       date: date,
       content: content,
-      attendanceList: JSON.stringify(attendanceList),
+      attendance_list: attendanceList,
       status_id: Assist.STATUS_SUBMITTED,
       stage_id: Assist.STAGE_SUBMITTED,
       approval_levels: config.approval_levels,
     };
 
-    console.log(postData);
+    console.log('posting data', postData);
 
     setTimeout(() => {
       Assist.postPutData(
         pageConfig.Title,
-        pageConfig.id == 0
+        pageConfig.Id == 0
           ? `meetings/create`
-          : `meetings/update/${pageConfig.id}`,
+          : `meetings/update/${pageConfig.Id}`,
         postData,
-        pageConfig.id
+        pageConfig.Id
       )
         .then((data) => {
           setSaving(false);

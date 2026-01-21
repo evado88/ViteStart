@@ -1,6 +1,3 @@
-export { default as AboutPage } from './about'
-export { default as ContactPage } from './contact'
-
 export { default as HomePage } from './home'
 //Error
 export { default as NotFoundPage } from './404'
@@ -8,6 +5,9 @@ export { default as NotFoundPage } from './404'
 export { default as LoginPage } from '../auth/login'
 export { default as SignupPage } from '../auth/signup'
 
+//All users
+export { default as PasswordPage } from './password'
+export { default as ProfilePage } from './profile'
 //ADMIN
 //dahsboard
 //user
@@ -20,6 +20,7 @@ export { default as AdminMonthlySummaryPage } from './reports/monthly_summary'
 export { default as AdminMonthlyExpenseEarningsSummaryPage } from './reports/expense_earning_summary'
 export { default as MemberInterestSharingPage } from './reports/member_interest_sharing'
 export { default as MemberTimeValueSummaryPage } from './reports/member_time_value_summary'
+export { default as MemberPayoutSummaryPage } from './reports/member_payout_summary'
 //posting period
 export { default as AdminPostingPeriodEditPage } from './admin/posting-periods/posting_period_edit'
 export { default as AdminPostingPeriodsPage } from './admin/posting-periods/posting_period_list'
@@ -42,6 +43,9 @@ export { default as AdminMonthlyApprovedPostingsPage } from './admin/monthly-pos
 export { default as AdminMonthlyRejectedPostingsPage } from './admin/monthly-posting/month_posting_rejected'
 export { default as AdminMonthlyPostingsDDACPage } from './admin/monthly-posting/month_posting_ddac'
 export { default as AdminMonthlyPostingPage } from './admin/monthly-posting/month_posting'
+
+//mid-month posting
+
 
 //expense and earnings
 export { default as AdminExpenseEarningGroupsPage } from './admin/expense-earnings/group_list'
@@ -88,9 +92,11 @@ export { default as ConfigurationSACCOPage} from './admin/configuration/sacco'
 //My
 export { default as MemberDashboardPage } from './dashboard'
 export { default as MonthlyPostingEditPage} from './my/month_posting_edit'
+export { default as MidMonthlyPostingEditPage} from './my/midmonth_posting_edit'
 export { default as MonthlyPostingPage} from './my/month_posting'
 export { default as MonthlyPostingApprovePage} from './my/month_posting_approve'
 export { default as MonthlyPostingsPage} from './my/month_posting_list'
+export { default as MidMonthlyPostingsPage} from './my/midmonth_posting_list'
 export { default as MonthlyPostingApprovalsPage} from './my/month_posting_approvals'
 export { default as MonthlyPostingPOPUploadPage} from './my/month_posting_pop_upload'
 export { default as MemberQueriesPage} from './my/query_list'

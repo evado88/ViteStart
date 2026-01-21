@@ -43,7 +43,7 @@ const MemberQueryEdit = () => {
 
   const pageConfig = new PageConfig(`New Member Query`, "", "", "Member Query", "");
 
-  pageConfig.id = eId == undefined ? 0 : Number(eId);
+  pageConfig.Id = eId == undefined ? 0 : Number(eId);
 
   useEffect(() => {
     Assist.loadData("Categories", "member-query-types/list")
@@ -61,7 +61,7 @@ const MemberQueryEdit = () => {
     setTimeout(() => {
       Assist.loadData("Configuration", AppInfo.configApiUrl)
         .then((data) => {
-          if (pageConfig.id != 0) {
+          if (pageConfig.Id != 0) {
             Assist.loadData(
               pageConfig.Single,
               `member-queries/id/${eId}`
@@ -128,11 +128,11 @@ const MemberQueryEdit = () => {
     setTimeout(() => {
       Assist.postPutData(
         pageConfig.Title,
-        pageConfig.id == 0
+        pageConfig.Id == 0
           ? `member-queries/create`
-          : `member-queries/update/${pageConfig.id}`,
+          : `member-queries/update/${pageConfig.Id}`,
         postData,
-        pageConfig.id
+        pageConfig.Id
       )
         .then((data) => {
           setSaving(false);

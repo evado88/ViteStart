@@ -57,9 +57,18 @@ const PostMonthly = () => {
   const [postingShares, setPostingShares] = useState<number | null>(null);
   const [postingSocial, setPostingSocial] = useState<number | null>(null);
   const [postingPenalty, setPostingPenalty] = useState<number | null>(0);
+
+  const [postingPayMethodData, setPostingPayMethodData] = useState<
+    any[] | null
+  >([]);
+
   const [postingPayMethod, setPostingPayMethod] = useState<string | null>(null);
-  const [postingPayNumber, setPostingPayNumber] = useState<string | null>(null);
-  const [postingPayName, setPostingPayName] = useState<string | null>(null);
+
+  const [postingGuarantorData, setPostingGuarantorData] = useState<
+    any[] | null
+  >([]);
+
+  const [postingGuarantor, setPostingGuarantor] = useState<string | null>(null);
 
   const [postingMember, setPostingMember] = useState<any | null>(null);
   const [postingAttendanceType, setPostingAttendanceType] = useState<
@@ -105,12 +114,12 @@ const PostMonthly = () => {
 
   //interest payment - minimum 10% if not yet paid on loan
   const [loanInterestPercent, setLoanInterestPercent] = useState<number | null>(
-    null
+    null,
   );
 
   //loan payment -  minimum 10% if not yet paid on loan
   const [loanPaymentPercent, setLoanPaymentPercent] = useState<number | null>(
-    null
+    null,
   );
 
   //new loan loan application
@@ -131,7 +140,7 @@ const PostMonthly = () => {
   const [loanData, setLoanData] = useState<any[] | null>([]);
   const [penaltyData, setPenaltyData] = useState<any[] | null>([]);
   const [totalSavingsAmount, setTotalSavingsAmount] = useState<number | null>(
-    0
+    0,
   );
 
   const [summryData, setSummaryData] = useState<any[] | null>([]);
@@ -141,19 +150,19 @@ const PostMonthly = () => {
     "",
     "",
     "User",
-    `monthly-posting/param/${user.userid}`
+    `monthly-posting/param/${user.userid}`,
   );
 
-  pageConfig.id = eId == undefined ? 0 : Number(eId);
+  pageConfig.Id = eId == undefined ? 0 : Number(eId);
 
   //load posting param and id if a
   useEffect(() => {
     setLoading(true);
 
     setTimeout(() => {
-      Assist.loadData("Monthly Posting Param", pageConfig.updateUrl)
+      Assist.loadData("Monthly Posting Param", pageConfig.UpdateUrl)
         .then((data) => {
-          if (pageConfig.id != 0) {
+          if (pageConfig.Id != 0) {
             Assist.loadData("Monthly Posting", `monthly-posting/id/${eId}`)
               .then((postData) => {
                 setLoading(false);
@@ -201,9 +210,10 @@ const PostMonthly = () => {
     setPostingSavings(data.saving);
     setPostingShares(data.shares);
 
-    setPostingPayMethod(data.payment_method_type);
-    setPostingPayNumber(data.payment_method_number);
-    setPostingPayName(data.payment_method_name);
+    setPostingPayMethod(data.payment_method_id);
+    setPostingGuarantor(data.guarantor_id);
+
+    setPostingAttendanceType(data.meeting_attendance);
 
     setPostingLoanApplication(data.loan_application);
     setPostingComments(data.comments);
@@ -212,7 +222,7 @@ const PostMonthly = () => {
       setError(true);
       Assist.showMessage(
         "This monthly posting has already been submitetd and cannt be edited",
-        "error"
+        "error",
       );
     } else {
       setError(false);
@@ -220,11 +230,12 @@ const PostMonthly = () => {
   };
   const updateVaues = (data: any) => {
     setPostingMember(data.member);
-    setPostingPayNumber(data.member.mobile2);
-    setPostingPayName(`${data.member.fname} ${data.member.lname}`);
+
+    setPostingPayMethodData(data.paymentMethods);
+    setPostingGuarantorData(data.guarantors);
 
     setLatePostingStartDate(
-      Assist.updateDateDay(postingDate, data.latePostingStartDay)
+      Assist.updateDateDay(postingDate, data.latePostingStartDay),
     );
 
     setLatePostingStartDay(data.latePostingStartDay);
@@ -308,7 +319,7 @@ const PostMonthly = () => {
 
     let result = confirm(
       "Are you sure you want to submit this monthly posting?",
-      "Confirm submission"
+      "Confirm submission",
     );
     result.then((dialogResult) => {
       if (dialogResult) {
@@ -321,7 +332,7 @@ const PostMonthly = () => {
     setSaving(true);
 
     const periodDate = new Date(postingDate);
-    const periodId = `${periodDate.getFullYear()}${periodDate.getMonth() + 1}`;
+    const periodId = Assist.getDatePeriodId(periodDate);
 
     const totalContributions = getContributions();
 
@@ -330,14 +341,20 @@ const PostMonthly = () => {
       user_id: user.userid,
       user_action_id: user.userid,
       period_id: periodId,
+      meeting_attendance: postingAttendanceType,
       missed_meeting_penalty: isAbsenteePosting() ? missedMeetingFee : 0,
       date: `${postingDate} ${Assist.getCurrentTime()}`,
+      saving_mon: postingSavings,
+      saving_mid: 0,
       saving: postingSavings,
       shares: postingShares,
       social: postingSocial,
       penalty: postingPenalty,
+      penalty_list: penaltyData,
       loan_interest: postingLoanInterestPayment,
       loan_month_repayment: postingLoanMonthPayment,
+      loan_application_mon: postingLoanApplication,
+      loan_application_mid: 0,
       loan_application: postingLoanApplication,
       guarantor_required: requireGuarantor()
         ? Assist.RESPONSE_YES
@@ -350,27 +367,26 @@ const PostMonthly = () => {
       contribution_total: totalContributions,
       deposit_total: getDepositAmount(),
       receive_total: getReceiveAmount(),
-      payment_method_type: postingPayMethod,
-      payment_method_number: postingPayNumber,
-      payment_method_name: postingPayName,
+      payment_method_id: postingPayMethod,
+      guarantor_id: postingGuarantor,
       stage_id: Assist.STAGE_SUBMITTED,
     };
 
     setTimeout(() => {
       Assist.postPutData(
         pageConfig.Title,
-        pageConfig.id == 0
+        pageConfig.Id == 0
           ? `monthly-posting/create`
-          : `monthly-posting/update/${pageConfig.id}`,
+          : `monthly-posting/update/${pageConfig.Id}`,
         postData,
-        pageConfig.id
+        pageConfig.Id,
       )
         .then((data) => {
           setSaving(false);
 
           Assist.showMessage(
             "You have successfully submitted the monthly posting!",
-            "success"
+            "success",
           );
 
           navigate(`/my/monthly-posting/list`);
@@ -614,7 +630,10 @@ const PostMonthly = () => {
       <Row>
         <Col sz={12} sm={12} lg={12}>
           <Card title="Applicant" showHeader={false}>
-            <MemberHeader title={user.name} description="Monthly Posting" />
+            <MemberHeader
+              title={user.name}
+              description="Current Cummulative Savings"
+            />
             <h4 className="font-bold text-success">
               {Assist.formatCurrency(totalSavingsAmount!)}
             </h4>
@@ -630,30 +649,17 @@ const PostMonthly = () => {
                   <div className="dx-fieldset-header">Period</div>
                   <div className="dx-field">
                     <div className="dx-field-label">Current</div>
-                    <DateBox
-                      className="dx-field-value"
-                      placeholder="Period"
-                      displayFormat={"dd MMM yyy"}
-                      value={postingDate}
-                      disabled={true}
-                      onValueChanged={(c) => console.log(c)}
-                      onValueChange={(text) => {
-                        setPostingDate(text);
-                        setLatePostingStartDate(
-                          Assist.updateDateDay(text, latePostingStartDay)
-                        );
-                      }}
-                    />
+                    <div className="dx-field-value-static">
+                      {" "}
+                      {Assist.formatDateLong(postingDate)}
+                    </div>
                   </div>
                   <div className="dx-field">
                     <div className="dx-field-label">Late Posting Start</div>
-                    <DateBox
-                      className="dx-field-value"
-                      placeholder="Period"
-                      displayFormat={"dd MMM yyy"}
-                      value={latePostingStartDate!}
-                      readOnly={true}
-                    />
+                    <div className="dx-field-value-static">
+                      {" "}
+                      {Assist.formatDateLong(latePostingStartDate!)}
+                    </div>
                   </div>
                   <div className="dx-field">
                     <div className="dx-field-label">Posting Status</div>
@@ -778,54 +784,48 @@ const PostMonthly = () => {
                   </div>
                   <div className="dx-field">
                     <div className="dx-field-label">
-                      Prefered Payment Method
+                      Payment Method
                     </div>
                     <SelectBox
                       className="dx-field-value"
-                      placeholder="Prefered Payment Method"
-                      dataSource={AppInfo.paymethodsList}
+                      placeholder="Payment Method"
+                      dataSource={postingPayMethodData}
+                      valueExpr={"id"}
+                      displayExpr={"name"}
+                      itemTemplate={(twn) =>
+                        `${twn.name} - ${twn.type}`
+                      }
                       onValueChange={(value) => setPostingPayMethod(value)}
                       validationMessagePosition="left"
                       value={postingPayMethod}
                       disabled={error}
                     >
                       <Validator>
-                        <RequiredRule message=" Prefered payment method is required" />
+                        <RequiredRule message="Prefered payment method is required" />
                       </Validator>
                     </SelectBox>
                   </div>
-                  {isMobileMoney() && (
-                    <div className="dx-field">
-                      <div className="dx-field-label">Mobile Money Number</div>
-                      <TextBox
-                        className="dx-field-value"
-                        placeholder="Mobile Money Number"
-                        value={postingPayNumber!}
-                        disabled={error || saving}
-                        onValueChange={(text) => setPostingPayNumber(text)}
-                      >
-                        <Validator>
-                          <RequiredRule message="Mobile money number is required" />
-                        </Validator>
-                      </TextBox>
-                    </div>
-                  )}
-                  {isMobileMoney() && (
-                    <div className="dx-field">
-                      <div className="dx-field-label">Mobile Money Name</div>
-                      <TextBox
-                        className="dx-field-value"
-                        placeholder="Mobile Money Name"
-                        value={postingPayName!}
-                        disabled={error || saving}
-                        onValueChange={(text) => setPostingPayName(text)}
-                      >
-                        <Validator>
-                          <RequiredRule message="Mobile money name is required" />
-                        </Validator>
-                      </TextBox>
-                    </div>
-                  )}
+                  <div className="dx-field">
+                    <div className="dx-field-label">Guarantor</div>
+                    <SelectBox
+                      className="dx-field-value"
+                      placeholder="Guarantor"
+                      dataSource={postingGuarantorData}
+                      valueExpr={"id"}
+                      displayExpr={"guar_email"}
+                      itemTemplate={(twn) =>
+                        `${twn.guar_fname} - ${twn.guar_lname}`
+                      }
+                      onValueChange={(value) => setPostingGuarantor(value)}
+                      validationMessagePosition="left"
+                      value={postingGuarantor}
+                      disabled={error}
+                    >
+                      <Validator>
+                        <RequiredRule message="Guarantor is required" />
+                      </Validator>
+                    </SelectBox>
+                  </div>
                 </div>
               </div>
             </Card>
@@ -907,7 +907,7 @@ const PostMonthly = () => {
                               }
                             }}
                             message={`Loan repayment must be >= ${Assist.formatCurrency(
-                              minPostingLoanMonthPayment
+                              minPostingLoanMonthPayment,
                             )}`}
                           />
                         </Validator>
@@ -930,7 +930,7 @@ const PostMonthly = () => {
                       <strong className="text-success">
                         {Assist.formatCurrency(
                           (totalSavingsAmount! + postingSavings!) *
-                            loanSavingsRatio!
+                            loanSavingsRatio!,
                         )}
                       </strong>
                     </div>
@@ -977,7 +977,7 @@ const PostMonthly = () => {
                       <strong>
                         {requireGuarantor()
                           ? `Yes, ${Assist.formatCurrency(
-                              loanApplyLimit!
+                              loanApplyLimit!,
                             )} and above`
                           : "No"}
                       </strong>

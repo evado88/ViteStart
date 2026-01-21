@@ -42,7 +42,7 @@ const MemberQueryEdit = () => {
 
   const pageConfig = new PageConfig(`New Guarantor`, "", "", "Guarantor", "");
 
-  pageConfig.id = eId == undefined ? 0 : Number(eId);
+  pageConfig.Id = eId == undefined ? 0 : Number(eId);
 
   useEffect(() => {
     //only load config for new items to get approval levels and other data
@@ -50,7 +50,7 @@ const MemberQueryEdit = () => {
     setTimeout(() => {
       Assist.loadData("Configuration", AppInfo.configApiUrl)
         .then((data) => {
-          if (pageConfig.id != 0) {
+          if (pageConfig.Id != 0) {
             Assist.loadData(pageConfig.Single, `guarantors/id/${eId}`)
               .then((postData) => {
                 setLoading(false);
@@ -128,11 +128,11 @@ const MemberQueryEdit = () => {
     setTimeout(() => {
       Assist.postPutData(
         pageConfig.Title,
-        pageConfig.id == 0
+        pageConfig.Id == 0
           ? `guarantors/create`
-          : `guarantors/update/${pageConfig.id}`,
+          : `guarantors/update/${pageConfig.Id}`,
         postData,
-        pageConfig.id
+        pageConfig.Id
       )
         .then((data) => {
           setSaving(false);
@@ -234,7 +234,7 @@ const MemberQueryEdit = () => {
                     <div className="dx-field-label">Mobile</div>
                     <TextBox
                       className="dx-field-value"
-                      placeholder="Mobile i.e. 260977123456"
+                      placeholder="Mobile i.e. 977123456"
                       value={guarantorMobile}
                       onValueChange={(text) => setGuarantorMobile(text)}
                     />

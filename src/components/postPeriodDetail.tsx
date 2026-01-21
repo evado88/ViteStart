@@ -49,31 +49,73 @@ export const PostingPeriodDetail = ({
         <div className="dx-fieldset">
           <div className="dx-fieldset-header">Configuration</div>
           <div className="dx-field">
-            <div className="dx-field-label">Late Posting Start Day</div>
+            <div className="dx-field-label">Posting Start Date</div>
             <div className="dx-field-value-static">
               <strong>
-                {Assist.getDateDay(postingPeriod.late_posting_date_start)}
+                {Assist.getDateText(postingPeriod.posting_date_start)}
+              </strong>
+            </div>
+          </div>
+          <div className="dx-field">
+            <div className="dx-field-label">Posting End Date</div>
+            <div className="dx-field-value-static">
+              <strong>
+                {Assist.getDateText(postingPeriod.posting_date_end)}
+              </strong>
+            </div>
+          </div>
+          <div className="dx-field">
+            <div className="dx-field-label">Late Posting Start Date</div>
+            <div className="dx-field-value-static">
+              <strong>
+                {Assist.getDateText(postingPeriod.late_posting_date_start)}
+              </strong>
+            </div>
+          </div>
+          <div className="dx-field">
+            <div className="dx-field-label">Late Posting End Date</div>
+            <div className="dx-field-value-static">
+              <strong>
+                {Assist.getDateText(postingPeriod.late_posting_date_end)}
+              </strong>
+            </div>
+          </div>
+                  <div className="dx-field">
+            <div className="dx-field-label">Mid-Month Posting Start Date</div>
+            <div className="dx-field-value-static">
+              <strong>
+                {Assist.getDateText(postingPeriod.mid_posting_date_start)}
+              </strong>
+            </div>
+          </div>
+          <div className="dx-field">
+            <div className="dx-field-label">Mid-Month Posting End Date</div>
+            <div className="dx-field-value-static">
+              <strong>
+                {Assist.getDateText(postingPeriod.mid_posting_date_end)}
               </strong>
             </div>
           </div>
           <div className="dx-field">
             <div className="dx-field-label">Savings Multiple</div>
             <div className="dx-field-value-static">
-              <strong>{Assist.formatCurrency(postingPeriod.saving_multiple)}</strong>
+              <strong>
+                {Assist.formatCurrency(postingPeriod.saving_multiple)}
+              </strong>
             </div>
           </div>
           <div className="dx-field">
             <div className="dx-field-label">Shares Multiple</div>
             <div className="dx-field-value-static">
-              <strong>{Assist.formatCurrency(postingPeriod.shares_multiple)}</strong>
+              <strong>
+                {Assist.formatCurrency(postingPeriod.shares_multiple)}
+              </strong>
             </div>
           </div>
           <div className="dx-field">
             <div className="dx-field-label">Social Fund Minimum</div>
             <div className="dx-field-value-static">
-              <strong>
-                {Assist.formatCurrency(postingPeriod.social_min)}
-              </strong>
+              <strong>{Assist.formatCurrency(postingPeriod.social_min)}</strong>
             </div>
           </div>
           <div className="dx-field">
@@ -91,29 +133,29 @@ export const PostingPeriodDetail = ({
           <div className="dx-field">
             <div className="dx-field-label">Loan Savings Ratio</div>
             <div className="dx-field-value-static">
-              <strong>
-                {postingPeriod.loan_saving_ratio}
-              </strong>
+              <strong>{postingPeriod.loan_saving_ratio}</strong>
             </div>
           </div>
-             <div className="dx-field">
+          <div className="dx-field">
             <div className="dx-field-label">Loan Duraton (Months)</div>
             <div className="dx-field-value-static">
-              <strong>
-                {postingPeriod.loan_duration}
-              </strong>
+              <strong>{postingPeriod.loan_duration}</strong>
             </div>
           </div>
           <div className="dx-field">
             <div className="dx-field-label">Loan Guarantor Limit</div>
             <div className="dx-field-value-static">
-              <strong>{Assist.formatCurrency(postingPeriod.loan_apply_limit)}</strong>
+              <strong>
+                {Assist.formatCurrency(postingPeriod.loan_apply_limit)}
+              </strong>
             </div>
           </div>
           <div className="dx-field">
             <div className="dx-field-label">Late Posting Fee</div>
             <div className="dx-field-value-static">
-              <strong>{Assist.formatCurrency(postingPeriod.late_posting_rate)}</strong>
+              <strong>
+                {Assist.formatCurrency(postingPeriod.late_posting_rate)}
+              </strong>
             </div>
           </div>
           <div className="dx-field">

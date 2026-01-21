@@ -56,6 +56,9 @@ class Assist {
   static NOTIFY_WAITING = 1;
   static NOTIFY_SENT = 2;
 
+  static TRANSACTION_PERIOD_NORMAL = 1;
+  static TRANSACTION_PERIOD_MID = 2;
+
   static firebaseConfig = {
     apiKey: "AIzaSyCbH2wyJmcqTQU3gIl_raQwr0AmVuG_bhA",
     authDomain: "myzambia-5c62c.firebaseapp.com",
@@ -132,11 +135,9 @@ class Assist {
   }
 
   static setMobile(code: string, phone: string): string {
-   
     const safeCode = `${code.substring(1)}${phone}`;
 
     return safeCode;
-
   }
 
   static getDateText(mysqlDate: string): string {
@@ -172,6 +173,11 @@ class Assist {
 
   static getPeriodId(year: number, month: number): string {
     const date = new Date(year, month);
+    const periodId = date.toISOString().slice(0, 7).replace("-", "");
+    return periodId;
+  }
+
+  static getDatePeriodId(date: Date): string {
     const periodId = date.toISOString().slice(0, 7).replace("-", "");
     return periodId;
   }

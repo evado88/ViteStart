@@ -51,14 +51,14 @@ const MyMemberQuery = () => {
     `guarantors/review-update/${eId}`
   );
 
-  pageConfig.id = eId == undefined ? 0 : Number(eId);
+  pageConfig.Id = eId == undefined ? 0 : Number(eId);
 
   useEffect(() => {
     //only load if viewing the item
-    if (pageConfig.id != 0) {
+    if (pageConfig.Id != 0) {
       setLoading(true);
       setTimeout(() => {
-        Assist.loadData(pageConfig.Title, `guarantors/id/${pageConfig.id}`)
+        Assist.loadData(pageConfig.Title, `guarantors/id/${pageConfig.Id}`)
           .then((data) => {
             setLoading(false);
             updateVaues(data);
@@ -158,7 +158,7 @@ const MyMemberQuery = () => {
     };
 
     setTimeout(() => {
-      Assist.postPutData(pageConfig.Title, pageConfig.updateUrl, postData, 1)
+      Assist.postPutData(pageConfig.Title, pageConfig.UpdateUrl, postData, 1)
         .then((data) => {
           setSaving(false);
 

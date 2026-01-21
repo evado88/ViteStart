@@ -1,4 +1,3 @@
-import { useState } from "react";
 import "./App.css";
 import "devextreme/dist/css/dx.greenmist.compact.css";
 import MainLayout from "./components/MainLayout";
@@ -8,8 +7,6 @@ import { Routes, Route } from "react-router-dom";
 import {
   HomePage,
   MemberDashboardPage,
-  ContactPage,
-  AboutPage,
   //Error
   NotFoundPage,
   //Auth
@@ -89,6 +86,11 @@ import {
   AdminPaymentMethodPage,
   AdminGuarantorPage,
   AdminGuarantorsPage,
+  MemberPayoutSummaryPage,
+  ProfilePage,
+  PasswordPage,
+  MidMonthlyPostingEditPage,
+  MidMonthlyPostingsPage,
 
 } from "./pages";
 import { BrowserRouter } from "react-router-dom";
@@ -111,8 +113,9 @@ function App() {
         >
 
           <Route path="/home" element={<HomePage></HomePage>} />
-          <Route path="/about" element={<AboutPage></AboutPage>} />
-          <Route path="/contact" element={<ContactPage></ContactPage>} />
+          {/* ALL */}
+          <Route path="/account/profile" element={<ProfilePage/>} />
+          <Route path="/account/security" element={<PasswordPage/>} />
           {/* ADMIN */}
           {/* users */}
           <Route path="/admin/users/list" element={<AdminUsersPage/>} />
@@ -128,6 +131,7 @@ function App() {
           <Route path="/reports/expense-earnings-summary" element={<AdminMonthlyExpenseEarningsSummaryPage/>} />
           <Route path="/reports/interest-sharing" element={<MemberInterestSharingPage/>} />
           <Route path="/reports/time-value-summary" element={<MemberTimeValueSummaryPage/>} />
+          <Route path="/reports/payout-summary" element={<MemberPayoutSummaryPage/>} />
           {/* Dictionaries */}
           <Route path="/admin/dictionairies/statuses" element={<StatusesPage></StatusesPage>} />
           <Route path="/admin/dictionairies/transaction-sources" element={<TransactionSourcesPage></TransactionSourcesPage>} />
@@ -141,6 +145,9 @@ function App() {
           <Route path="/admin/monthly-postings/rejected" element={<AdminMonthlyRejectedPostingsPage/>} />
           <Route path="/admin/monthly-postings/ddac-report/:eId" element={<AdminMonthlyPostingsDDACPage/>} />
           <Route path="/admin/monthly-postings/view/:eId" element={<AdminMonthlyPostingPage/>} />
+          {/* mid-month posting */}
+
+
           {/*expense and earnings*/}
           <Route path="/admin/expense-earning/group/list" element={<AdminExpenseEarningGroupsPage/>} />
           <Route path="/admin/expense-earning/group/add" element={<AdminExpenseEarningGroupsEditPage/>} />
@@ -201,7 +208,10 @@ function App() {
           <Route path="/" element={<MemberDashboardPage></MemberDashboardPage>} />
           <Route path="/my/monthly-posting/post" element={<MonthlyPostingEditPage/>} />
           <Route path="/my/monthly-posting/edit/:eId" element={<MonthlyPostingEditPage/>} />
+          <Route path="/my/mid-month-posting/post" element={<MidMonthlyPostingEditPage/>} />
+          <Route path="/my/mid-month-posting/edit/:eId" element={<MidMonthlyPostingEditPage/>} />
           <Route path="/my/monthly-posting/list" element={<MonthlyPostingsPage/>} />
+          <Route path="/my/mid-month-posting/list" element={<MidMonthlyPostingsPage/>} />
           <Route path="/my/monthly-posting/approvals" element={<MonthlyPostingApprovalsPage/>} />
           <Route path="/my/monthly-posting/view/:eId" element={<MonthlyPostingPage/>} />
           <Route path="/my/monthly-posting/guarantor-approval/:eId" element={<MonthlyPostingApprovePage/>} />

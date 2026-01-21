@@ -1,36 +1,59 @@
 import { useState, useEffect, useMemo } from "react";
-import { Titlebar } from "../../../components/titlebar";
-import { Card } from "../../../components/card";
-import { Row } from "../../../components/row";
-import { Col } from "../../../components/column";
+import { Titlebar } from "../../components/titlebar";
+import { Card } from "../../components/card";
+import { Row } from "../../components/row";
+import { Col } from "../../components/column";
 import { TextBox } from "devextreme-react/text-box";
-import { Validator, RequiredRule } from "devextreme-react/validator";
+import {
+  Validator,
+  RequiredRule,
+  CustomRule,
+} from "devextreme-react/validator";
 import Button from "devextreme-react/button";
 import ValidationSummary from "devextreme-react/validation-summary";
 import { LoadPanel } from "devextreme-react/load-panel";
-import DateBox from "devextreme-react/date-box";
-import { useAuth } from "../../../context/AuthContext";
-import PageConfig from "../../../classes/page-config";
-import Assist from "../../../classes/assist";
+import SelectBox from "devextreme-react/select-box";
+import { useAuth } from "../../context/AuthContext";
+import PageConfig from "../../classes/page-config";
+import Assist from "../../classes/assist";
 import { LoadIndicator } from "devextreme-react/load-indicator";
 import { useNavigate, useParams } from "react-router-dom";
 import HtmlEditor, { MediaResizing } from "devextreme-react/html-editor";
-import AppInfo from "../../../classes/app-info";
+import AppInfo from "../../classes/app-info";
 import FileUploader from "devextreme-react/file-uploader";
 import DataGrid, { Column, Pager, Paging } from "devextreme-react/data-grid";
 import { confirm } from "devextreme/ui/dialog";
+import DateBox from "devextreme-react/date-box";
+import { NumberBox } from "devextreme-react/number-box";
+import { MemberHeader } from "../../components/memberHeader";
 
-const AnnouncementEdit = () => {
+const KnowledgebaseArticleEdit = () => {
   //user
   const navigate = useNavigate();
   const { user } = useAuth();
   const { eId } = useParams(); // Destructure the parameter directly
 
-  //posting
-  const [title, setTitle] = useState(null);
-  const [content, setContent] = useState(null);
+  //
+  const [date, setDate] = useState(() => {
+    const today = new Date();
+    500;
+    const iso = today.toISOString();
+
+    const mysqlDate = `${iso[0]} ${iso[1]}`; // "YYYY-MM-DD"
+    return iso;
+    //return "2025-05-18";
+  });
+  const [amount, setAmount] = useState(null);
+  const [comments, setComments] = useState(null);
+  const [reference, setReference] = useState(null);
   const [uploadedFiles, setUploadedFiles] = useState([]);
   //config
+
+  const [totalSavingsAmount, setTotalSavingsAmount] = useState(0);
+  const [loanSavingsRatio, setLoanSavingsRatio] = useState(0);
+  const [loanApplyLimit, setLoanApplyLimit] = useState(0);
+  const [currentLoan, setCurrentLoan] = useState(null);
+
   const [config, setConfig] = useState(null);
 
   //service
@@ -38,7 +61,13 @@ const AnnouncementEdit = () => {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState(false);
 
-  const pageConfig = new PageConfig(`New Announcement`, "", "", "Announcement", "", [2]);
+  const pageConfig = new PageConfig(
+    `New Mid-Month Posting`,
+    "",
+    "",
+    "Mid-Month Posting",
+    `monthly-posting/param/${user.userid}`
+  );
 
   pageConfig.Id = eId == undefined ? 0 : Number(eId);
 
@@ -46,14 +75,15 @@ const AnnouncementEdit = () => {
     //only load config for new items to get approval levels and other data
     setLoading(true);
     setTimeout(() => {
-      Assist.loadData("Configuration", AppInfo.configApiUrl)
+      Assist.loadData("Configuration", pageConfig.UpdateUrl)
         .then((data) => {
           if (pageConfig.Id != 0) {
-            Assist.loadData(pageConfig.Single, `announcements/id/${eId}`)
+            Assist.loadData(pageConfig.Single, `transactions/id/${eId}`)
               .then((postData) => {
                 setLoading(false);
-                updateVaues(postData);
-                setConfig(data);
+                updateVaues(postData, true);
+                setConfig(data.config);
+                updatePostingParam(data);
               })
               .catch((message) => {
                 setLoading(false);
@@ -62,8 +92,8 @@ const AnnouncementEdit = () => {
               });
           } else {
             setLoading(false);
-            setConfig(data);
-            setError(false);
+            setConfig(data.config);
+            updatePostingParam(data);
           }
         })
         .catch((message) => {
@@ -74,10 +104,41 @@ const AnnouncementEdit = () => {
     }, Assist.DEV_DELAY);
   }, []);
 
-  const updateVaues = (data) => {
-    setTitle(data.title);
-    setContent(data.content);
+  const updatePostingParam = (data, isLoading) => {
+    setTotalSavingsAmount(data.totalSavings);
+    setLoanApplyLimit(data.config.loan_apply_limit);
+    setLoanSavingsRatio(data.config.loan_saving_ratio);
+    console.log("Param", data);
+
+    if (data.monthlyPosting == null) {
+      Assist.showMessage(
+        "You must submit your Monthly posting before applying for a mid-month loang",
+        "error"
+      );
+      setError(true);
+    }
+  };
+
+  const updateVaues = (data, isLoading) => {
+    setDate(data.date);
+    setAmount(data.amount);
+
+    setComments(data.comments);
+    setReference(data.reference);
     setUploadedFiles([data.attachment]);
+  };
+
+  const allowLoanApplication = () => {
+    //check if there is a loan
+    if (currentLoan == null) {
+      return true;
+    } else {
+      return false;
+    }
+  };
+  const requireGuarantor = () => {
+    //check if loan requires guarantor
+    return amount >= loanApplyLimit;
   };
 
   const onFormSubmit = (e) => {
@@ -89,30 +150,35 @@ const AnnouncementEdit = () => {
     );
     result.then((dialogResult) => {
       if (dialogResult) {
-        submitMeeting();
+        submitArticle();
       }
     });
   };
 
-  const submitMeeting = () => {
-    setSaving(true);
-
+  const submitArticle = () => {
     const postData = {
       user_id: user.userid,
       attachment_id: uploadedFiles.length == 0 ? null : uploadedFiles[0].id,
-      title: title,
-      content: content,
+      type_id: Assist.TRANSACTION_LOAN,
+      date: `${date}`,
+      amount: amount,
+      interest_rate: config.loan_interest_rate,
+      term_months: config.loan_duration,
+      comments: comments,
+      reference: reference,
+      state_id: Assist.STATE_OPEN,
       status_id: Assist.STATUS_SUBMITTED,
       stage_id: Assist.STAGE_SUBMITTED,
       approval_levels: config.approval_levels,
     };
 
+    setSaving(true);
     setTimeout(() => {
       Assist.postPutData(
         pageConfig.Title,
         pageConfig.Id == 0
-          ? `announcements/create`
-          : `announcements/update/${pageConfig.Id}`,
+          ? `transactions/create`
+          : `transactions/update/${pageConfig.Id}`,
         postData,
         pageConfig.Id
       )
@@ -125,7 +191,7 @@ const AnnouncementEdit = () => {
           );
 
           //navigate
-          navigate(`/admin/announcements/list`);
+          navigate(`/my/loans/submitted`);
         })
         .catch((message) => {
           setSaving(false);
@@ -133,10 +199,6 @@ const AnnouncementEdit = () => {
         });
     }, Assist.DEV_DELAY);
   };
-
-  const toolbar = useMemo(() => {
-    return AppInfo.htmlToolbar;
-  }, []);
 
   return (
     <div id="pageRoot" className="page-content">
@@ -156,7 +218,16 @@ const AnnouncementEdit = () => {
         url="#"
       ></Titlebar>
       {/* end widget */}
-
+      <Row>
+        <Col sz={12} sm={12} lg={12}>
+          <Card title="Applicant" showHeader={false}>
+            <MemberHeader title={user.name} description="Mid-Month Posting" />
+            <h4 className="font-bold text-success">
+              {Assist.formatCurrency(totalSavingsAmount)}
+            </h4>
+          </Card>
+        </Col>
+      </Row>
       {/* chart start */}
       <form id="formMain" onSubmit={onFormSubmit}>
         <Row>
@@ -164,20 +235,102 @@ const AnnouncementEdit = () => {
             <Card title="Properties" showHeader={true}>
               <div className="form">
                 <div className="dx-fieldset">
-                  <div className="dx-fieldset-header">Title</div>
+                  <div className="dx-fieldset-header">Detail</div>
                   <div className="dx-field">
-                    <div className="dx-field-label">Title</div>
-                    <TextBox
+                    <div className="dx-field-label">Date</div>
+                    <DateBox
                       className="dx-field-value"
-                      placeholder="Title"
-                      value={title}
-                      disabled={error || saving}
-                      onValueChange={(text) => setTitle(text)}
+                      placeholder="Date"
+                      displayFormat={"dd MMMM yyyy"}
+                      dateSerializationFormat="yyyy-MM-dd HH:mm"
+                      value={date}
+                      disabled={true}
+                      onValueChange={(text) => setDate(text)}
                     >
                       <Validator>
-                        <RequiredRule message="Meeting title is required" />
+                        <RequiredRule message="Date is required" />
                       </Validator>
-                    </TextBox>
+                    </DateBox>
+                  </div>
+                  <div className="dx-field">
+                    <div className="dx-field-label">Comments</div>
+                    <TextBox
+                      className="dx-field-value"
+                      placeholder="Comments"
+                      value={comments}
+                      disabled={error || saving}
+                      onValueChange={(text) => setComments(text)}
+                    ></TextBox>
+                  </div>
+                  <div className="dx-field">
+                    <div className="dx-field-label">Reference</div>
+                    <TextBox
+                      className="dx-field-value"
+                      placeholder="Reference"
+                      value={reference}
+                      disabled={error || saving}
+                      onValueChange={(text) => setReference(text)}
+                    ></TextBox>
+                  </div>
+                </div>
+                <div className="dx-fieldset">
+                  <div className="dx-fieldset-header">Loan Application</div>
+                  <div className="dx-field">
+                    <div className="dx-field-label">
+                      Max Loan Amount ({loanSavingsRatio} Savings)
+                    </div>
+                    <div className="dx-field-value-static">
+                      <strong className="text-success">
+                        {Assist.formatCurrency(
+                          totalSavingsAmount * loanSavingsRatio
+                        )}
+                      </strong>
+                    </div>
+                  </div>
+                  <div className="dx-field">
+                    <div className="dx-field-label">Loan Amount</div>
+                    {allowLoanApplication() && (
+                      <NumberBox
+                        className="dx-field-value"
+                        value={amount}
+                        placeholder="Loan Amount"
+                        disabled={error || saving || saving}
+                        onValueChange={(value) => setAmount(value)}
+                        min={0.0}
+                      >
+                        <Validator>
+                          <RequiredRule message="Loan amount required" />
+                          <CustomRule
+                            validationCallback={(e) =>
+                              Number(e.value) <=
+                              totalSavingsAmount * loanSavingsRatio
+                            }
+                            message={`Loan amount must be ≤ ${loanSavingsRatio} savings`}
+                          />
+                        </Validator>
+                      </NumberBox>
+                    )}
+                    {!allowLoanApplication() && (
+                      <div className="dx-field-value-static">
+                        <strong className="text-danger">
+                          You already have an active loan
+                        </strong>
+                      </div>
+                    )}
+                  </div>
+                  <div className="dx-field">
+                    <div className="dx-field-label">
+                      Require Guarantor Approval
+                    </div>
+                    <div className="dx-field-value-static">
+                      <strong>
+                        {requireGuarantor()
+                          ? `Yes, ${Assist.formatCurrency(
+                              loanApplyLimit
+                            )} and above`
+                          : "No"}
+                      </strong>
+                    </div>
                   </div>
                 </div>
                 <div className="dx-fieldset">
@@ -189,10 +342,15 @@ const AnnouncementEdit = () => {
                       multiple={false}
                       accept="*"
                       name="file"
+                      disabled={error || saving}
+                      maxFileSize={5000000}
                       uploadMode="instantly"
                       onUploaded={(e) => {
                         if (e.request.status === 200) {
                           const res = JSON.parse(e.request.response);
+
+                          console.log("runq", res);
+
                           if (res === null) {
                             Assist.showMessage(
                               `The response from the server is invalid. Please try again`,
@@ -208,7 +366,7 @@ const AnnouncementEdit = () => {
                           );
                         }
                       }}
-                      uploadUrl={`${AppInfo.apiUrl}attachments/create/type/${pageConfig.Single}/parent/0`}
+                      uploadUrl={`${AppInfo.apiUrl}attachments/create/type/expenseEarning/parent/0`}
                     />
                   </div>
                   <div className="dx-field">
@@ -261,23 +419,6 @@ const AnnouncementEdit = () => {
                     </DataGrid>
                   </div>
                 </div>
-                <div className="dx-fieldset">
-                  <div className="dx-fieldset-header">Content</div>
-                  <div className="dx-field">
-                    <HtmlEditor
-                      height="525px"
-                      defaultValue={content}
-                      value={content}
-                      toolbar={toolbar}
-                      onValueChanged={(e) => setContent(e.value)}
-                    >
-                      <MediaResizing enabled={true} />
-                      <Validator>
-                        <RequiredRule message="Content is required" />
-                      </Validator>
-                    </HtmlEditor>
-                  </div>
-                </div>
                 <div className="dx-field">
                   <div className="dx-field-label">
                     <ValidationSummary id="summaryMain" />
@@ -307,4 +448,4 @@ const AnnouncementEdit = () => {
   );
 };
 
-export default AnnouncementEdit;
+export default KnowledgebaseArticleEdit;

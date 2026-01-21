@@ -23,7 +23,9 @@ const AdminAnnouncement = () => {
   const { eId } = useParams(); // Destructure the parameter directly
 
   //posting
-  const [announcementDetail, setAnnouncementDetail] = useState<null | any>(null);
+  const [announcementDetail, setAnnouncementDetail] = useState<null | any>(
+    null
+  );
 
   //service
   const [loading, setLoading] = useState(false);
@@ -42,17 +44,18 @@ const AdminAnnouncement = () => {
     "",
     "",
     "Announcement ",
-    `announcements/review-update/${eId}`
+    `announcements/review-update/${eId}`,
+    [2]
   );
 
-  pageConfig.id = eId == undefined ? 0 : Number(eId);
+  pageConfig.Id = eId == undefined ? 0 : Number(eId);
 
   useEffect(() => {
     //only load if viewing the item
-    if (pageConfig.id != 0) {
+    if (pageConfig.Id != 0) {
       setLoading(true);
       setTimeout(() => {
-        Assist.loadData(pageConfig.Title, `announcements/id/${pageConfig.id}`)
+        Assist.loadData(pageConfig.Title, `announcements/id/${pageConfig.Id}`)
           .then((data) => {
             setLoading(false);
             updateVaues(data);
@@ -153,7 +156,7 @@ const AdminAnnouncement = () => {
     };
 
     setTimeout(() => {
-      Assist.postPutData(pageConfig.Title, pageConfig.updateUrl, postData, 1)
+      Assist.postPutData(pageConfig.Title, pageConfig.UpdateUrl, postData, 1)
         .then((data) => {
           setSaving(false);
 
@@ -174,7 +177,11 @@ const AdminAnnouncement = () => {
   };
 
   const unsubmitButton = () => {
-    if (stage == "Submitted" && status == "Submitted" && createdBy == user.sub) {
+    if (
+      stage == "Submitted" &&
+      status == "Submitted" &&
+      createdBy == user.sub
+    ) {
       return (
         <div className="dx-field">
           <div className="dx-field-label"></div>
@@ -214,7 +221,6 @@ const AdminAnnouncement = () => {
       status_id: Assist.STATUS_DRAFT,
       stage_id: Assist.STAGE_AWAITING_SUBMISSION,
     };
-
 
     const postData = { ...announcementDetail, ...newData };
 

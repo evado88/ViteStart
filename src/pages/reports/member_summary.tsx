@@ -61,7 +61,7 @@ const MemberSummary = () => {
     setTimeout(() => {
       Assist.loadData("Dashboard", pageConfig.Url)
         .then((data: any) => {
-          Assist.loadData("Members", pageConfig.updateUrl)
+          Assist.loadData("Members", pageConfig.UpdateUrl)
             .then((memberData: any) => {
               setLoading(false);
               setData(memberData);

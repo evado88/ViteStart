@@ -12,26 +12,22 @@ import ValidationSummary from "devextreme-react/validation-summary";
 import { LoadIndicator } from "devextreme-react/load-indicator";
 import { useAuth } from "../context/AuthContext";
 import { useNavigate, Link } from "react-router-dom";
-import notify from "devextreme/ui/notify";
-import axios from "axios";
-import { DateBox, NumberBox } from "devextreme-react";
+import { DateBox } from "devextreme-react";
 import SelectBox from "devextreme-react/select-box";
-import { v4 as uuidv4 } from "uuid";
 import Assist from "../classes/assist";
 import { LoadPanel } from "devextreme-react/load-panel";
 import PageConfig from "../classes/page-config";
 import { confirm } from "devextreme/ui/dialog";
 import AppInfo from "../classes/app-info";
 import FileUploader from "devextreme-react/file-uploader";
+import { CheckBox } from "devextreme-react/check-box";
+import { Popover } from "devextreme-react/popover";
+
 import DataGrid, {
   Column,
   Pager,
   Paging,
-  Summary,
-  GroupItem,
-  TotalItem,
 } from "devextreme-react/data-grid";
-import Box, { Item } from "devextreme-react/box";
 
 const Signup = () => {
   const { user, login } = useAuth();
@@ -50,6 +46,7 @@ const Signup = () => {
   const [mobile2FA, setMobile2FA] = useState(null);
   const [mobileMoneyCode, setMobileMoneyCode] = useState("+260");
   const [mobileMoney, setMobileMoney] = useState(null);
+  const [consent, setConsent] = useState(false);
 
   const [otp, setOTP] = useState("");
   const [code, setCode] = useState("");
@@ -307,7 +304,7 @@ const Signup = () => {
     console.log("xxx", postData);
 
     setTimeout(() => {
-      Assist.postPutData(pageConfig.Title, pageConfig.updateUrl, postData, 0)
+      Assist.postPutData(pageConfig.Title, pageConfig.UpdateUrl, postData, 0)
         .then(async (data) => {
           await notifyMemberRegistered(data);
           setSaving(false);
@@ -327,9 +324,9 @@ const Signup = () => {
         });
     }, Assist.DEV_DELAY);
   };
-  const setPreviousStage = (e) => {
-    e.preventDefault();
-    setStage((prev) => prev - 1);
+  const setPreviousStage = (newStage) => {
+    console.log(newStage);
+    setStage(newStage);
   };
 
   function asyncValidation(params) {
@@ -445,6 +442,37 @@ const Signup = () => {
                       </Validator>
                     </TextBox>
                   </div>
+                  <div className="dx-field">
+                    <div className="dx-field-label">
+                      <a style={{ color: "#088F8F" }} id="link1">
+                        Terms and Conditions
+                      </a>
+                    </div>
+                    <CheckBox
+                      text="I agree to terms and conditions"
+                      value={consent}
+                      onValueChanged={(e) => setConsent(e.value)}
+                    >
+                      <Validator>
+                        <RequiredRule message="You must agree to terms and conditions" />
+                      </Validator>
+                    </CheckBox>
+                  </div>
+                  <Popover
+                    target="#link1"
+                    showEvent="mouseenter"
+                    hideEvent="mouseleave"
+                    position="top"
+                    width={300}
+                  >
+                    I consent to the collection, processing, and secure storage
+                    of my personal information by Osawe for purposes of
+                    membership registration, account administration, and
+                    compliance with applicable laws and regulations. I confirm
+                    that the information provided is true and accurate, and I
+                    understand that my data will be handled confidentially and
+                    used only for legitimate Osawe operations.
+                  </Popover>
                 </div>
                 <div className="form-group">
                   <ValidationSummary id="summary1" />
@@ -511,7 +539,7 @@ const Signup = () => {
                   <a
                     to={"#"}
                     className="signup-image-link"
-                    onClick={() => setPreviousStage}
+                    onClick={() => setPreviousStage(1)}
                   >
                     Personal Details
                   </a>
@@ -622,7 +650,7 @@ const Signup = () => {
                   <a
                     to={"#"}
                     className="signup-image-link"
-                    onClick={() => setPreviousStage}
+                    onClick={() => setPreviousStage()}
                   >
                     Identity Details
                   </a>
@@ -721,7 +749,10 @@ const Signup = () => {
                     text="Next"
                     useSubmitBehavior={true}
                   />
-                  <a className="signup-image-link" onClick={() => setStage(2)}>
+                  <a
+                    className="signup-image-link"
+                    onClick={() => setPreviousStage(2)}
+                  >
                     Identity Details
                   </a>
                 </div>
@@ -849,7 +880,8 @@ const Signup = () => {
                     >
                       {" "}
                       <Validator>
-                        <RequiredRule message="Guarantor mobile is required" />
+                        <RequiredRule message="Guarantor email is required" />
+                        <EmailRule message="Email is invalid" />
                       </Validator>
                     </TextBox>
                   </div>
@@ -864,7 +896,7 @@ const Signup = () => {
                   <a
                     to={"#"}
                     className="signup-image-link"
-                    onClick={() => setStage(3)}
+                    onClick={() => setPreviousStage(4)}
                   >
                     Mobile Phone Details
                   </a>
@@ -966,7 +998,7 @@ const Signup = () => {
                   <a
                     to={"#"}
                     className="signup-image-link"
-                    onClick={() => setPreviousStage}
+                    onClick={() => setPreviousStage(6)}
                   >
                     Guarantor Details
                   </a>
@@ -1039,7 +1071,7 @@ const Signup = () => {
                   <a
                     to={"#"}
                     className="signup-image-link"
-                    onClick={() => setPreviousStage}
+                    onClick={() => setPreviousStage(7)}
                   >
                     Bank Details
                   </a>

@@ -6,13 +6,11 @@ import {
   RequiredRule,
   CustomRule,
 } from "devextreme-react/validator";
-import DateBox from "devextreme-react/date-box";
 import ValidationSummary from "devextreme-react/validation-summary";
 import { LoadIndicator } from "devextreme-react/load-indicator";
 import { useAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
-import { Link, NavLink, useLocation } from "react-router-dom";
-import axios, { AxiosError } from "axios";
+import { Link } from "react-router-dom";
 import Assist from "../classes/assist";
 import AppInfo from "../classes/app-info";
 
@@ -62,10 +60,9 @@ const Login = () => {
 
           sendWhatsappOTP(details.mobile);
           setStage(2);
-*/
-          /* DEBUG
- 
-          */
+
+          DEBUG   */
+
           login(data.access_token);
         })
         .catch((message) => {
@@ -134,14 +131,6 @@ const Login = () => {
     <section className="sign-in">
       <div className="container">
         <div className="signin-content">
-          <div className="signin-image">
-            <figure>
-              <img src="./images/key.png" alt="sing up image"></img>
-            </figure>
-            <Link to={"/signup"} className="signup-image-link">
-              Create an account
-            </Link>
-          </div>
           <div className="signin-form">
             <h2 className="form-title">{AppInfo.appCode}</h2>
             {stage == 1 && (
@@ -205,6 +194,9 @@ const Login = () => {
                     />
                     <span className="dx-button-text">Login</span>
                   </Button>
+                  <Link to={"/signup"} className="signup-image-link">
+                    Create an account
+                  </Link>
                 </div>
               </form>
             )}

@@ -4,32 +4,24 @@ import { Card } from "../../../components/card";
 import { Row } from "../../../components/row";
 import { Col } from "../../../components/column";
 import SelectBox from "devextreme-react/select-box";
-import { TextBox } from "devextreme-react/text-box";
 import {
   Validator,
   RequiredRule,
-  AsyncRule,
-  CompareRule,
-  CustomRule,
 } from "devextreme-react/validator";
-import TextArea from "devextreme-react/text-area";
 import { NumberBox } from "devextreme-react/number-box";
 import Button from "devextreme-react/button";
 import ValidationSummary from "devextreme-react/validation-summary";
 import { LoadPanel } from "devextreme-react/load-panel";
-import Toolbar, { Item } from "devextreme-react/toolbar";
-import DateBox from "devextreme-react/date-box";
-import { useTheme } from "../../../context/ThemeContext";
 import { useAuth } from "../../../context/AuthContext";
 import PageConfig from "../../../classes/page-config";
 import Assist from "../../../classes/assist";
-import axios from "axios";
 import { LoadIndicator } from "devextreme-react/load-indicator";
 import { useNavigate } from "react-router-dom";
 
 const Configuration = () => {
   //user
   const { user } = useAuth();
+
   const navigate = useNavigate();
 
   //posting
@@ -39,12 +31,12 @@ const Configuration = () => {
 
   //interest payment - minimum 10% if not yet paid on loan
   const [loanInterestPercent, setLoanInterestPercent] = useState<number | null>(
-    null
+    null,
   );
 
   //loan payment -  minimum 10% if not yet paid on loan
   const [loanPaymentPercent, setLoanPaymentPercent] = useState<number | null>(
-    null
+    null,
   );
 
   //new loan loan application
@@ -53,6 +45,9 @@ const Configuration = () => {
   const [approvalLevels, setApprovalLevels] = useState<number | null>(null);
   const [loanApplyLimit, setLoanApplyLimit] = useState<number | null>(null);
   //additiona
+  const [incorrectPostingFee, setIncorrectPostingFee] = useState<number | null>(
+    null,
+  );
   const [latePostingFee, setLatePostingFee] = useState<number | null>(null);
   const [missedMeetingFee, setMissedMeetingFee] = useState<number | null>(null);
   const [lateMeetingFee, setLateMeetingFee] = useState<number | null>(null);
@@ -66,10 +61,15 @@ const Configuration = () => {
     "sacco-config/1",
     "",
     "SACCO Configuration",
-    "sacco-config/update/1"
+    "sacco-config/update/1",
+    [2],
   );
 
   useEffect(() => {
+    if (!pageConfig.Permissions?.includes(user.role)) {
+      navigate("/404");
+      return;
+    }
     setLoading(true);
 
     setTimeout(() => {
@@ -99,6 +99,7 @@ const Configuration = () => {
     setLoanApplyLimit(data.loan_apply_limit);
 
     setLatePostingFee(data.late_posting_rate);
+    setIncorrectPostingFee(data.incorrect_posting_rate);
     setLateMeetingFee(data.late_meeting_rate);
     setMissedMeetingFee(data.missed_meeting_rate);
 
@@ -123,18 +124,19 @@ const Configuration = () => {
       late_posting_rate: latePostingFee,
       missed_meeting_rate: missedMeetingFee,
       late_meeting_rate: lateMeetingFee,
+      incorrect_posting_rate: incorrectPostingFee,
       approval_levels: approvalLevels,
     };
 
     setTimeout(() => {
-      Assist.postPutData(pageConfig.Title, pageConfig.updateUrl, postData, 1)
+      Assist.postPutData(pageConfig.Title, pageConfig.UpdateUrl, postData, 1)
         .then((data) => {
           setSaving(false);
           updateVaues(data);
 
           Assist.showMessage(
             "You have successfully updated the configuration!",
-            "success"
+            "success",
           );
         })
         .catch((message) => {
@@ -335,6 +337,22 @@ const Configuration = () => {
                 </div>
                 <div className="dx-fieldset">
                   <div className="dx-fieldset-header">Penalties</div>
+                  <div className="dx-field">
+                    <div className="dx-field-label">Incorrect Posting Fee</div>
+                    <NumberBox
+                      className="dx-field-value"
+                      value={incorrectPostingFee!}
+                      placeholder="Incorrect Posting Fee"
+                      format={",##0.###"}
+                      disabled={error || saving}
+                      onValueChange={(value) => setIncorrectPostingFee(value)}
+                      min={0.0}
+                    >
+                      <Validator>
+                        <RequiredRule message="Incorrect posting fee required" />
+                      </Validator>
+                    </NumberBox>
+                  </div>
                   <div className="dx-field">
                     <div className="dx-field-label">Late Posting Fee</div>
                     <NumberBox

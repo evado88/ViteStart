@@ -38,9 +38,26 @@ const PostingPeriodEdit = () => {
   const [config, setConfig] = useState<any | any>(null);
 
   //posting
-  const [latePostDate, setLatePostDate] = useState<string | null>(null);
-  const [maxPostDate, setMaxPostDate] = useState<string | null>(null);
-  const [minPostDate, setMinPostDate] = useState<string | null>(null);
+  const [periodStart, setPeriodStart] = useState<string | null>(null);
+  const [periodEnd, setPeriodEnd] = useState<string | null>(null);
+
+  const [postingDateStart, setPostingDateStart] = useState<string | null>(null);
+  const [postingDateEnd, setPostingDateEnd] = useState<string | null>(null);
+
+  const [latePostingStartDate, setLatePostingStartDate] = useState<
+    string | null
+  >(null);
+  const [latePostingEndDate, setLatePostingEndDate] = useState<string | null>(
+    null
+  );
+
+  const [midPostingStartDate, setMidPostingStartDate] = useState<string | null>(
+    null
+  );
+  const [midPostingEndDate, setMidPostingEndDate] = useState<string | null>(
+    null
+  );
+
   const [cashAtBank, setCashAtBank] = useState<number | null>(null);
   const [savingsMultiple, setSavingsMultiple] = useState<number | null>(null);
   const [sharesMultiple, setSharesMultiple] = useState<number | null>(null);
@@ -78,7 +95,7 @@ const PostingPeriodEdit = () => {
     ""
   );
 
-  pageConfig.id = eId == undefined ? 0 : Number(eId);
+  pageConfig.Id = eId == undefined ? 0 : Number(eId);
 
   useEffect(() => {
     //only load config for new items to get approval levels and other data
@@ -87,7 +104,7 @@ const PostingPeriodEdit = () => {
       Assist.loadData("Configuration", "sacco-config/1")
         .then((data: any) => {
           updateConfigVaues(data);
-          if (pageConfig.id != 0) {
+          if (pageConfig.Id != 0) {
             Assist.loadData(pageConfig.Single, `posting-periods/id/${eId}`)
               .then((postData) => {
                 setLoading(false);
@@ -133,8 +150,17 @@ const PostingPeriodEdit = () => {
   };
 
   const updateVaues = (data: any) => {
-    setMinPostDate(data.late_posting_date_min);
-    setMaxPostDate(data.late_posting_date_max);
+    setPeriodStart(data.period_start);
+    setPeriodEnd(data.period_end);
+
+    setPostingDateStart(data.posting_date_start);
+    setPostingDateEnd(data.posting_date_end);
+
+    setLatePostingStartDate(data.late_posting_date_start);
+    setLatePostingEndDate(data.late_posting_date_end);
+
+    setMidPostingStartDate(data.mid_posting_date_start);
+    setMidPostingEndDate(data.mid_posting_date_end);
 
     setName(data.name);
     setYear(data.year);
@@ -175,9 +201,18 @@ const PostingPeriodEdit = () => {
       //cash
       cash_at_bank: cashAtBank,
       //config
-      late_posting_date_start: latePostDate,
-      late_posting_date_min: minPostDate,
-      late_posting_date_max: maxPostDate,
+      period_start: periodStart,
+      period_end: periodEnd,
+
+      posting_date_start: postingDateStart,
+      posting_date_end: postingDateEnd,
+      //
+      late_posting_date_start: latePostingStartDate,
+      late_posting_date_end: latePostingEndDate,
+      //
+      mid_posting_date_start: midPostingStartDate,
+      mid_posting_date_end: midPostingEndDate,
+      //
       saving_multiple: savingsMultiple,
       shares_multiple: sharesMultiple,
       social_min: socialMin,
@@ -198,11 +233,11 @@ const PostingPeriodEdit = () => {
     setTimeout(() => {
       Assist.postPutData(
         pageConfig.Title,
-        pageConfig.id == 0
+        pageConfig.Id == 0
           ? `posting-periods/create`
-          : `posting-periods/update/${pageConfig.id}`,
+          : `posting-periods/update/${pageConfig.Id}`,
         postData,
-        pageConfig.id
+        pageConfig.Id
       )
         .then((data) => {
           setSaving(false);
@@ -410,6 +445,53 @@ const PostingPeriodEdit = () => {
                   <div className="dx-fieldset-header">Posting Date</div>
                   <div className="dx-field">
                     <div className="dx-field-label">
+                      Posting Start Date
+                    </div>
+                    <DateBox
+                      className="dx-field-value"
+                      displayFormat={"dd MMMM yyyy"}
+                      placeholder="Posting Start Date"
+                      dateSerializationFormat="yyyy-MM-dd"
+                      min={periodStart!}
+                      max={periodEnd!}
+                      value={postingDateStart!}
+                      disabled={error || saving}
+                      onValueChange={(date) => {
+                        console.log(date);
+                        setPostingDateStart(date);
+                      }}
+                    >
+                      <Validator>
+                        <RequiredRule message="Posting Start Date required" />
+                      </Validator>
+                    </DateBox>
+                  </div>
+                  <div className="dx-field">
+                    <div className="dx-field-label">Posting Date End</div>
+                    <DateBox
+                      className="dx-field-value"
+                      displayFormat={"dd MMMM yyyy"}
+                      placeholder="Posting End Date"
+                      dateSerializationFormat="yyyy-MM-dd"
+                      min={periodStart!}
+                      max={periodEnd!}
+                      value={postingDateEnd!}
+                      disabled={error || saving}
+                      onValueChange={(date) => {
+                        console.log(date);
+                        setPostingDateEnd(date);
+                      }}
+                    >
+                      <Validator>
+                        <RequiredRule message="Posting End Date required" />
+                      </Validator>
+                    </DateBox>
+                  </div>
+                </div>
+                <div className="dx-fieldset">
+                  <div className="dx-fieldset-header">Late Posting Date</div>
+                  <div className="dx-field">
+                    <div className="dx-field-label">
                       Late Posting Start Date
                     </div>
                     <DateBox
@@ -417,17 +499,83 @@ const PostingPeriodEdit = () => {
                       displayFormat={"dd MMMM yyyy"}
                       placeholder="Late Posting Start Date"
                       dateSerializationFormat="yyyy-MM-dd"
-                      min={minPostDate!}
-                      max={maxPostDate!}
-                      value={latePostDate!}
+                      min={periodStart!}
+                      max={periodEnd!}
+                      value={latePostingStartDate!}
                       disabled={error || saving}
                       onValueChange={(date) => {
                         console.log(date);
-                        setLatePostDate(date);
+                        setLatePostingStartDate(date);
                       }}
                     >
                       <Validator>
                         <RequiredRule message="Late Posting Start Date required" />
+                      </Validator>
+                    </DateBox>
+                  </div>
+                  <div className="dx-field">
+                    <div className="dx-field-label">Late Posting End Date</div>
+                    <DateBox
+                      className="dx-field-value"
+                      displayFormat={"dd MMMM yyyy"}
+                      placeholder="Late Posting End Date"
+                      dateSerializationFormat="yyyy-MM-dd"
+                      min={periodStart!}
+                      max={periodEnd!}
+                      value={latePostingEndDate!}
+                      disabled={error || saving}
+                      onValueChange={(date) => {
+                        console.log(date);
+                        setLatePostingEndDate(date);
+                      }}
+                    >
+                      <Validator>
+                        <RequiredRule message="Late Posting End Date required" />
+                      </Validator>
+                    </DateBox>
+                  </div>
+                </div>
+                <div className="dx-fieldset">
+                  <div className="dx-fieldset-header">Mid-Month Posting</div>
+                  <div className="dx-field">
+                    <div className="dx-field-label">Mid Posting Start Date</div>
+                    <DateBox
+                      className="dx-field-value"
+                      displayFormat={"dd MMMM yyyy"}
+                      placeholder="Mid Posting Start Date"
+                      dateSerializationFormat="yyyy-MM-dd"
+                      min={periodStart!}
+                      max={periodEnd!}
+                      value={midPostingStartDate!}
+                      disabled={error || saving}
+                      onValueChange={(date) => {
+                        console.log(date);
+                        setMidPostingStartDate(date);
+                      }}
+                    >
+                      <Validator>
+                        <RequiredRule message="Mid Posting Start Date required" />
+                      </Validator>
+                    </DateBox>
+                  </div>
+                  <div className="dx-field">
+                    <div className="dx-field-label">Mid Posting End Date</div>
+                    <DateBox
+                      className="dx-field-value"
+                      displayFormat={"dd MMMM yyyy"}
+                      placeholder="Mid Posting End Date"
+                      dateSerializationFormat="yyyy-MM-dd"
+                      min={periodStart!}
+                      max={periodEnd!}
+                      value={midPostingEndDate!}
+                      disabled={error || saving}
+                      onValueChange={(date) => {
+                        console.log(date);
+                        setMidPostingEndDate(date);
+                      }}
+                    >
+                      <Validator>
+                        <RequiredRule message="Mid Posting End Date required" />
                       </Validator>
                     </DateBox>
                   </div>

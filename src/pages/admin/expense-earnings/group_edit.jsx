@@ -22,7 +22,6 @@ import { useTheme } from "../../../context/ThemeContext";
 import { useAuth } from "../../../context/AuthContext";
 import PageConfig from "../../../classes/page-config";
 import Assist from "../../../classes/assist";
-import axios from "axios";
 import { LoadIndicator } from "devextreme-react/load-indicator";
 import { useNavigate, useParams } from "react-router-dom";
 import HtmlEditor, {
@@ -49,15 +48,15 @@ const ExpenseEarningGroupEdit = () => {
 
   const pageConfig = new PageConfig("Expense Earning Group", "", "", "Expense Earning Group", "");
 
-  pageConfig.id = eId == undefined ? 0 : Number(eId);
+  pageConfig.Id = eId == undefined ? 0 : Number(eId);
 
   useEffect(() => {
     //only load if updating item
-    if (pageConfig.id != 0) {
+    if (pageConfig.Id != 0) {
       setLoading(true);
 
       setTimeout(() => {
-        Assist.loadData(pageConfig.Title, `transaction-groups/id/${pageConfig.id}`)
+        Assist.loadData(pageConfig.Title, `transaction-groups/id/${pageConfig.Id}`)
           .then((data) => {
             setLoading(false);
             updateVaues(data);
@@ -91,16 +90,16 @@ const ExpenseEarningGroupEdit = () => {
     console.log('pd', postData);
 
 
-    const url = pageConfig.id == 0
+    const url = pageConfig.Id == 0
           ? `transaction-groups/create`
-          : `transaction-groups/update/${pageConfig.id}`;
+          : `transaction-groups/update/${pageConfig.Id}`;
 
     setTimeout(() => {
       Assist.postPutData(
         pageConfig.Title,
         url,
         postData,
-        pageConfig.id
+        pageConfig.Id
       )
         .then((data) => {
           setSaving(false);
@@ -111,7 +110,7 @@ const ExpenseEarningGroupEdit = () => {
             "success"
           );
 
-          if (pageConfig.id == 0) {
+          if (pageConfig.Id == 0) {
             //navigate
             navigate(`/admin/expense-earning/group/edit/${data.id}`);
           }

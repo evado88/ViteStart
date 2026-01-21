@@ -55,7 +55,7 @@ const KnowledgebaseArticleEdit = () => {
     ""
   );
 
-  pageConfig.id = eId == undefined ? 0 : Number(eId);
+  pageConfig.Id = eId == undefined ? 0 : Number(eId);
 
   useEffect(() => {
     Assist.loadData("Categories", "transaction-groups/list")
@@ -73,7 +73,7 @@ const KnowledgebaseArticleEdit = () => {
     setTimeout(() => {
       Assist.loadData("Configuration", AppInfo.configApiUrl)
         .then((data) => {
-          if (pageConfig.id != 0) {
+          if (pageConfig.Id != 0) {
             Assist.loadData(
               pageConfig.Single,
               `transactions/id/${eId}`
@@ -129,7 +129,6 @@ const KnowledgebaseArticleEdit = () => {
   const submitArticle = () => {
     const postData = {
       user_id: user.userid,
-      user_id: user.userid,
       attachment_id: uploadedFiles.length == 0 ? null : uploadedFiles[0].id,
       type_id:
         type == "Expense"
@@ -150,11 +149,11 @@ const KnowledgebaseArticleEdit = () => {
     setTimeout(() => {
       Assist.postPutData(
         pageConfig.Title,
-        pageConfig.id == 0
+        pageConfig.Id == 0
           ? `transactions/create`
-          : `transactions/update/${pageConfig.id}`,
+          : `transactions/update/${pageConfig.Id}`,
         postData,
-        pageConfig.id
+        pageConfig.Id
       )
         .then((data) => {
           setSaving(false);
