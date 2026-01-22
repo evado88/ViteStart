@@ -13,6 +13,7 @@ import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
 import Assist from "../classes/assist";
 import AppInfo from "../classes/app-info";
+import { LoadPanel } from "devextreme-react/load-panel";
 
 const Login = () => {
   const { user, login } = useAuth();
@@ -20,6 +21,7 @@ const Login = () => {
 
   const [error, setError] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [saving, setSaving] = useState(false);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
 
@@ -29,15 +31,32 @@ const Login = () => {
 
   const [stage, setStage] = useState(1);
 
+  const [config, setConfig] = useState<any | null>(null);
+
   useEffect(() => {
     // Redirect if already logged in
     if (user) {
       navigate("/");
+    } else {
+      setLoading(true);
+      setTimeout(() => {
+        Assist.loadData("Configuration", AppInfo.configApiUrl)
+          .then((data) => {
+            setLoading(false);
+            setConfig(data);
+            setError(false);
+          })
+          .catch((message) => {
+            setLoading(false);
+            setError(true);
+            Assist.showMessage(message, "error");
+          });
+      }, Assist.DEV_DELAY);
     }
   }, [user, navigate]);
 
   const onFormSubmit = async (e: React.FormEvent) => {
-    setLoading(true);
+    setSaving(true);
 
     e.preventDefault();
 
@@ -49,24 +68,24 @@ const Login = () => {
     setTimeout(() => {
       Assist.postPutData("Login", "auth/login", formData, 0)
         .then((data: any) => {
-          setLoading(false);
+          setSaving(false);
 
           //navigate
+          //check if two factor is active
+          if (config.enable_2FA == 1) {
+            //active
+            setAccessToken(data.access_token);
+            const details = Assist.getTokenDetails(data.access_token);
 
-          // PRODUCTION
-          /*
-          setAccessToken(data.access_token);
-          const details = Assist.getTokenDetails(data.access_token);
-
-          sendWhatsappOTP(details.mobile);
-          setStage(2);
-
-          DEBUG   */
-
-          login(data.access_token);
+            sendWhatsappOTP(details.mobile);
+            setStage(2);
+          } else {
+            //disabled, login immediately
+            login(data.access_token);
+          }
         })
         .catch((message) => {
-          setLoading(false);
+          setSaving(false);
           Assist.showMessage(message, "error");
         });
     }, Assist.DEV_DELAY);
@@ -90,14 +109,14 @@ const Login = () => {
         "WhatsApp Code",
         `whatsapp/send-infobip-auth-message`,
         postData,
-        0
+        0,
       )
         .then((data) => {
           setLoading(false);
           console.log(data);
           Assist.showMessage(
             `The OTP has been successfully sent to ${userPhone}`,
-            "success"
+            "success",
           );
         })
         .catch((message) => {
@@ -105,7 +124,7 @@ const Login = () => {
           console.log(message);
           Assist.showMessage(
             `Error sending OTP to ${userPhone}. Please try again`,
-            "error"
+            "error",
           );
         });
     }, Assist.DEV_DELAY);
@@ -122,7 +141,7 @@ const Login = () => {
       } else {
         Assist.showMessage(
           `The specified code ${code} is not correct. Please try again.`,
-          "error"
+          "error",
         );
       }
     }, Assist.DEV_DELAY);
@@ -131,6 +150,15 @@ const Login = () => {
     <section className="sign-in">
       <div className="container">
         <div className="signin-content">
+          <LoadPanel
+            shadingColor="rgba(0,0,0,0.4)"
+            position={{ of: "#pageRoot" }}
+            visible={loading}
+            showIndicator={true}
+            shading={true}
+            showPane={true}
+            hideOnOutsideClick={false}
+          />
           <div className="signin-form">
             <h2 className="form-title">{AppInfo.appCode}</h2>
             {stage == 1 && (
@@ -183,14 +211,13 @@ const Login = () => {
                 <div className="form-group form-button">
                   <Button
                     width="100%"
-                    text="Login"
-                    type={loading ? "normal" : "default"}
-                    disabled={loading}
+                    type={saving ? "normal" : "default"}
+                    disabled={loading || error || saving}
                     useSubmitBehavior={true}
                   >
                     <LoadIndicator
                       className="button-indicator"
-                      visible={loading}
+                      visible={saving}
                     />
                     <span className="dx-button-text">Login</span>
                   </Button>

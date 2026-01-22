@@ -97,16 +97,16 @@ export const PostingPeriodingsList = ({
           caption="Status"
           hidingPriority={10}
           cellRender={(e) => {
-            if (e.data.status == "Approved") {
-              //draft
-              return (
-                <a href={`/admin/monthly-postings/ddac-report/${e.data.id}`}>
-                  {e.text}, View DDAC
-                </a>
-              );
-            } else {
-              return e.text;
-            }
+            // if (e.data.status == "Approved") {
+            //draft
+            return (
+              <a href={`/admin/monthly-postings/ddac-report/${e.data.id}`}>
+                {e.text}, View DDAC
+              </a>
+            );
+            // } else {
+            //  return e.text;
+            //}
           }}
         ></Column>
         <Column dataField="stage" caption="Stage" hidingPriority={9}></Column>

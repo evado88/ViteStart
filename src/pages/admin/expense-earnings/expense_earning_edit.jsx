@@ -121,12 +121,12 @@ const KnowledgebaseArticleEdit = () => {
     );
     result.then((dialogResult) => {
       if (dialogResult) {
-        submitArticle();
+        submitItem();
       }
     });
   };
 
-  const submitArticle = () => {
+  const submitItem = () => {
     const postData = {
       user_id: user.userid,
       attachment_id: uploadedFiles.length == 0 ? null : uploadedFiles[0].id,

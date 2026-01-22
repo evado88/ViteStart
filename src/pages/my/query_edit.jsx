@@ -106,12 +106,12 @@ const MemberQueryEdit = () => {
     );
     result.then((dialogResult) => {
       if (dialogResult) {
-        submitArticle();
+        submitItem();
       }
     });
   };
 
-  const submitArticle = () => {
+  const submitItem = () => {
     setSaving(true);
 
     const postData = {

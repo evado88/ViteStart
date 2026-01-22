@@ -5,7 +5,12 @@ import TaskResult from "./task-result.js";
 import { jwtDecode } from "jwt-decode";
 
 class Assist {
-  static POSTING_BEHALF = 2;
+  static LOAN_REFINANCE_NOLOAN = 1;
+  static LOAN_REFINANCE_YES = 2;
+  static LOAN_REFINANCE_NO= 3;
+
+  static POSTING_MONTHLY = 1;
+  static POSTING_MIDMONTH = 2;
 
   static DEV_DELAY: number = 1000;
   static UX_DELAY: number = 500;

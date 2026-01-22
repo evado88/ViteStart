@@ -13,7 +13,6 @@ import { NumberBox } from "devextreme-react/number-box";
 import Button from "devextreme-react/button";
 import ValidationSummary from "devextreme-react/validation-summary";
 import { LoadPanel } from "devextreme-react/load-panel";
-import DateBox from "devextreme-react/date-box";
 import { useAuth } from "../../context/AuthContext";
 import PageConfig from "../../classes/page-config";
 import Assist from "../../classes/assist";
@@ -31,7 +30,6 @@ import { MemberHeader } from "../../components/memberHeader";
 import { confirm } from "devextreme/ui/dialog";
 import SelectBox from "devextreme-react/select-box";
 import AppInfo from "../../classes/app-info";
-import TextBox from "devextreme-react/text-box";
 const PostMonthly = () => {
   //user
   const { user } = useAuth();
@@ -91,6 +89,7 @@ const PostMonthly = () => {
   const [postingLoanApplication, setPostingLoanApplication] = useState<
     number | null
   >(0);
+
 
   //additiona
   const [postingComments, setPostingComments] = useState("No comments");
@@ -244,6 +243,8 @@ const PostMonthly = () => {
     setSharesMultiple(data.config.shares_multiple);
     setSocialMin(data.config.social_min);
 
+    setTotalSavingsAmount(data.totalSavings);
+
     setLoanInterestPercent(data.config.loan_interest_rate);
     setLoanPaymentPercent(data.config.loan_repayment_rate);
     setLoanSavingsRatio(data.config.loan_saving_ratio);
@@ -254,8 +255,6 @@ const PostMonthly = () => {
     setMissedMeetingFee(data.config.missed_meeting_rate);
 
     setApprovalLevels(data.config.approval_levels);
-
-    setTotalSavingsAmount(data.totalSavings);
 
     setPostingSocial(data.config.social_min);
 
@@ -343,6 +342,7 @@ const PostMonthly = () => {
       period_id: periodId,
       meeting_attendance: postingAttendanceType,
       missed_meeting_penalty: isAbsenteePosting() ? missedMeetingFee : 0,
+      mid_status: Assist.POSTING_MONTHLY,
       date: `${postingDate} ${Assist.getCurrentTime()}`,
       saving_mon: postingSavings,
       saving_mid: 0,
@@ -356,6 +356,7 @@ const PostMonthly = () => {
       loan_application_mon: postingLoanApplication,
       loan_application_mid: 0,
       loan_application: postingLoanApplication,
+      loan_refinance: getLoanRefinanceState(),
       guarantor_required: requireGuarantor()
         ? Assist.RESPONSE_YES
         : Assist.RESPONSE_NO,
@@ -433,6 +434,16 @@ const PostMonthly = () => {
       return true;
     } else {
       return postingLoanMonthPayment! >= loanBalance;
+    }
+  };
+
+  const getLoanRefinanceState = () => {
+    if (currentLoan == null) {
+      return Assist.LOAN_REFINANCE_NOLOAN;
+    } else {
+      return postingLoanMonthPayment! >= loanBalance
+        ? Assist.LOAN_REFINANCE_YES
+        : Assist.LOAN_REFINANCE_NO;
     }
   };
 
@@ -707,7 +718,7 @@ const PostMonthly = () => {
                           validationCallback={(e) => {
                             if (
                               Number(e.value) % savingsMultiple! == 0 &&
-                              Number(e.value) != 0
+                              Number(e.value) > 0
                             ) {
                               return true;
                             } else {
@@ -783,18 +794,14 @@ const PostMonthly = () => {
                     </NumberBox>
                   </div>
                   <div className="dx-field">
-                    <div className="dx-field-label">
-                      Payment Method
-                    </div>
+                    <div className="dx-field-label">Payment Method</div>
                     <SelectBox
                       className="dx-field-value"
                       placeholder="Payment Method"
                       dataSource={postingPayMethodData}
                       valueExpr={"id"}
                       displayExpr={"name"}
-                      itemTemplate={(twn) =>
-                        `${twn.name} - ${twn.type}`
-                      }
+                      itemTemplate={(twn) => `${twn.name} - ${twn.type}`}
                       onValueChange={(value) => setPostingPayMethod(value)}
                       validationMessagePosition="left"
                       value={postingPayMethod}
@@ -919,6 +926,19 @@ const PostMonthly = () => {
                       </div>
                     )}
                   </div>
+
+                  {allowLoanPayment() && (
+                    <div className="dx-field">
+                      <div className="dx-field-label">Loan Refinance</div>
+                      <div className="dx-field-value-static">
+                        <strong>
+                          {getLoanRefinanceState() == Assist.LOAN_REFINANCE_YES
+                            ? "Yes"
+                            : "No"}
+                        </strong>
+                      </div>
+                    </div>
+                  )}
                 </div>
                 <div className="dx-fieldset">
                   <div className="dx-fieldset-header">Loan Application</div>

@@ -4,10 +4,7 @@ import { Card } from "../../../components/card";
 import { Row } from "../../../components/row";
 import { Col } from "../../../components/column";
 import SelectBox from "devextreme-react/select-box";
-import {
-  Validator,
-  RequiredRule,
-} from "devextreme-react/validator";
+import { Validator, RequiredRule } from "devextreme-react/validator";
 import { NumberBox } from "devextreme-react/number-box";
 import Button from "devextreme-react/button";
 import ValidationSummary from "devextreme-react/validation-summary";
@@ -17,6 +14,7 @@ import PageConfig from "../../../classes/page-config";
 import Assist from "../../../classes/assist";
 import { LoadIndicator } from "devextreme-react/load-indicator";
 import { useNavigate } from "react-router-dom";
+import AppInfo from "../../../classes/app-info";
 
 const Configuration = () => {
   //user
@@ -43,6 +41,7 @@ const Configuration = () => {
   const [loanSavingsRatio, setLoanSavingsRatio] = useState<number | null>(null);
   const [loanDuration, setLoanDuration] = useState<number | null>(null);
   const [approvalLevels, setApprovalLevels] = useState<number | null>(null);
+  const [enable2FA, setEnable2FA] = useState<string | null>(null);
   const [loanApplyLimit, setLoanApplyLimit] = useState<number | null>(null);
   //additiona
   const [incorrectPostingFee, setIncorrectPostingFee] = useState<number | null>(
@@ -104,6 +103,7 @@ const Configuration = () => {
     setMissedMeetingFee(data.missed_meeting_rate);
 
     setApprovalLevels(data.approval_levels);
+    setEnable2FA(data.enable_2FA == 1 ? "Yes" : "No");
   };
 
   const onFormSubmit = (e: React.FormEvent) => {
@@ -126,6 +126,7 @@ const Configuration = () => {
       late_meeting_rate: lateMeetingFee,
       incorrect_posting_rate: incorrectPostingFee,
       approval_levels: approvalLevels,
+      enable_2FA: enable2FA == "Yes" ? 1 : 2,
     };
 
     setTimeout(() => {
@@ -171,6 +172,26 @@ const Configuration = () => {
           <Card title="Properties" showHeader={true}>
             <form id="formMain" onSubmit={onFormSubmit}>
               <div className="form">
+                <div className="dx-fieldset">
+                  <div className="dx-fieldset-header">Security</div>
+                  <div className="dx-field">
+                    <div className="dx-field-label">
+                      Enable Two-Factor Authentication
+                    </div>
+                    <SelectBox
+                      className="dx-field-value"
+                      dataSource={AppInfo.yesNoList}
+                      onValueChange={(value) => setEnable2FA(value)}
+                      validationMessagePosition="left"
+                      value={enable2FA}
+                      disabled={error}
+                    >
+                      <Validator>
+                        <RequiredRule message="Enable Two-Factor authentication is required" />
+                      </Validator>
+                    </SelectBox>
+                  </div>
+                </div>
                 <div className="dx-fieldset">
                   <div className="dx-fieldset-header">Appprovals</div>
                   <div className="dx-field">

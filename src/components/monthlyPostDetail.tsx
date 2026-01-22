@@ -39,7 +39,21 @@ export const MonthlyPostDetail = ({
           </Field>
         </Fieldset>
         <Fieldset title="Savings & Contributions">
-          <Field title="Savings" staticContent={true}>
+          <Field title="Savings - Monthly Post" staticContent={true}>
+            <strong>
+              <strong>
+                {Assist.formatCurrency(monthlyPosting.saving_mon)}
+              </strong>
+            </strong>
+          </Field>
+          <Field title="Savings - Mid-Month" staticContent={true}>
+            <strong>
+              <strong>
+                {Assist.formatCurrency(monthlyPosting.saving_mid)}
+              </strong>
+            </strong>
+          </Field>
+          <Field title="Savings -Total" staticContent={true}>
             <strong>
               <strong>{Assist.formatCurrency(monthlyPosting.saving)}</strong>
             </strong>
@@ -53,19 +67,6 @@ export const MonthlyPostDetail = ({
           <Field title="Penalty" staticContent={true}>
             <strong>{Assist.formatCurrency(monthlyPosting.penalty)}</strong>
           </Field>
-          <Field title="Payment Method Type" staticContent={true}>
-            <strong>{monthlyPosting.payment_method_type}</strong>
-          </Field>
-          {isMobileMoney() && (
-            <Field title="Payment Method Number" staticContent={true}>
-              <strong>{monthlyPosting.payment_method_number}</strong>
-            </Field>
-          )}
-          {isMobileMoney() && (
-            <Field title="Payment Method Name" staticContent={true}>
-              <strong>{monthlyPosting.payment_method_name}</strong>
-            </Field>
-          )}
         </Fieldset>
 
         <div className="dx-fieldset">
@@ -93,7 +94,23 @@ export const MonthlyPostDetail = ({
         <div className="dx-fieldset">
           <div className="dx-fieldset-header">Loan Application</div>
           <div className="dx-field">
-            <div className="dx-field-label">Loan Amount</div>
+            <div className="dx-field-label">Loan Amount - Monthly Post</div>
+            <div className="dx-field-value-static">
+              <strong>
+                {Assist.formatCurrency(monthlyPosting.loan_application_mon)}
+              </strong>
+            </div>
+          </div>
+          <div className="dx-field">
+            <div className="dx-field-label">Loan Amount - Mid-Month</div>
+            <div className="dx-field-value-static">
+              <strong>
+                {Assist.formatCurrency(monthlyPosting.loan_application_mid)}
+              </strong>
+            </div>
+          </div>
+          <div className="dx-field">
+            <div className="dx-field-label">Loan Amount - Total</div>
             <div className="dx-field-value-static">
               <strong>
                 {Assist.formatCurrency(monthlyPosting.loan_application)}
@@ -111,56 +128,60 @@ export const MonthlyPostDetail = ({
             </div>
           </div>
         </div>
-        {monthlyPosting.stage_id >= 7 &&  <div className="dx-fieldset">
-          <div className="dx-fieldset-header">Proof of Payment</div>
-          <Field staticContent={true} title="POP Comments / Reference">
-            <strong>{monthlyPosting.pop_comments}</strong>
-          </Field>
+        {monthlyPosting.stage_id >= 7 && (
+          <div className="dx-fieldset">
+            <div className="dx-fieldset-header">Proof of Payment</div>
+            <Field staticContent={true} title="POP Comments / Reference">
+              <strong>{monthlyPosting.pop_comments}</strong>
+            </Field>
 
-          <div className="dx-field">
-            <DataGrid
-              className={"dx-card wide-card"}
-              dataSource={[monthlyPosting.attachment]}
-              keyExpr={"id"}
-              noDataText={"No POP uploaded"}
-              showBorders={false}
-              focusedRowEnabled={false}
-              defaultFocusedRowIndex={0}
-              columnAutoWidth={true}
-              columnHidingEnabled={true}
-            >
-              <Paging defaultPageSize={10} />
-              <Pager showPageSizeSelector={true} showInfo={true} />
-              <Column dataField="id" caption="ID" hidingPriority={7}></Column>
-              <Column
-                dataField="name"
-                caption="Name"
-                hidingPriority={4}
-                cellRender={(e) => {
-                  return (
-                    <a
-                      href={encodeURI(`${AppInfo.apiUrl}static/${e.data.path}`)}
-                      target="_null"
-                    >
-                      {e.text}
-                    </a>
-                  );
-                }}
-              ></Column>
-              <Column
-                dataField="filesize"
-                caption="Size"
-                format={",##0.###"}
-                hidingPriority={4}
-              ></Column>
-              <Column
-                dataField="filetype"
-                caption="Type"
-                hidingPriority={5}
-              ></Column>
-            </DataGrid>
+            <div className="dx-field">
+              <DataGrid
+                className={"dx-card wide-card"}
+                dataSource={[monthlyPosting.attachment]}
+                keyExpr={"id"}
+                noDataText={"No POP uploaded"}
+                showBorders={false}
+                focusedRowEnabled={false}
+                defaultFocusedRowIndex={0}
+                columnAutoWidth={true}
+                columnHidingEnabled={true}
+              >
+                <Paging defaultPageSize={10} />
+                <Pager showPageSizeSelector={true} showInfo={true} />
+                <Column dataField="id" caption="ID" hidingPriority={7}></Column>
+                <Column
+                  dataField="name"
+                  caption="Name"
+                  hidingPriority={4}
+                  cellRender={(e) => {
+                    return (
+                      <a
+                        href={encodeURI(
+                          `${AppInfo.apiUrl}static/${e.data.path}`,
+                        )}
+                        target="_null"
+                      >
+                        {e.text}
+                      </a>
+                    );
+                  }}
+                ></Column>
+                <Column
+                  dataField="filesize"
+                  caption="Size"
+                  format={",##0.###"}
+                  hidingPriority={4}
+                ></Column>
+                <Column
+                  dataField="filetype"
+                  caption="Type"
+                  hidingPriority={5}
+                ></Column>
+              </DataGrid>
+            </div>
           </div>
-        </div>}
+        )}
         {monthlyPosting.guarantor_required == Assist.RESPONSE_YES && (
           <div className="dx-fieldset">
             <div className="dx-fieldset-header">Guarantor</div>
@@ -187,6 +208,79 @@ export const MonthlyPostDetail = ({
             </div>
           </div>
         )}
+        <div className="dx-fieldset">
+          <div className="dx-fieldset-header">Payment Method</div>
+          <div className="dx-field">
+            <div className="dx-field-label">Type</div>
+            <div className="dx-field-value-static">
+              <strong>{monthlyPosting.paymentmethod.type}</strong>
+            </div>
+          </div>
+          <div className="dx-field">
+            <div className="dx-field-label">Name</div>
+            <div className="dx-field-value-static">
+              <strong>{monthlyPosting.paymentmethod.name}</strong>
+            </div>
+          </div>
+          {monthlyPosting.paymentmethod.type == "Mobile" && (
+            <div className="dx-field">
+              <div className="dx-field-label">Mobile Name</div>
+              <div className="dx-field-value-static">
+                <strong>{monthlyPosting.paymentmethod.method_name}</strong>
+              </div>
+            </div>
+          )}
+          {monthlyPosting.paymentmethod.type == "Mobile" && (
+            <div className="dx-field">
+              <div className="dx-field-label">Mobile Number</div>
+              <div className="dx-field-value-static">
+                <strong>{monthlyPosting.paymentmethod.method_number}</strong>
+              </div>
+            </div>
+          )}
+          {monthlyPosting.paymentmethod.type != "Mobile" && (
+            <div className="dx-field">
+              <div className="dx-field-label">Bank</div>
+              <div className="dx-field-value-static">
+                <strong>{monthlyPosting.paymentmethod.bank_name}</strong>
+              </div>
+            </div>
+          )}
+          {monthlyPosting.paymentmethod.type != "Mobile" && (
+            <div className="dx-field">
+              <div className="dx-field-label">Branch Name</div>
+              <div className="dx-field-value-static">
+                <strong>{monthlyPosting.paymentmethod.bank_branch_name}</strong>
+              </div>
+            </div>
+          )}
+          {monthlyPosting.paymentmethod.type != "Mobile" && (
+            <div className="dx-field">
+              <div className="dx-field-label">Branch Code</div>
+              <div className="dx-field-value-static">
+                <strong>{monthlyPosting.paymentmethod.bank_branch_code}</strong>
+              </div>
+            </div>
+          )}
+          {monthlyPosting.paymentmethod.type != "Mobile" && (
+            <div className="dx-field">
+              <div className="dx-field-label">Account Name</div>
+              <div className="dx-field-value-static">
+                <strong>
+                  {monthlyPosting.paymentmethod.bank_account_name}
+                </strong>
+              </div>
+            </div>
+          )}
+          {monthlyPosting.paymentmethod.type != "Mobile" && (
+            <div className="dx-field">
+              <div className="dx-field-label">Account No</div>
+              <div className="dx-field-value-static">
+                <strong>{monthlyPosting.paymentmethod.bank_account_no}</strong>
+              </div>
+            </div>
+          )}
+        </div>
         <div className="dx-fieldset">
           <div className="dx-fieldset-header">Summary</div>
           <div className="dx-field">

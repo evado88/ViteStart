@@ -1,6 +1,6 @@
 const AppInfo = {
   appName: "Control Panel",
-  appCode: "Demo",
+  appCode: "Osawe",
   apiUrl: "http://127.0.0.1:8700/",
   onlineApiUrl: "https://api.api-zm.online/",
   localApiUrl: "http://127.0.0.1:8700/",
