@@ -38,7 +38,14 @@ const AnnouncementEdit = () => {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState(false);
 
-  const pageConfig = new PageConfig(`New Announcement`, "", "", "Announcement", "", [2]);
+  const pageConfig = new PageConfig(
+    `New Announcement`,
+    "",
+    "",
+    "Announcement",
+    "",
+    [2],
+  );
 
   pageConfig.Id = eId == undefined ? 0 : Number(eId);
 
@@ -77,7 +84,10 @@ const AnnouncementEdit = () => {
   const updateVaues = (data) => {
     setTitle(data.title);
     setContent(data.content);
-    setUploadedFiles([data.attachment]);
+    
+    if (data.attachment != null) {
+      setUploadedFiles([data.attachment]);
+    }
   };
 
   const onFormSubmit = (e) => {
@@ -85,7 +95,7 @@ const AnnouncementEdit = () => {
 
     let result = confirm(
       `Are you sure you want to submit this ${pageConfig.Single}?`,
-      "Confirm submission"
+      "Confirm submission",
     );
     result.then((dialogResult) => {
       if (dialogResult) {
@@ -96,6 +106,8 @@ const AnnouncementEdit = () => {
 
   const submitMeeting = () => {
     setSaving(true);
+
+    console.log("upppp", uploadedFiles);
 
     const postData = {
       user_id: user.userid,
@@ -114,14 +126,14 @@ const AnnouncementEdit = () => {
           ? `announcements/create`
           : `announcements/update/${pageConfig.Id}`,
         postData,
-        pageConfig.Id
+        pageConfig.Id,
       )
         .then((data) => {
           setSaving(false);
 
           Assist.showMessage(
             `You have successfully submitted the ${pageConfig.Title}!`,
-            "success"
+            "success",
           );
 
           //navigate
@@ -196,7 +208,7 @@ const AnnouncementEdit = () => {
                           if (res === null) {
                             Assist.showMessage(
                               `The response from the server is invalid. Please try again`,
-                              "error"
+                              "error",
                             );
                           } else {
                             setUploadedFiles([res.attachment]);
@@ -204,7 +216,7 @@ const AnnouncementEdit = () => {
                         } else {
                           Assist.showMessage(
                             `Unable to upload attachment file. Please try again`,
-                            "error"
+                            "error",
                           );
                         }
                       }}
@@ -238,7 +250,7 @@ const AnnouncementEdit = () => {
                           return (
                             <a
                               href={encodeURI(
-                                `${AppInfo.apiUrl}static/${e.data.path}`
+                                `${AppInfo.apiUrl}static/${e.data.path}`,
                               )}
                               target="_null"
                             >

@@ -1,3 +1,4 @@
+import { useRef } from "react";
 import Assist from "../classes/assist";
 import { Card } from "./card";
 import DataGrid, {
@@ -11,6 +12,9 @@ import DataGrid, {
   Toolbar,
   Item,
 } from "devextreme-react/data-grid";
+
+import type DxDataGrid from "devextreme/ui/data_grid";
+
 interface MonthlyPostArgs {
   data: any;
   loadingText: string;
@@ -20,7 +24,7 @@ interface MonthlyPostArgs {
   isExpenseEarning?: boolean;
   title: string;
 }
-export const TransactionList = ({
+export const TransactionList: React.FC<MonthlyPostArgs> = ({
   data,
   loadingText,
   addButtonOptions,
@@ -29,10 +33,13 @@ export const TransactionList = ({
   isExpenseEarning,
   title,
 }: MonthlyPostArgs) => {
+  const gridRef = useRef<any>(null);
+
   return (
     /* start title */
     <Card showHeader={false}>
       <DataGrid
+        ref={gridRef}
         className={"dx-card wide-card"}
         dataSource={data}
         keyExpr={"id"}
@@ -73,7 +80,12 @@ export const TransactionList = ({
             options={{
               icon: "save",
               text: " Excel Export",
-              onClick: () => Assist.downloadExcel(title, data),
+              onClick: () =>
+                Assist.downloadExcel(
+                  title,
+                  data,
+                  gridRef.current?.instance.getVisibleColumns(),
+                ),
             }}
           />
         </Toolbar>

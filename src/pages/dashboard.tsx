@@ -58,10 +58,22 @@ const MyDashboard = () => {
       : `transactions/member-summary/${user.userid}`,
     "",
     "User",
-    `transactions/year-to-date/all`
+    `transactions/year-to-date/all`,
   );
 
   useEffect(() => {
+    //put audit action
+    Assist.auditAction(
+      user.userid,
+      user.sub,
+      user.jti,
+      pageConfig.Title,
+      null,
+      "View",
+      null,
+      null,
+    );
+
     setLoading(true);
 
     setTimeout(() => {
@@ -105,23 +117,23 @@ const MyDashboard = () => {
 
   const updateValues = (data: any) => {
     const savingItem = data.find(
-      (item: any) => item.id == Assist.TRANSACTION_SAVINGS
+      (item: any) => item.id == Assist.TRANSACTION_SAVINGS,
     );
 
     setSavings(savingItem.amount);
 
     const socialItem = data.find(
-      (item: any) => item.id == Assist.TRANSACTION_SOCIAL_FUND
+      (item: any) => item.id == Assist.TRANSACTION_SOCIAL_FUND,
     );
 
     setSocial(socialItem.amount);
 
     const interestItem = data.find(
-      (item: any) => item.id == Assist.TRANSACTION_INTEREST_CHARGED
+      (item: any) => item.id == Assist.TRANSACTION_INTEREST_CHARGED,
     );
 
     const shareItem = data.find(
-      (item: any) => item.id == Assist.TRANSACTION_SHARE
+      (item: any) => item.id == Assist.TRANSACTION_SHARE,
     );
 
     setShare(shareItem.amount);
@@ -129,13 +141,13 @@ const MyDashboard = () => {
     setInterest(interestItem.amount);
 
     const loanItem = data.find(
-      (item: any) => item.id == Assist.TRANSACTION_LOAN
+      (item: any) => item.id == Assist.TRANSACTION_LOAN,
     );
 
     setLoan(loanItem.amount);
 
     const penaltyItem = data.find(
-      (item: any) => item.id == Assist.TRANSACTION_PENALTY_CHARGED
+      (item: any) => item.id == Assist.TRANSACTION_PENALTY_CHARGED,
     );
 
     setPenalty(penaltyItem.amount);
@@ -147,7 +159,7 @@ const MyDashboard = () => {
       text: "New Monthly Posting",
       onClick: () => navigate("/my/monthly-posting/post"),
     }),
-    []
+    [],
   );
 
   return (

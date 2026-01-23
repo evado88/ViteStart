@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect, useMemo, useRef } from "react";
 import { Ticker } from "../../components/ticker.jsx";
 import { Titlebar } from "../../components/titlebar.js";
 import { Card } from "../../components/card.js";
@@ -31,6 +31,7 @@ import DataGrid, {
 import { useNavigate } from "react-router-dom";
 
 const MemberSummary = () => {
+  const gridRef = useRef<any>(null);
   //user
   const { user } = useAuth();
   const navigate = useNavigate();
@@ -46,16 +47,30 @@ const MemberSummary = () => {
   const [loadingText, setLoadingText] = useState("Loading data...");
 
   const pageConfig = new PageConfig(
-    `Dashboard`,
+    user.role == 2
+      ? `Dashboard - Group Summary`
+      : `Dashboard - Member Summary `,
     user.role == 2
       ? `transactions/summary/all`
       : `transactions/member-summary/${user.userid}`,
     "",
     "User",
-    `transactions/year-to-date/all`
+    `transactions/year-to-date/all`,
   );
 
   useEffect(() => {
+    //put audit action
+    Assist.auditAction(
+      user.userid,
+      user.sub,
+      user.jti,
+      pageConfig.Title,
+      null,
+      "View",
+      null,
+      null,
+    );
+
     setLoading(true);
 
     setTimeout(() => {
@@ -81,23 +96,23 @@ const MemberSummary = () => {
 
   const updateValues = (data: any) => {
     const savingItem = data.find(
-      (item: any) => item.id == Assist.TRANSACTION_SAVINGS
+      (item: any) => item.id == Assist.TRANSACTION_SAVINGS,
     );
 
     setSavings(savingItem.amount);
 
     const socialItem = data.find(
-      (item: any) => item.id == Assist.TRANSACTION_SOCIAL_FUND
+      (item: any) => item.id == Assist.TRANSACTION_SOCIAL_FUND,
     );
 
     setSocial(socialItem.amount);
 
     const interestItem = data.find(
-      (item: any) => item.id == Assist.TRANSACTION_INTEREST_CHARGED
+      (item: any) => item.id == Assist.TRANSACTION_INTEREST_CHARGED,
     );
 
     const shareItem = data.find(
-      (item: any) => item.id == Assist.TRANSACTION_SHARE
+      (item: any) => item.id == Assist.TRANSACTION_SHARE,
     );
 
     setShare(shareItem.amount);
@@ -105,13 +120,13 @@ const MemberSummary = () => {
     setInterest(interestItem.amount);
 
     const loanItem = data.find(
-      (item: any) => item.id == Assist.TRANSACTION_LOAN
+      (item: any) => item.id == Assist.TRANSACTION_LOAN,
     );
 
     setLoan(loanItem.amount);
 
     const penaltyItem = data.find(
-      (item: any) => item.id == Assist.TRANSACTION_PENALTY_CHARGED
+      (item: any) => item.id == Assist.TRANSACTION_PENALTY_CHARGED,
     );
 
     setPenalty(penaltyItem.amount);
@@ -123,7 +138,7 @@ const MemberSummary = () => {
       text: "New Monthly Posting",
       onClick: () => navigate("/my/monthly-posting/post"),
     }),
-    []
+    [],
   );
 
   return (
@@ -202,6 +217,7 @@ const MemberSummary = () => {
           <Card title={"Members"} showHeader={false}>
             <Card showHeader={false}>
               <DataGrid
+                ref={gridRef}
                 className={"dx-card wide-card"}
                 dataSource={data}
                 keyExpr={"id"}
@@ -240,7 +256,11 @@ const MemberSummary = () => {
                       icon: "save",
                       text: " Excel Export",
                       onClick: () =>
-                        Assist.downloadExcel(pageConfig.Title, data),
+                        Assist.downloadExcel(
+                          pageConfig.Title,
+                          data,
+                          gridRef.current?.instance.getVisibleColumns(),
+                        ),
                     }}
                   />
                 </Toolbar>

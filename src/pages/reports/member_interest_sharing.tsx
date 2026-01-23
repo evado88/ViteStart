@@ -85,7 +85,7 @@ const MemberInterestSharing = () => {
   const [interestData, setInterestData] = useState<null | any>([]);
   const [interestRatesData, setInterestRatesData] = useState<null | any>([]);
   const [savingProportionData, setSavingProportionData] = useState<null | any>(
-    []
+    [],
   );
 
   const [loadingText, setLoadingText] = useState("Loading data...");
@@ -96,8 +96,20 @@ const MemberInterestSharing = () => {
     (args: any) => {
       console.log("args", args);
       setSelectedItem(args.selectedItem || args.addedItems[0]);
+
+      //put audit action
+      Assist.auditAction(
+        user.userid,
+        user.sub,
+        user.jti,
+        args.addedItems[0].text,
+        null,
+        "View",
+        null,
+        null,
+      );
     },
-    [setSelectedItem]
+    [setSelectedItem],
   );
 
   const pageConfig = new PageConfig(
@@ -105,10 +117,22 @@ const MemberInterestSharing = () => {
     `transactions/summary/all`,
     "",
     "User",
-    `transactions/interest-sharing/all`
+    `transactions/interest-sharing/all`,
   );
 
   useEffect(() => {
+    //put audit action
+    Assist.auditAction(
+      user.userid,
+      user.sub,
+      user.jti,
+      selectedItem.text,
+      null,
+      "View",
+      null,
+      null,
+    );
+
     setLoading(true);
 
     setTimeout(() => {
@@ -142,23 +166,23 @@ const MemberInterestSharing = () => {
 
   const updateValues = (data: any) => {
     const savingItem = data.find(
-      (item: any) => item.id == Assist.TRANSACTION_SAVINGS
+      (item: any) => item.id == Assist.TRANSACTION_SAVINGS,
     );
 
     setSavings(savingItem.amount);
 
     const socialItem = data.find(
-      (item: any) => item.id == Assist.TRANSACTION_SOCIAL_FUND
+      (item: any) => item.id == Assist.TRANSACTION_SOCIAL_FUND,
     );
 
     setSocial(socialItem.amount);
 
     const interestItem = data.find(
-      (item: any) => item.id == Assist.TRANSACTION_INTEREST_CHARGED
+      (item: any) => item.id == Assist.TRANSACTION_INTEREST_CHARGED,
     );
 
     const shareItem = data.find(
-      (item: any) => item.id == Assist.TRANSACTION_SHARE
+      (item: any) => item.id == Assist.TRANSACTION_SHARE,
     );
 
     setShare(shareItem.amount);
@@ -166,13 +190,13 @@ const MemberInterestSharing = () => {
     setInterest(interestItem.amount);
 
     const loanItem = data.find(
-      (item: any) => item.id == Assist.TRANSACTION_LOAN
+      (item: any) => item.id == Assist.TRANSACTION_LOAN,
     );
 
     setLoan(loanItem.amount);
 
     const penaltyItem = data.find(
-      (item: any) => item.id == Assist.TRANSACTION_PENALTY_CHARGED
+      (item: any) => item.id == Assist.TRANSACTION_PENALTY_CHARGED,
     );
 
     setPenalty(penaltyItem.amount);
@@ -261,49 +285,49 @@ const MemberInterestSharing = () => {
             <InterestSharingList
               data={data}
               loadingText={loadingText}
-              title={pageConfig.Title}
+              title={selectedItem.text}
             />
           )}
           {selectedItem.id == 1 && (
             <MemberMonthlySavingsList
               data={data}
               loadingText={loadingText}
-              title={pageConfig.Title}
+              title={selectedItem.text}
             />
           )}
           {selectedItem.id == 2 && (
             <MonthlyTotalList
               data={savingsData}
               loadingText={loadingText}
-              title={pageConfig.Title}
+              title={selectedItem.text}
             />
           )}
           {selectedItem.id == 3 && (
             <MonthlyTotalList
               data={loansData}
               loadingText={loadingText}
-              title={pageConfig.Title}
+              title={selectedItem.text}
             />
           )}
           {selectedItem.id == 4 && (
             <MonthlyTotalList
               data={interestData}
               loadingText={loadingText}
-              title={pageConfig.Title}
+              title={selectedItem.text}
             />
           )}
           {selectedItem.id == 5 && (
             <MonthlyTotalList
               data={savingProportionData}
               loadingText={loadingText}
-              title={pageConfig.Title}
+              title={selectedItem.text}
             />
           )}
           {selectedItem.id == 6 && (
             <MonthlyTotalList
               data={interestRatesData}
               loadingText={loadingText}
-              title={pageConfig.Title}
+              title={selectedItem.text}
             />
           )}
         </Col>

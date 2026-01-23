@@ -42,12 +42,14 @@ const AdminMonthlyPosting = ({ props }: any) => {
 
   const [monthlyPosting, setMonthlyPosting] = useState<any | null>(null);
 
+  const [assignPenalty, setAssignPenalty] = useState<string | null>(null);
+
   const pageConfig = new PageConfig(
     "Review Monthly Posting",
     `monthly-posting/id/${eId}`,
     "",
     "Monthly Posting",
-    `monthly-posting/review-update/${eId}`
+    `monthly-posting/review-update/${eId}`,
   );
 
   pageConfig.Id = eId == undefined ? 0 : Number(eId);
@@ -61,7 +63,6 @@ const AdminMonthlyPosting = ({ props }: any) => {
           setLoading(false);
           updateVaues(res);
           setMonthlyPosting(res);
-          console.log("rsssssssss", res);
           setError(false);
         })
         .catch((ex) => {
@@ -89,7 +90,7 @@ const AdminMonthlyPosting = ({ props }: any) => {
 
     let result = confirm(
       `Are you sure you want to approve this monthly posting?${additional}`,
-      "Confirm changes"
+      "Confirm changes",
     );
 
     result.then((dialogResult) => {
@@ -97,7 +98,7 @@ const AdminMonthlyPosting = ({ props }: any) => {
         submitPostingReview(
           Assist.REVIEW_ACTION_APPROVE,
           approvalComments,
-          "approved"
+          "approved",
         );
       }
     });
@@ -111,14 +112,14 @@ const AdminMonthlyPosting = ({ props }: any) => {
 
     let result = confirm(
       "Are you sure you want to reject this monthly posting?",
-      "Confirm changes"
+      "Confirm changes",
     );
     result.then((dialogResult) => {
       if (dialogResult) {
         submitPostingReview(
           Assist.REVIEW_ACTION_REJECT,
           rejectionReason,
-          "rejected"
+          "rejected",
         );
       }
     });
@@ -148,7 +149,7 @@ const AdminMonthlyPosting = ({ props }: any) => {
   const submitPostingReview = (
     action: number,
     reviewComments: string,
-    verb: string
+    verb: string,
   ) => {
     setSaving(true);
 
@@ -156,6 +157,7 @@ const AdminMonthlyPosting = ({ props }: any) => {
       user_id: user.userid,
       review_action: action,
       comments: reviewComments,
+      penalize: assignPenalty == "Yes" ? Assist.RESPONSE_YES : Assist.RESPONSE_NO,
     };
 
     setTimeout(() => {
@@ -165,7 +167,7 @@ const AdminMonthlyPosting = ({ props }: any) => {
 
           Assist.showMessage(
             `You have successfully ${verb} the monthly posting!`,
-            "success"
+            "success",
           );
 
           navigate(`/admin/monthly-postings/list`);
@@ -210,6 +212,21 @@ const AdminMonthlyPosting = ({ props }: any) => {
                   <form id="formMain" onSubmit={onFormRejectSubmit}>
                     <div className="dx-fieldset">
                       <div className="dx-fieldset-header">Submission</div>
+                      <div className="dx-field">
+                        <div className="dx-field-label">Assign Penalty</div>
+                        <SelectBox
+                          className="dx-field-value"
+                          dataSource={AppInfo.yesNoList}
+                          onValueChange={(value) => setAssignPenalty(value)}
+                          validationMessagePosition="left"
+                          value={assignPenalty}
+                          disabled={error}
+                        >
+                          <Validator validationGroup="Reject">
+                            <RequiredRule message="Assign penalty is required" />
+                          </Validator>
+                        </SelectBox>
+                      </div>
                       <div className="dx-field">
                         <div className="dx-field-label">Rejection Reason</div>
                         <TextArea
@@ -299,7 +316,7 @@ const AdminMonthlyPosting = ({ props }: any) => {
                                 return (
                                   <a
                                     href={encodeURI(
-                                      `${AppInfo.apiUrl}static/${e.data.path}`
+                                      `${AppInfo.apiUrl}static/${e.data.path}`,
                                     )}
                                     target="_null"
                                   >
@@ -472,7 +489,9 @@ const AdminMonthlyPosting = ({ props }: any) => {
                     </div>
                   )}
                   <div className="dx-fieldset">
-                    <div className="dx-fieldset-header">Proof of Payment Approval</div>
+                    <div className="dx-fieldset-header">
+                      Proof of Payment Approval
+                    </div>
                     <div className="dx-field">
                       <div className="dx-field-label">Date</div>
                       <div className="dx-field-value-static">

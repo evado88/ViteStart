@@ -19,13 +19,25 @@ const MonthlyPostings = () => {
 
   const pageConfig = new PageConfig(
     "Mid-Month Postings",
-    `monthly-posting/user/${user.userid}`,
+    `monthly-posting/user/${user.userid}/mid`,
     "",
     "Monthly Posting",
-    ""
+    "",
   );
 
   useEffect(() => {
+    //put audit action
+    Assist.auditAction(
+      user.userid,
+      user.sub,
+      user.jti,
+      pageConfig.Title,
+      null,
+      "View",
+      null,
+      null,
+    );
+
     setLoading(true);
 
     setTimeout(() => {
@@ -53,7 +65,7 @@ const MonthlyPostings = () => {
       text: "New Monthly Posting",
       onClick: () => navigate("/my/monthly-posting/post"),
     }),
-    []
+    [],
   );
 
   return (

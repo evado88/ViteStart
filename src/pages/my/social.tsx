@@ -22,10 +22,22 @@ const MonthlyPostings = () => {
     `transactions/user/${user.userid}/type/${Assist.TRANSACTION_SOCIAL_FUND}/status/${Assist.STATUS_APPROVED}`,
     "",
     "My Social Funds",
-    ""
+    "",
   );
 
   useEffect(() => {
+    //put audit action
+    Assist.auditAction(
+      user.userid,
+      user.sub,
+      user.jti,
+      pageConfig.Title,
+      null,
+      "View",
+      null,
+      null,
+    );
+
     setLoading(true);
 
     setTimeout(() => {
@@ -53,7 +65,7 @@ const MonthlyPostings = () => {
       text: "New Monthly Posting",
       onClick: () => navigate("/my/monthly-posting/post"),
     }),
-    []
+    [],
   );
 
   return (

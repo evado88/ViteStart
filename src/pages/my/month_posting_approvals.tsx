@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 import { Titlebar } from "../../components/titlebar";
 import { Card } from "../../components/card";
 import { Row } from "../../components/row";
@@ -21,6 +21,7 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 
 const MonthlyPostingApprovals = () => {
+  const gridRef = useRef<any>(null);
   const { user } = useAuth();
   const navigate = useNavigate();
   const [data, setData] = useState([]);
@@ -32,10 +33,22 @@ const MonthlyPostingApprovals = () => {
     `monthly-posting/guarantor-approvals/email/${encodeURI(user.sub)}`,
     "",
     "Monthly Posting",
-    ""
+    "",
   );
 
   useEffect(() => {
+    //put audit action
+    Assist.auditAction(
+      user.userid,
+      user.sub,
+      user.jti,
+      pageConfig.Title,
+      null,
+      "View",
+      null,
+      null,
+    );
+
     setLoading(true);
 
     setTimeout(() => {
@@ -46,7 +59,7 @@ const MonthlyPostingApprovals = () => {
 
           if (data.length === 0) {
             setLoadingText(
-              "You have no monthly posts that require your approval"
+              "You have no monthly posts that require your approval",
             );
           } else {
             setLoadingText("");
@@ -74,6 +87,7 @@ const MonthlyPostingApprovals = () => {
         <Col sz={12} sm={12} lg={12}>
           <Card showHeader={false}>
             <DataGrid
+              ref={gridRef}
               className={"dx-card wide-card"}
               dataSource={data}
               keyExpr={"id"}
@@ -105,7 +119,12 @@ const MonthlyPostingApprovals = () => {
                   options={{
                     icon: "save",
                     text: " Excel Export",
-                    onClick: () => Assist.downloadExcel(pageConfig.Title, data),
+                    onClick: () =>
+                      Assist.downloadExcel(
+                        pageConfig.Title,
+                        data,
+                        gridRef.current?.instance.getVisibleColumns(),
+                      ),
                   }}
                 />
               </Toolbar>

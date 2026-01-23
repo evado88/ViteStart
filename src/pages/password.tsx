@@ -33,75 +33,119 @@ const Password = () => {
   const navigate = useNavigate();
 
   //posting
-  const [currentPassword, setCurrentPassword] = useState<string | undefined>(
-    undefined
-  );
-  const [password, setPassword] = useState<string | undefined>(undefined);
-  const [confirmPassword, setConfirmPassword] = useState<string | undefined>(
-    undefined
-  );
+  const [currentPassword, setCurrentPassword] = useState<string>("");
+  const [password, setPassword] = useState<string>("");
+  const [confirmPassword, setConfirmPassword] = useState<string>("");
   //service
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState(false);
 
+  const [code, setCode] = useState("");
+  const [OTP, setOTP] = useState("");
+
+  const [stage, setStage] = useState(1);
+
   const pageConfig = new PageConfig(
-    "Security",
-    "sacco-config/1",
+    "Update Password",
+    `users/${user.userid}`,
     "",
     "Password",
-    "sacco-config/update/1",
-    [1, 2]
+    "",
+    [1, 2],
   );
 
-  useEffect(() => {
-    if (!pageConfig.Permissions?.includes(user.role)) {
-      navigate("/404");
-      return;
-    }
-    setLoading(true);
-
-    setTimeout(() => {
-      Assist.loadData(pageConfig.Title, pageConfig.Url)
-        .then((data) => {
-          setLoading(false);
-          updateVaues(data);
-          setError(false);
-        })
-        .catch((message) => {
-          setLoading(false);
-          setError(true);
-          Assist.showMessage(message, "error");
-        });
-    }, Assist.DEV_DELAY);
-  }, []);
-
-  const updateVaues = (data: any) => {};
-
   const onFormSubmit = (e: React.FormEvent) => {
-    setSaving(true);
-
     e.preventDefault();
 
+    sendWhatsappOTP(user.mobile);
+    setStage(2);
+  };
+
+  const sendWhatsappOTP = (userPhone: string) => {
+    setLoading(true);
+    const newCode = Math.floor(100000 + Math.random() * 900000);
+
+    console.log(`Now sending OTP ${newCode} to client ${userPhone}`);
+
+    setOTP(`${newCode}`);
+
     const postData = {
-      user_id: user.userid,
+      mobile: userPhone,
+      code: newCode,
     };
 
     setTimeout(() => {
-      Assist.postPutData(pageConfig.Title, pageConfig.UpdateUrl, postData, 1)
+      Assist.postPutData(
+        "WhatsApp Code",
+        `whatsapp/send-infobip-auth-message`,
+        postData,
+        0,
+      )
         .then((data) => {
-          setSaving(false);
-          updateVaues(data);
-
+          setLoading(false);
+          console.log(data);
           Assist.showMessage(
-            "You have successfully updated the configuration!",
-            "success"
+            `The OTP has been successfully sent to ${userPhone}`,
+            "success",
           );
         })
         .catch((message) => {
-          setSaving(false);
-          Assist.showMessage(message, "error");
+          setLoading(false);
+          console.log(message);
+          Assist.showMessage(
+            `Error sending OTP to ${userPhone}. Please try again`,
+            "error",
+          );
         });
+    }, Assist.DEV_DELAY);
+  };
+
+  const onOTPFormSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setSaving(true);
+
+    setTimeout(() => {
+      if (code == OTP) {
+        const formData = new FormData();
+
+        formData.append("username", user.sub);
+        formData.append("current_password", currentPassword);
+        formData.append("new_password", password);
+
+        setTimeout(() => {
+          Assist.postPutData(
+            pageConfig.Title,
+            `users/update-password`,
+            formData,
+            1,
+          )
+            .then((data) => {
+              setSaving(false);
+
+              Assist.showMessage(
+                "You have successfully updated your password!",
+                "success",
+              );
+
+              setStage(1);
+              setCurrentPassword("");
+              setConfirmPassword("");
+              setPassword("");
+              setCode("");
+            })
+            .catch((message) => {
+              setStage(1);
+              setSaving(false);
+              Assist.showMessage(message, "error");
+            });
+        }, Assist.DEV_DELAY);
+      } else {
+        Assist.showMessage(
+          `The specified code ${code} is not correct. Please try again.`,
+          "error",
+        );
+      }
     }, Assist.DEV_DELAY);
   };
 
@@ -128,87 +172,138 @@ const Password = () => {
       <Row>
         <Col sz={12} sm={12} lg={7}>
           <Card title="Properties" showHeader={true}>
-            <form id="formMain" onSubmit={onFormSubmit}>
-              <div className="form">
-                <div className="dx-fieldset">
-                  <div className="dx-fieldset-header">Current Password</div>
+            {stage == 1 && (
+              <form id="formMain" onSubmit={onFormSubmit}>
+                <div className="form">
+                  <div className="dx-fieldset">
+                    <div className="dx-fieldset-header">Current Password</div>
+                    <div className="dx-field">
+                      <div className="dx-field-label">Password</div>
+                      <TextBox
+                        className="dx-field-value"
+                        placeholder="Password"
+                        mode="password"
+                        value={currentPassword}
+                        onValueChange={(text) => setCurrentPassword(text)}
+                      >
+                        {" "}
+                        <Validator>
+                          <RequiredRule message="Current password is required" />
+                        </Validator>
+                      </TextBox>
+                    </div>
+                  </div>
+                  <div className="dx-fieldset">
+                    <div className="dx-fieldset-header">New Password</div>
+                    <div className="dx-field">
+                      <div className="dx-field-label">Password</div>
+                      <TextBox
+                        className="dx-field-value"
+                        placeholder="Password"
+                        mode="password"
+                        value={password}
+                        onValueChange={(text) => setPassword(text)}
+                      >
+                        {" "}
+                        <Validator>
+                          <RequiredRule message="Password is required" />
+                          <CustomRule
+                            validationCallback={(e) =>
+                              e.value == confirmPassword
+                            }
+                            message={`Password does not match confirm password`}
+                          />
+                        </Validator>
+                      </TextBox>
+                    </div>
+                    <div className="dx-field">
+                      <div className="dx-field-label">Confirm Password</div>
+                      <TextBox
+                        className="dx-field-value"
+                        placeholder="Confirm Password"
+                        mode="password"
+                        value={confirmPassword}
+                        onValueChange={(text) => setConfirmPassword(text)}
+                      >
+                        {" "}
+                        <Validator>
+                          <RequiredRule message="Please confirm password" />
+                          <CustomRule
+                            validationCallback={(e) => e.value == password}
+                            message={`Confirm password does not match password`}
+                          />
+                        </Validator>
+                      </TextBox>
+                    </div>
+                  </div>
+                  <div className="form-group">
+                    <ValidationSummary id="summary6" />
+                  </div>
                   <div className="dx-field">
-                    <div className="dx-field-label">Password</div>
-                    <TextBox
-                      className="dx-field-value"
-                      placeholder="Password"
-                      mode="password"
-                      value={currentPassword}
-                      onValueChange={(text) => setCurrentPassword(text)}
+                    <div className="dx-field-label"></div>
+                    <Button
+                      width="100%"
+                      type={saving ? "normal" : "default"}
+                      disabled={loading || error || saving}
+                      useSubmitBehavior={true}
                     >
-                      {" "}
-                      <Validator>
-                        <RequiredRule message="Current password is required" />
-                      </Validator>
-                    </TextBox>
+                      <LoadIndicator
+                        className="button-indicator"
+                        visible={saving}
+                      />
+                      <span className="dx-button-text">Update Password</span>
+                    </Button>
                   </div>
                 </div>
+              </form>
+            )}
+            {stage == 2 && (
+              <form
+                className="register-form"
+                id="login-form"
+                onSubmit={onOTPFormSubmit}
+              >
                 <div className="dx-fieldset">
-                  <div className="dx-fieldset-header">New Password</div>
+                  <div className="dx-fieldset-header">One Time Password</div>
                   <div className="dx-field">
-                    <div className="dx-field-label">Password</div>
+                    <div className="dx-field-label">Code</div>
                     <TextBox
                       className="dx-field-value"
-                      placeholder="Password"
-                      mode="password"
-                      value={password}
-                      onValueChange={(text) => setPassword(text)}
+                      placeholder="Code"
+                      value={code}
+                      onValueChange={(text) => setCode(text)}
                     >
                       {" "}
                       <Validator>
-                        <RequiredRule message="Password is required" />
+                        <RequiredRule message="OTP code required" />
                         <CustomRule
-                          validationCallback={(e) => e.value == confirmPassword}
-                          message={`Password does not match confirm password`}
-                        />
-                      </Validator>
-                    </TextBox>
-                  </div>
-                  <div className="dx-field">
-                    <div className="dx-field-label">Confirm Password</div>
-                    <TextBox
-                      className="dx-field-value"
-                      placeholder="Confirm Password"
-                      mode="password"
-                      value={confirmPassword}
-                      onValueChange={(text) => setConfirmPassword(text)}
-                    >
-                      {" "}
-                      <Validator>
-                        <RequiredRule message="Please confirm password" />
-                        <CustomRule
-                          validationCallback={(e) => e.value == password}
-                          message={`Confirm password does not match password`}
+                          validationCallback={(e) => e.value == OTP}
+                          message={`The specified code is not valid. Please try again`}
                         />
                       </Validator>
                     </TextBox>
                   </div>
                 </div>
                 <div className="form-group">
-                  <ValidationSummary id="summary6" />
+                  <ValidationSummary id="summary" />
                 </div>
-                <div className="dx-field">
-                  <div className="dx-field-label"></div>
+                <div className="form-group form-button">
                   <Button
                     width="100%"
+                    text="Login"
                     type={saving ? "normal" : "default"}
-                    disabled={loading || error || saving}
+                    disabled={saving}
                     useSubmitBehavior={true}
                   >
                     <LoadIndicator
                       className="button-indicator"
                       visible={saving}
                     />
-                    <span className="dx-button-text">Update Password</span>
+                    <span className="dx-button-text">Verify OTP</span>
                   </Button>
                 </div>
-              </div>
-            </form>
+              </form>
+            )}
           </Card>
         </Col>
       </Row>

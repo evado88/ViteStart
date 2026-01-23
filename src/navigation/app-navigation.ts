@@ -55,7 +55,7 @@ export const navigation: MenuItem[] = [
     path: "",
     roles: [1],
     items: [
-            {
+      {
         key: "mid-month-postings-post",
         text: "New Mid-Month Posting",
         icon: "",
@@ -71,7 +71,6 @@ export const navigation: MenuItem[] = [
         roles: [1],
         items: [],
       },
-
     ],
   },
   {
@@ -183,10 +182,18 @@ export const navigation: MenuItem[] = [
     roles: [1],
     items: [
       {
-        key: "my-penalties",
+        key: "my-guarantors-list",
         text: "My Guarantors",
         icon: "",
         path: "/my/guarantors/list",
+        roles: [1],
+        items: [],
+      },
+      {
+        key: "my-guarantors-approve",
+        text: "My Approvals",
+        icon: "",
+        path: "/my/guarantors/approvals",
         roles: [1],
         items: [],
       },

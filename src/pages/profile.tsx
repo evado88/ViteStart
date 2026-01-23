@@ -4,10 +4,7 @@ import { Card } from "../components/card";
 import { Row } from "../components/row";
 import { Col } from "../components/column";
 import SelectBox from "devextreme-react/select-box";
-import {
-  Validator,
-  RequiredRule,
-} from "devextreme-react/validator";
+import { Validator, RequiredRule } from "devextreme-react/validator";
 import Button from "devextreme-react/button";
 import { LoadPanel } from "devextreme-react/load-panel";
 import { useAuth } from "../context/AuthContext";
@@ -23,41 +20,19 @@ const Profile = () => {
 
   const navigate = useNavigate();
 
-  //posting
-  const [savingsMultiple, setSavingsMultiple] = useState<number | null>(null);
-  const [sharesMultiple, setSharesMultiple] = useState<number | null>(null);
-  const [socialMin, setSocialMin] = useState<number | null>(null);
-
-  //interest payment - minimum 10% if not yet paid on loan
-  const [loanInterestPercent, setLoanInterestPercent] = useState<number | null>(
-    null
-  );
-
-  //loan payment -  minimum 10% if not yet paid on loan
-  const [loanPaymentPercent, setLoanPaymentPercent] = useState<number | null>(
-    null
-  );
-
-  //new loan loan application
-  const [loanSavingsRatio, setLoanSavingsRatio] = useState<number | null>(null);
-  const [loanDuration, setLoanDuration] = useState<number | null>(null);
-  const [approvalLevels, setApprovalLevels] = useState<number | null>(null);
-  const [loanApplyLimit, setLoanApplyLimit] = useState<number | null>(null);
   //additiona
-  const [latePostingFee, setLatePostingFee] = useState<number | null>(null);
-  const [missedMeetingFee, setMissedMeetingFee] = useState<number | null>(null);
-  const [lateMeetingFee, setLateMeetingFee] = useState<number | null>(null);
-  const [memberDetail, setMemberetail] = useState<null | any>(null);
+
+  const [memberDetail, setMemberDetail] = useState<null | any>(null);
 
   const [guarantors, setGuarantors] = useState([]);
   const [guarantor, setGuarantor] = useState<number | undefined>(undefined);
 
   const [paymnetMethods, setPaymentMethods] = useState([]);
   const [paymnetMethod, setPaymentMethod] = useState<number | undefined>(
-    undefined
+    undefined,
   );
   const [payoutMethod, setPayouttMethod] = useState<number | undefined>(
-    undefined
+    undefined,
   );
   //service
   const [loading, setLoading] = useState(false);
@@ -70,10 +45,22 @@ const Profile = () => {
     "",
     "Profile",
     ``,
-    [1, 2]
+    [1],
   );
 
   useEffect(() => {
+    //put audit action
+    Assist.auditAction(
+      user.userid,
+      user.sub,
+      user.jti,
+      pageConfig.Title,
+      null,
+      "Update",
+      null,
+      null,
+    );
+
     if (!pageConfig.Permissions?.includes(user.role)) {
       navigate("/404");
       return;
@@ -97,7 +84,10 @@ const Profile = () => {
 
   useEffect(() => {
     setTimeout(() => {
-      Assist.loadData(pageConfig.Title, "guarantors/list")
+      Assist.loadData(
+        pageConfig.Title,
+        `guarantors/user/${user.userid}/approved/list`,
+      )
         .then((data: any) => {
           setGuarantors(data);
         })
@@ -109,7 +99,10 @@ const Profile = () => {
 
   useEffect(() => {
     setTimeout(() => {
-      Assist.loadData(pageConfig.Title, "paymentmethods/list")
+      Assist.loadData(
+        pageConfig.Title,
+        `paymentmethods/user/${user.userid}/approved/list`,
+      )
         .then((data: any) => {
           setPaymentMethods(data);
         })
@@ -120,7 +113,11 @@ const Profile = () => {
   }, []);
 
   const updateVaues = (data: any) => {
-    setMemberetail(data);
+    setMemberDetail(data);
+
+    setGuarantor(data.guarantor_id);
+    setPaymentMethod(data.payment_method_id);
+    setPayouttMethod(data.payout_method_id);
   };
 
   const onFormSubmit = (e: React.FormEvent) => {
@@ -128,31 +125,39 @@ const Profile = () => {
 
     e.preventDefault();
 
-    const postData = {
-      user_id: user.userid,
-      saving_multiple: savingsMultiple,
-      shares_multiple: sharesMultiple,
-      social_min: socialMin,
-      loan_interest_rate: loanInterestPercent,
-      loan_repayment_rate: loanPaymentPercent,
-      loan_saving_ratio: loanSavingsRatio,
-      loan_duration: loanDuration,
-      loan_apply_limit: loanApplyLimit,
-      late_posting_rate: latePostingFee,
-      missed_meeting_rate: missedMeetingFee,
-      late_meeting_rate: lateMeetingFee,
-      approval_levels: approvalLevels,
+    const newData = {
+      guarantor_id: guarantor,
+      payment_method_id: paymnetMethod,
+      payout_method_id: payoutMethod,
     };
+    const postData = { ...memberDetail, ...newData };
 
     setTimeout(() => {
-      Assist.postPutData(pageConfig.Title, pageConfig.UpdateUrl, postData, 1)
+      Assist.postPutData(
+        pageConfig.Title,
+        `members/update/user/${user.userid}`,
+        postData,
+        1,
+      )
         .then((data) => {
           setSaving(false);
           updateVaues(data);
 
           Assist.showMessage(
-            "You have successfully updated the configuration!",
-            "success"
+            "You have successfully updated your profile!",
+            "success",
+          );
+
+          //put audit action
+          Assist.auditAction(
+            user.userid,
+            user.sub,
+            user.jti,
+            pageConfig.Title,
+            null,
+            "Updated",
+            memberDetail,
+            data,
           );
         })
         .catch((message) => {
@@ -188,11 +193,11 @@ const Profile = () => {
         </Col>
         <Col sz={12} sm={12} lg={7}>
           {memberDetail != null && (
-            <Card title="Properties" showHeader={true}>
+            <Card title="Payment Methods & Guarantor" showHeader={true}>
               <form id="formMain" onSubmit={onFormSubmit}>
                 <div className="form">
                   <div className="dx-fieldset">
-                    <div className="dx-fieldset-header">Settings</div>
+                    <div className="dx-fieldset-header">Guarantors</div>
                     <div className="dx-field">
                       <div className="dx-field-label">Guarantor</div>
                       <SelectBox
@@ -214,6 +219,9 @@ const Profile = () => {
                         </Validator>
                       </SelectBox>
                     </div>
+                  </div>
+                  <div className="dx-fieldset">
+                    <div className="dx-fieldset-header">Payment Methods</div>
                     <div className="dx-field">
                       <div className="dx-field-label">Payment Method</div>
                       <SelectBox

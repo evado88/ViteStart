@@ -15,6 +15,7 @@ import Assist from "../../../classes/assist";
 import { LoadIndicator } from "devextreme-react/load-indicator";
 import { useNavigate } from "react-router-dom";
 import AppInfo from "../../../classes/app-info";
+import { TextBox } from "devextreme-react/text-box";
 
 const Configuration = () => {
   //user
@@ -50,6 +51,14 @@ const Configuration = () => {
   const [latePostingFee, setLatePostingFee] = useState<number | null>(null);
   const [missedMeetingFee, setMissedMeetingFee] = useState<number | null>(null);
   const [lateMeetingFee, setLateMeetingFee] = useState<number | null>(null);
+
+  //smtp
+  const [smtpServer, setSmtpServer] = useState<string | undefined>(undefined);
+  const [smtpPort, setSmtpPort] = useState<number | undefined>(undefined);
+  const [smtpUser, setSmtpUser] = useState<string | undefined>(undefined);
+  const [smtpPassword, setSmtpPassword] = useState<string | undefined>(
+    undefined,
+  );
   //service
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -104,6 +113,11 @@ const Configuration = () => {
 
     setApprovalLevels(data.approval_levels);
     setEnable2FA(data.enable_2FA == 1 ? "Yes" : "No");
+
+    setSmtpServer(data.smtp_server);
+    setSmtpPort(data.smtp_port);
+    setSmtpUser(data.smtp_user);
+    setSmtpPassword(data.smtp_password);
   };
 
   const onFormSubmit = (e: React.FormEvent) => {
@@ -127,6 +141,10 @@ const Configuration = () => {
       incorrect_posting_rate: incorrectPostingFee,
       approval_levels: approvalLevels,
       enable_2FA: enable2FA == "Yes" ? 1 : 2,
+      smtp_server: smtpServer,
+      smtp_port: smtpPort,
+      smtp_user: smtpUser,
+      smtp_password: smtpPassword,
     };
 
     setTimeout(() => {
@@ -190,6 +208,65 @@ const Configuration = () => {
                         <RequiredRule message="Enable Two-Factor authentication is required" />
                       </Validator>
                     </SelectBox>
+                  </div>
+                </div>
+                <div className="dx-fieldset">
+                  <div className="dx-fieldset-header">SMTP Mail Settings</div>
+                  <div className="dx-field">
+                    <div className="dx-field-label">Server</div>
+                    <TextBox
+                      className="dx-field-value"
+                      onValueChange={(value) => setSmtpServer(value)}
+                      value={smtpServer}
+                      validationMessagePosition="left"
+                      disabled={error}
+                    >
+                      <Validator>
+                        <RequiredRule message="SMTP server is required" />
+                      </Validator>
+                    </TextBox>
+                  </div>
+                  <div className="dx-field">
+                    <div className="dx-field-label">Port</div>
+                    <NumberBox
+                      className="dx-field-value"
+                      onValueChange={(value) => setSmtpPort(value)}
+                      value={smtpPort}
+                      validationMessagePosition="left"
+                      disabled={error}
+                    >
+                      <Validator>
+                        <RequiredRule message="SMTP portis required" />
+                      </Validator>
+                    </NumberBox>
+                  </div>
+                  <div className="dx-field">
+                    <div className="dx-field-label">User</div>
+                    <TextBox
+                      className="dx-field-value"
+                      onValueChange={(value) => setSmtpUser(value)}
+                      value={smtpUser}
+                      validationMessagePosition="left"
+                      disabled={error}
+                    >
+                      <Validator>
+                        <RequiredRule message="SMTP user is required" />
+                      </Validator>
+                    </TextBox>
+                  </div>
+                  <div className="dx-field">
+                    <div className="dx-field-label">Password</div>
+                    <TextBox
+                      className="dx-field-value"
+                      onValueChange={(value) => setSmtpPassword(value)}
+                      value={smtpPassword}
+                      validationMessagePosition="left"
+                      disabled={error}
+                    >
+                      <Validator>
+                        <RequiredRule message="SMTP user password is required" />
+                      </Validator>
+                    </TextBox>
                   </div>
                 </div>
                 <div className="dx-fieldset">

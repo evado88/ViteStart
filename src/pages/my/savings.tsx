@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 import { Titlebar } from "../../components/titlebar";
 import { Card } from "../../components/card";
 import { Row } from "../../components/row";
@@ -11,6 +11,7 @@ import { useAuth } from "../../context/AuthContext";
 import { TransactionList } from "../../components/transactionList";
 
 const MonthlyPostings = () => {
+  const gridRef = useRef(null);
   const { user } = useAuth();
   const navigate = useNavigate();
   const [data, setData] = useState([]);
@@ -22,10 +23,22 @@ const MonthlyPostings = () => {
     `transactions/user/${user.userid}/type/${Assist.TRANSACTION_SAVINGS}/status/${Assist.STATUS_APPROVED}`,
     "",
     "My Saving",
-    ""
+    "",
   );
 
   useEffect(() => {
+    //put audit action
+    Assist.auditAction(
+      user.userid,
+      user.sub,
+      user.jti,
+      pageConfig.Title,
+      null,
+      "View",
+      null,
+      null,
+    );
+
     setLoading(true);
 
     setTimeout(() => {
@@ -53,7 +66,7 @@ const MonthlyPostings = () => {
       text: "New Monthly Posting",
       onClick: () => navigate("/my/monthly-posting/post"),
     }),
-    []
+    [],
   );
 
   return (

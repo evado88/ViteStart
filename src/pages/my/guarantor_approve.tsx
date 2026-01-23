@@ -1,27 +1,28 @@
 import { useState, useEffect, useMemo } from "react";
-import { Titlebar } from "../../../components/titlebar";
-import { Card } from "../../../components/card";
-import { Row } from "../../../components/row";
-import { Col } from "../../../components/column";
+import { Titlebar } from "../../components/titlebar";
+import { Card } from "../../components/card";
+import { Row } from "../../components/row";
+import { Col } from "../../components/column";
 import { Validator, RequiredRule } from "devextreme-react/validator";
 import Button from "devextreme-react/button";
 import { LoadPanel } from "devextreme-react/load-panel";
-import { useAuth } from "../../../context/AuthContext";
-import PageConfig from "../../../classes/page-config";
-import Assist from "../../../classes/assist";
+import { useAuth } from "../../context/AuthContext";
+import PageConfig from "../../classes/page-config";
+import Assist from "../../classes/assist";
 import { LoadIndicator } from "devextreme-react/load-indicator";
 import { useNavigate, useParams } from "react-router-dom";
 import HtmlEditor, { MediaResizing } from "devextreme-react/html-editor";
-import AppInfo from "../../../classes/app-info";
+import AppInfo from "../../classes/app-info";
 import DataGrid, { Column, Pager, Paging } from "devextreme-react/data-grid";
 import { confirm } from "devextreme/ui/dialog";
 import TextArea from "devextreme-react/text-area";
 import ValidationSummary from "devextreme-react/validation-summary";
-import { ArticleDetail } from "../../../components/articleDetail";
-import { MemberQueryDetail } from "../../../components/memberQueryDetail";
-import { PaymentMethodDetail } from "../../../components/paymentMethodDetail";
+import { ArticleDetail } from "../../components/articleDetail";
+import { MemberQueryDetail } from "../../components/memberQueryDetail";
+import { PaymentMethodDetail } from "../../components/paymentMethodDetail";
+import { GuarantorDetail } from "../../components/guarantorDetail";
 
-const MyMemberQuery = () => {
+const GuarantorApprove = () => {
   //user
   const navigate = useNavigate();
   const { user } = useAuth();
@@ -37,17 +38,17 @@ const MyMemberQuery = () => {
   const [stageId, setStageId] = useState(1);
   const [status, setStatus] = useState(null);
   const [createdBy, setCreatedBy] = useState("");
-
+  const [guarantorUserEmail, setGuarantorUserEmail] = useState(null);
   const [approvalLevels, setApprovalLevels] = useState(1);
 
   const [rejectionReason, setRejectionReason] = useState("");
   const [approvalComments, setApprovalComments] = useState("");
   const pageConfig = new PageConfig(
-    `${status == "Approved" ? "View" : "Review"} Payment Method`,
+    `${status == "Approved" ? "View" : "Review"} Member Guarantor`,
     "",
     "",
-    "Payment Method",
-    `paymentmethods/review-update/${eId}`,
+    "Member Guarantor",
+    `guarantors/review-update/${eId}`,
   );
 
   pageConfig.Id = eId == undefined ? 0 : Number(eId);
@@ -57,7 +58,7 @@ const MyMemberQuery = () => {
     if (pageConfig.Id != 0) {
       setLoading(true);
       setTimeout(() => {
-        Assist.loadData(pageConfig.Title, `paymentmethods/id/${pageConfig.Id}`)
+        Assist.loadData(pageConfig.Title, `guarantors/id/${pageConfig.Id}`)
           .then((data) => {
             setLoading(false);
             updateVaues(data);
@@ -78,6 +79,7 @@ const MyMemberQuery = () => {
     setStage(res.stage.stage_name);
     setStageId(res.stage_id);
     setCreatedBy(res.created_by);
+    setGuarantorUserEmail(res.guar_email);
 
     setApprovalLevels(res.approval_levels);
   };
@@ -87,16 +89,12 @@ const MyMemberQuery = () => {
   };
 
   const requiresApproval = () => {
-    if (status == "Submitted") {
-      if (
-        stage == "Submitted" ||
-        stage == "Primary Approval" ||
-        stage == "Secondary Approval"
-      ) {
-        return true;
-      } else {
-        return false;
-      }
+    if (
+      status == "Submitted" &&
+      stage == "Submitted" &&
+      guarantorUserEmail == user.sub
+    ) {
+      return true;
     } else {
       return false;
     }
@@ -166,7 +164,7 @@ const MyMemberQuery = () => {
             "success",
           );
 
-          navigate(`/admin/payment-methods/list`);
+          navigate(`/my/guarantors/approvals`);
         })
         .catch((message) => {
           setSaving(false);
@@ -176,6 +174,10 @@ const MyMemberQuery = () => {
         });
     }, Assist.DEV_DELAY);
   };
+
+  const toolbar: any = useMemo(() => {
+    return AppInfo.htmlToolbar;
+  }, []);
 
   return (
     <div id="pageRoot" className="page-content">
@@ -190,8 +192,8 @@ const MyMemberQuery = () => {
       />
       <Titlebar
         title={`${pageConfig.Title}`}
-        section={"Administration"}
-        icon={"cubes"}
+        section={"Configuration"}
+        icon={"gear"}
         url="#"
       ></Titlebar>
       {/* end widget */}
@@ -200,7 +202,7 @@ const MyMemberQuery = () => {
       <Row>
         <Col sz={12} sm={12} lg={6}>
           {queryDetail != null && (
-            <PaymentMethodDetail paymentMethod={queryDetail} />
+            <GuarantorDetail guarantor={queryDetail} showMember={true} />
           )}
         </Col>
         <Col sz={12} sm={12} lg={6}>
@@ -388,4 +390,4 @@ const MyMemberQuery = () => {
   );
 };
 
-export default MyMemberQuery;
+export default GuarantorApprove;

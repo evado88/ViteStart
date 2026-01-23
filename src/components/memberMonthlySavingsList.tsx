@@ -1,3 +1,4 @@
+import { useRef } from "react";
 import Assist from "../classes/assist";
 import { Card } from "./card";
 import DataGrid, {
@@ -18,16 +19,18 @@ interface MemberMonthlySavingsArgs {
   loadingText: string;
   title: string;
 }
-export const MemberMonthlySavingsList = ({
+export const MemberMonthlySavingsList: React.FC<MemberMonthlySavingsArgs> = ({
   data,
   loadingText,
   title,
 }: MemberMonthlySavingsArgs) => {
+  const gridRef = useRef<any>(null);
   return (
     /* start title */
 
     <Card showHeader={false}>
       <DataGrid
+        ref={gridRef}
         className={"dx-card wide-card"}
         dataSource={data}
         keyExpr={"id"}
@@ -58,7 +61,12 @@ export const MemberMonthlySavingsList = ({
             options={{
               icon: "save",
               text: " Excel Export",
-              onClick: () => Assist.downloadExcel(title, data),
+              onClick: () =>
+                Assist.downloadExcel(
+                  title,
+                  data,
+                  gridRef.current?.instance.getVisibleColumns(),
+                ),
             }}
           />
         </Toolbar>

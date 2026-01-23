@@ -20,7 +20,7 @@ import PageConfig from "../../classes/page-config";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 
-const MemberQueries = () => {
+const MyGuarantorApprovals = () => {
   const gridRef = useRef<any>(null);
   //user
   const { user } = useAuth();
@@ -31,10 +31,10 @@ const MemberQueries = () => {
   const [loading, setLoading] = useState(true);
 
   const pageConfig = new PageConfig(
-    "My Member Queries",
-    `member-queries/user/${user.userid}`,
+    "Guarantor Approvals",
+    `guarantors/email/${user.sub}/list`,
     "",
-    "Member Query",
+    "Guarantor",
     "",
   );
 
@@ -70,21 +70,12 @@ const MemberQueries = () => {
       });
   }, []);
 
-  const addButtonOptions = useMemo(
-    () => ({
-      icon: "add",
-      text: "Submit Query",
-      onClick: () => navigate("/my/member-queries/submit"),
-    }),
-    [],
-  );
-
   return (
     <div className="page-content" style={{ minHeight: "862px" }}>
       <Titlebar
         title={pageConfig.Title}
-        section={"Administration"}
-        icon={"cubes"}
+        section={"My"}
+        icon={"home"}
         url="/"
       ></Titlebar>
       {/* end widget */}
@@ -109,7 +100,7 @@ const MemberQueries = () => {
               <Editing
                 mode="row"
                 allowUpdating={false}
-                allowDeleting={true}
+                allowDeleting={false}
                 allowAdding={false}
               />
               <Pager showPageSizeSelector={true} showInfo={true} />
@@ -117,13 +108,6 @@ const MemberQueries = () => {
               <LoadPanel enabled={loading} />
               <ColumnChooser enabled={true} mode="select"></ColumnChooser>
               <Toolbar>
-                <Item
-                  location="before"
-                  locateInMenu="auto"
-                  showText="always"
-                  widget="dxButton"
-                  options={addButtonOptions}
-                />
                 <Item name="columnChooserButton" />
                 <Item
                   location="after"
@@ -144,27 +128,46 @@ const MemberQueries = () => {
               </Toolbar>
               <Column dataField="id" caption="ID" hidingPriority={6}></Column>
               <Column
-                dataField="title"
-                caption="Title"
-                dataType="date"
-                format={"dd MMMM yyy"}
-                hidingPriority={6}
+                dataField="member.email"
+                caption="Member"
+                hidingPriority={9}
                 cellRender={(e) => {
                   const getLink = () => {
-                    if (e.data.status.status_name == "Draft") {
-                      return `/my/member-queries/edit/${e.data.id}`;
-                    } else {
-                      return `/my/member-queries/view/${e.data.id}`;
-                    }
+                    return `/my/guarantors/review/${e.data.id}`;
                   };
 
                   return <a href={getLink()}>{e.text}</a>;
                 }}
               ></Column>
               <Column
-                dataField="type.query_type_name"
-                caption="Type"
-                hidingPriority={5}
+                dataField="member.fname"
+                caption="Member First Name"
+                hidingPriority={8}
+              ></Column>
+              <Column
+                dataField="member.lname"
+                caption="Member Last Name"
+                hidingPriority={8}
+              ></Column>
+              <Column
+                dataField="guar_fname"
+                caption="First Name"
+                hidingPriority={8}
+              ></Column>
+              <Column
+                dataField="guar_lname"
+                caption="Last Name"
+                hidingPriority={8}
+              ></Column>
+              <Column
+                dataField="guar_mobile"
+                caption="Mobile"
+                hidingPriority={7}
+              ></Column>
+              <Column
+                dataField="guar_email"
+                caption="Email"
+                hidingPriority={6}
               ></Column>
               <Column
                 dataField="status.status_name"
@@ -175,12 +178,6 @@ const MemberQueries = () => {
                 dataField="stage.stage_name"
                 caption="Stage"
                 hidingPriority={3}
-              ></Column>
-              <Column
-                dataField="user.email"
-                caption="User"
-                minWidth={120}
-                hidingPriority={2}
               ></Column>
               <Column
                 dataField="created_at"
@@ -197,4 +194,4 @@ const MemberQueries = () => {
   );
 };
 
-export default MemberQueries;
+export default MyGuarantorApprovals;

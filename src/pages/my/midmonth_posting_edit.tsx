@@ -153,16 +153,38 @@ const KnowledgebaseArticleEdit = () => {
       );
       setError(true);
     } else {
-      setMonthlyPosting(data.monthlyPosting);
+      //check if mid-month has already been done
+      if (data.monthlyPosting.mid_status == 2) {
+        //check stage
+        if (
+          data.monthlyPosting.status_id == Assist.STATUS_SUBMITTED &&
+          data.monthlyPosting.stage_id == Assist.STAGE_SUBMITTED
+        ) {
+          //unsubmit allowed
+          Assist.showMessage(
+            `You have already submitted your mid-month posting. You can unsubit your monthly posting to make corrections `,
+            "error",
+          );
+        } else {
+          Assist.showMessage(
+            `You have already submitted your mid-month posting. You cannot unsubmit your monthly posting since its under review`,
+            "error",
+          );
+        }
 
-      setPostingId(data.monthlyPosting.id);
+        setError(true);
+      } else {
+        setMonthlyPosting(data.monthlyPosting);
 
-      setPostingSavings(data.monthlyPosting.saving);
+        setPostingId(data.monthlyPosting.id);
 
-      setPostingLoanApplication(data.monthlyPosting.loan_application);
-      setPostingContributions(data.monthlyPosting.contribution_total);
+        setPostingSavings(data.monthlyPosting.saving);
 
-      setPostingLoanRefinance(data.monthlyPosting.loan_refinance);
+        setPostingLoanApplication(data.monthlyPosting.loan_application);
+        setPostingContributions(data.monthlyPosting.contribution_total);
+
+        setPostingLoanRefinance(data.monthlyPosting.loan_refinance);
+      }
     }
   };
 
@@ -250,7 +272,7 @@ const KnowledgebaseArticleEdit = () => {
       type: 1,
       user_id: user.userid,
       mid_status: Assist.POSTING_MIDMONTH,
-      date: `${date} ${Assist.getCurrentTime()}`,
+      mid_date: `${date} ${Assist.getCurrentTime()}`,
       saving_mid: midPostingSavings,
       saving: midPostingSavings! + postingSavings!,
       loan_application_mid: midPostingLoanApplication,
@@ -280,7 +302,7 @@ const KnowledgebaseArticleEdit = () => {
           );
 
           //navigate
-          navigate(`/my/monthly-posting/list`);
+          navigate(`my/mid-month-posting/list`);
         })
         .catch((message) => {
           setSaving(false);
@@ -447,7 +469,9 @@ const KnowledgebaseArticleEdit = () => {
                       <div className="dx-field-label">Current Loan Balance</div>
                       <div className="dx-field-value-static">
                         <strong className="text-danger">
-                          {Assist.formatCurrency(currentLoanAmount! - currentLoanPaidAmount)}
+                          {Assist.formatCurrency(
+                            currentLoanAmount! - currentLoanPaidAmount,
+                          )}
                         </strong>
                       </div>
                     </div>

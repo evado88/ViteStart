@@ -22,10 +22,22 @@ const MonthlyPostings = () => {
     `monthly-posting/user/${user.userid}`,
     "",
     "Monthly Posting",
-    ""
+    "",
   );
 
   useEffect(() => {
+    //put audit action
+    Assist.auditAction(
+      user.userid,
+      user.sub,
+      user.jti,
+      pageConfig.Title,
+      null,
+      "View",
+      null,
+      null,
+    );
+
     setLoading(true);
 
     setTimeout(() => {
@@ -53,7 +65,7 @@ const MonthlyPostings = () => {
       text: "New Monthly Posting",
       onClick: () => navigate("/my/monthly-posting/post"),
     }),
-    []
+    [],
   );
 
   return (

@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 import { Titlebar } from "../../components/titlebar";
 import { Card } from "../../components/card";
 import { Row } from "../../components/row";
@@ -21,6 +21,7 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 
 const MemberQueries = () => {
+  const gridRef = useRef<any>(null);
   //user
   const { user } = useAuth();
   //other
@@ -34,10 +35,22 @@ const MemberQueries = () => {
     `guarantors/user/${user.userid}/list`,
     "",
     "Guarantor",
-    ""
+    "",
   );
 
   useEffect(() => {
+    //put audit action
+    Assist.auditAction(
+      user.userid,
+      user.sub,
+      user.jti,
+      pageConfig.Title,
+      null,
+      "View",
+      null,
+      null,
+    );
+
     setLoading(true);
 
     Assist.loadData(pageConfig.Title, pageConfig.Url)
@@ -63,7 +76,7 @@ const MemberQueries = () => {
       text: "New Guarantor",
       onClick: () => navigate("/my/guarantors/submit"),
     }),
-    []
+    [],
   );
 
   return (
@@ -81,6 +94,7 @@ const MemberQueries = () => {
         <Col sz={12} sm={12} lg={12}>
           <Card showHeader={false}>
             <DataGrid
+              ref={gridRef}
               className={"dx-card wide-card"}
               dataSource={data}
               keyExpr={"id"}
@@ -119,7 +133,12 @@ const MemberQueries = () => {
                   options={{
                     icon: "save",
                     text: " Excel Export",
-                    onClick: () => Assist.downloadExcel(pageConfig.Title, data),
+                    onClick: () =>
+                      Assist.downloadExcel(
+                        pageConfig.Title,
+                        data,
+                        gridRef.current?.instance.getVisibleColumns(),
+                      ),
                   }}
                 />
               </Toolbar>

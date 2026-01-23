@@ -38,7 +38,6 @@ import { MemberMonthlySavingsList } from "../../components/memberMonthlySavingsL
 import { MemberTimeValueList } from "../../components/memberTimeValueList.js";
 import config from "devextreme/core/config.js";
 
-
 const MemberPayoutSummary = () => {
   //user
   const { user } = useAuth();
@@ -57,7 +56,7 @@ const MemberPayoutSummary = () => {
   const [interestData, setInterestData] = useState<null | any>([]);
   const [interestRatesData, setInterestRatesData] = useState<null | any>([]);
   const [savingProportionData, setSavingProportionData] = useState<null | any>(
-    []
+    [],
   );
 
   const [loadingText, setLoadingText] = useState("Loading data...");
@@ -67,10 +66,22 @@ const MemberPayoutSummary = () => {
     `transactions/payout-sharing/all`,
     "",
     "User",
-    ``
+    ``,
   );
 
   useEffect(() => {
+    //put audit action
+    Assist.auditAction(
+      user.userid,
+      user.sub,
+      user.jti,
+      pageConfig.Title,
+      null,
+      "View",
+      null,
+      null,
+    );
+
     setLoading(true);
 
     setTimeout(() => {
@@ -174,7 +185,11 @@ const MemberPayoutSummary = () => {
       {/* chart start */}
       <Row>
         <Col sz={12} sm={12} lg={12}>
-          <MemberTimeValueList data={data} loadingText={loadingText} />
+          <MemberTimeValueList
+            data={data}
+            loadingText={loadingText}
+            title={pageConfig.Title}
+          />
         </Col>
       </Row>
     </div>

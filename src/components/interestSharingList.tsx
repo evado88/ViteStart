@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useRef } from "react";
 import { Link, Route } from "react-router-dom";
 import { Card } from "./card";
 import Assist from "../classes/assist";
@@ -21,18 +21,20 @@ interface InterestSharingArgs {
   data: any;
   loadingText: string;
   showSavings?: boolean;
-  title: string
+  title: string;
 }
-export const InterestSharingList = ({
+export const InterestSharingList: React.FC<InterestSharingArgs> = ({
   data,
   loadingText,
-  title
+  title,
 }: InterestSharingArgs) => {
+  const gridRef = useRef<any>(null);
   return (
     /* start title */
 
     <Card showHeader={false}>
       <DataGrid
+        ref={gridRef}
         className={"dx-card wide-card"}
         dataSource={data}
         keyExpr={"id"}
@@ -63,7 +65,8 @@ export const InterestSharingList = ({
             options={{
               icon: "save",
               text: " Excel Export",
-              onClick: () => Assist.downloadExcel(title, data),
+              onClick: () => Assist.downloadExcel(title, data,
+                  gridRef.current?.instance.getVisibleColumns(),),
             }}
           />
         </Toolbar>

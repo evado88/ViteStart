@@ -72,10 +72,11 @@ const Login = () => {
 
           //navigate
           //check if two factor is active
-          if (config.enable_2FA == 1) {
+
+          if (config.enable_2FA == Assist.RESPONSE_YES) {
             //active
-            setAccessToken(data.access_token);
             const details = Assist.getTokenDetails(data.access_token);
+            setAccessToken(data.access_token);
 
             sendWhatsappOTP(details.mobile);
             setStage(2);

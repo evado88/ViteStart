@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useRef } from "react";
 import { Card } from "./card";
 import DataGrid, {
   Column,
@@ -30,11 +30,14 @@ export const MonthlyTotalList = ({
   showId,
   title,
 }: MonthlyTotalArgs) => {
+  const gridRef = useRef<any>(null);
+
   return (
     /* start title */
 
     <Card showHeader={false}>
       <DataGrid
+        ref={gridRef}
         className={"dx-card wide-card"}
         dataSource={data}
         keyExpr={"m1"}
@@ -65,7 +68,8 @@ export const MonthlyTotalList = ({
             options={{
               icon: "save",
               text: " Excel Export",
-              onClick: () => Assist.downloadExcel(title, data),
+              onClick: () => Assist.downloadExcel(title, data,
+                  gridRef.current?.instance.getVisibleColumns()),
             }}
           />
         </Toolbar>

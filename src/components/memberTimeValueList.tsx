@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useRef } from "react";
 import { Link, Route } from "react-router-dom";
 import { Card } from "./card";
 import Assist from "../classes/assist";
@@ -21,16 +21,20 @@ interface InterestSharingArgs {
   data: any;
   loadingText: string;
   showSavings?: boolean;
+  title: string
 }
-export const MemberTimeValueList = ({
+export const MemberTimeValueList: React.FC<InterestSharingArgs> = ({
   data,
   loadingText,
+  title
 }: InterestSharingArgs) => {
+  const gridRef = useRef<any>(null);
   return (
     /* start title */
 
     <Card showHeader={false}>
       <DataGrid
+        ref={gridRef}
         className={"dx-card wide-card"}
         dataSource={data}
         keyExpr={"id"}
@@ -62,6 +66,22 @@ export const MemberTimeValueList = ({
         <ColumnChooser enabled={true} mode="select"></ColumnChooser>
         <Toolbar>
           <Item name="columnChooserButton" />
+          <Item
+            location="after"
+            locateInMenu="auto"
+            showText="always"
+            widget="dxButton"
+            options={{
+              icon: "save",
+              text: " Excel Export",
+              onClick: () =>
+                Assist.downloadExcel(
+                  title,
+                  data,
+                  gridRef.current?.instance.getVisibleColumns(),
+                ),
+            }}
+          />
         </Toolbar>
         <Column
           dataField="id"

@@ -14,6 +14,17 @@ export function AuthProvider({ children }) {
     const details = Assist.getTokenDetails(token);
 
     setUser(details);
+
+    Assist.auditAction(
+      details.userid,
+      details.sub,
+      details.jti,
+      "Session",
+      null,
+      "Start",
+      null,
+      details,
+    );
   };
 
   // Load user from localStorage on refresh

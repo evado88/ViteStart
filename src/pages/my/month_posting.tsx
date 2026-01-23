@@ -39,7 +39,7 @@ const MyMonthlyPosting = ({ props }: any) => {
     `monthly-posting/id/${eId}`,
     "",
     "Monthly Posting",
-    `monthly-posting/review-update/${eId}`
+    `monthly-posting/review-update/${eId}`,
   );
 
   pageConfig.Id = eId == undefined ? 0 : Number(eId);
@@ -78,7 +78,7 @@ const MyMonthlyPosting = ({ props }: any) => {
     //simulate process
     let result = confirm(
       "Are you sure you want to approve this monthly posting?",
-      "Confirm changes"
+      "Confirm changes",
     );
 
     result.then((dialogResult) => {
@@ -90,7 +90,7 @@ const MyMonthlyPosting = ({ props }: any) => {
           2,
           addGurantorApproval,
           approvalComments,
-          "approved"
+          "approved",
         );
       }
     });
@@ -104,7 +104,7 @@ const MyMonthlyPosting = ({ props }: any) => {
 
     let result = confirm(
       "Are you sure you want to reject this monthly posting?",
-      "Confirm changes"
+      "Confirm changes",
     );
     result.then((dialogResult) => {
       if (dialogResult) {
@@ -137,7 +137,7 @@ const MyMonthlyPosting = ({ props }: any) => {
     action: number,
     requireGuarantor: any,
     reviewComments: string,
-    verb: string
+    verb: string,
   ) => {
     setSaving(true);
 
@@ -155,7 +155,7 @@ const MyMonthlyPosting = ({ props }: any) => {
 
           Assist.showMessage(
             `You have successfully ${verb} the monthly posting!`,
-            "success"
+            "success",
           );
 
           navigate(`/admin/monthly-postings/list`);
@@ -194,8 +194,8 @@ const MyMonthlyPosting = ({ props }: any) => {
 
   const onFormUnsubmit = () => {
     let result = confirm(
-      "Are you sure you want to unsubmit this monthly posting?",
-      "Confirm submission"
+      "Are you sure you want to unsubmit this monthly posting? This will remove your mid-month posting as well",
+      "Confirm submission",
     );
     result.then((dialogResult) => {
       if (dialogResult) {
@@ -210,6 +210,12 @@ const MyMonthlyPosting = ({ props }: any) => {
     const newData = {
       status_id: Assist.STATUS_DRAFT,
       stage_id: Assist.STAGE_AWAITING_SUBMISSION,
+      //clear mid month details
+      mid_status: Assist.POSTING_MONTHLY,
+      mid_date: null,
+      saving_mid: 0,
+      loan_application_mid: 0,
+      comments_mid: null,
     };
     const postData = { ...monthlyPosting, ...newData };
 
@@ -218,14 +224,14 @@ const MyMonthlyPosting = ({ props }: any) => {
         pageConfig.Title,
         `monthly-posting/update/${eId}`,
         postData,
-        1
+        1,
       )
         .then((data) => {
           setSaving(false);
 
           Assist.showMessage(
             "You have successfully unsubmitted the monthly posting!",
-            "success"
+            "success",
           );
 
           navigate(`/my/monthly-posting/list`);

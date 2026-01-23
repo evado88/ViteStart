@@ -90,7 +90,6 @@ const PostMonthly = () => {
     number | null
   >(0);
 
-
   //additiona
   const [postingComments, setPostingComments] = useState("No comments");
 
@@ -229,6 +228,9 @@ const PostMonthly = () => {
   };
   const updateVaues = (data: any) => {
     setPostingMember(data.member);
+
+    setPostingGuarantor(data.member.guarantor_id);
+    setPostingPayMethod(data.member.payment_method_id);
 
     setPostingPayMethodData(data.paymentMethods);
     setPostingGuarantorData(data.guarantors);

@@ -91,6 +91,8 @@ import {
   PasswordPage,
   MidMonthlyPostingEditPage,
   MidMonthlyPostingsPage,
+  GuarantorApprovalsPage,
+  GuarantorApprovePage,
 
 } from "./pages";
 import { BrowserRouter } from "react-router-dom";
@@ -226,9 +228,11 @@ function App() {
           <Route path="/my/shares/list" element={<MemberSharesPage/>} />
           <Route path="/my/loans/list" element={<MemberLoansPage/>} />
           <Route path="/my/guarantors/list" element={<GuarantorsPage/>} />
+          <Route path="/my/guarantors/approvals" element={<GuarantorApprovalsPage/>} />
           <Route path="/my/guarantors/submit" element={<GuarantorSubmitPage/>} />
           <Route path="/my/guarantors/edit/:eId" element={<GuarantorSubmitPage/>} />
           <Route path="/my/guarantors/view/:eId" element={<GuarantorPage/>} />
+          <Route path="/my/guarantors/review/:eId" element={<GuarantorApprovePage/>} />
           <Route path="/my/payment-methods/list" element={<PaymentMethodsPage/>} />
           <Route path="/my/payment-methods/add" element={<PaymentMethodSubmitPage/>} />
           <Route path="/my/payment-methods/edit/:eId" element={<PaymentMethodSubmitPage/>} />
