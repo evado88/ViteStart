@@ -35,9 +35,12 @@ import {
   Scrolling,
 } from "devextreme-react/pivot-grid";
 import PivotGridDataSource from "devextreme/ui/pivot_grid/data_source";
+import { usePeriod } from "../../context/PeriodContext.jsx";
+import SelectBox from "devextreme-react/select-box.js";
 
 const MonthlySummary = () => {
   //user
+  const { periodYear, UpdatePeriodYear, periodYearData } = usePeriod();
   const { user } = useAuth();
   const navigate = useNavigate();
   const [savings, setSavings] = useState(0);
@@ -52,18 +55,25 @@ const MonthlySummary = () => {
   const [loadingText, setLoadingText] = useState("Loading data...");
 
   const pageConfig = new PageConfig(
-    user.role == 2
-      ? `Monthly Group Summary`
-      : `Monthly Member Summary`,
+    user.role == 2 ? `Monthly Group Summary` : `Monthly Member Summary`,
     user.role == 2
       ? `transactions/summary/all`
       : `transactions/member-summary/${user.userid}`,
     "",
     "User",
-    `transactions/transaction-summary/all`,
+    `transactions/transaction-summary/$all`,
   );
 
-  useEffect(() => {
+  const loadData = (year: number) => {
+    const statisticUrl =
+      user.role == 2
+        ? `transactions/summary/${year}`
+        : `transactions/member-summary/${user.userid}/${year}`;
+
+    const url = `transactions/transaction-summary/${year}`;
+
+    setLoading(true);
+
     //put audit action
     Assist.auditAction(
       user.userid,
@@ -71,18 +81,16 @@ const MonthlySummary = () => {
       user.jti,
       pageConfig.Title,
       null,
-      "View",
+      `View - ${year}`,
       null,
       null,
-      null
+      null,
     );
 
-    setLoading(true);
-
     setTimeout(() => {
-      Assist.loadData("Dashboard", pageConfig.Url)
+      Assist.loadData("Dashboard", statisticUrl)
         .then((data: any) => {
-          Assist.loadData("Members", pageConfig.UpdateUrl)
+          Assist.loadData("Members", url)
             .then((memberData: any) => {
               setLoading(false);
               setData(memberData);
@@ -98,6 +106,23 @@ const MonthlySummary = () => {
           Assist.showMessage(message, "error");
         });
     }, Assist.DEV_DELAY);
+  };
+
+  useEffect(() => {
+    //put audit action
+    Assist.auditAction(
+      user.userid,
+      user.sub,
+      user.jti,
+      pageConfig.Title,
+      null,
+      "View",
+      null,
+      null,
+      null,
+    );
+
+    loadData(periodYear);
   }, []);
 
   const updateValues = (data: any) => {
@@ -242,6 +267,32 @@ const MonthlySummary = () => {
 
       {/* chart start */}
       <Row>
+        <Col sz={12} sm={12} lg={12}>
+          <Card title={"Knowledgebase"} showHeader={false}>
+            <Row>
+              <Col sz={12} sm={12} lg={2}>
+                <div className="form">
+                  <div className="dx-fieldset">
+                    <div className="dx-field">
+                      <div className="dx-field-label">Period</div>
+                      <SelectBox
+                        className="dx-field-value"
+                        placeholder="Meeting Attendance"
+                        dataSource={periodYearData}
+                        onValueChange={(value) => {
+                          UpdatePeriodYear(value);
+                          loadData(value);
+                        }}
+                        validationMessagePosition="left"
+                        value={periodYear}
+                      ></SelectBox>
+                    </div>
+                  </div>
+                </div>
+              </Col>
+            </Row>
+          </Card>
+        </Col>
         <Col sz={12} sm={12} lg={12}>
           <Card title={"Members"} showHeader={false}>
             <Card showHeader={false}>

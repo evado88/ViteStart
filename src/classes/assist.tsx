@@ -480,8 +480,6 @@ class Assist {
       created_by: userEmail,
     };
 
-    console.log("Log Audit", postData);
-
     setTimeout(() => {
       Assist.postPutData("Audit", url, postData, 0)
         .then((data) => {

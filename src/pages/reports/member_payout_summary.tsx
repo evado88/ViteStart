@@ -37,9 +37,13 @@ import { MonthlyTotalList } from "../../components/monthlyTotalList.js";
 import { MemberMonthlySavingsList } from "../../components/memberMonthlySavingsList.js";
 import { MemberTimeValueList } from "../../components/memberTimeValueList.js";
 import config from "devextreme/core/config.js";
+import { usePeriod } from "../../context/PeriodContext.jsx";
+import SelectBox from "devextreme-react/select-box.js";
 
 const MemberPayoutSummary = () => {
   //user
+  const { periodYear, UpdatePeriodYear, periodYearData } = usePeriod();
+
   const { user } = useAuth();
   const navigate = useNavigate();
   const [savingsTotal, setSavingsTotal] = useState(0);
@@ -69,7 +73,9 @@ const MemberPayoutSummary = () => {
     ``,
   );
 
-  useEffect(() => {
+  const loadData = (year: number) => {
+    setLoading(true);
+
     //put audit action
     Assist.auditAction(
       user.userid,
@@ -77,16 +83,20 @@ const MemberPayoutSummary = () => {
       user.jti,
       pageConfig.Title,
       null,
-      "View",
+      `View - ${year}`,
       null,
       null,
-      null
+      null,
     );
+
+
+    const url = `transactions/payout-sharing/${year}`;
 
     setLoading(true);
 
+
     setTimeout(() => {
-      Assist.loadData("Members", pageConfig.Url)
+      Assist.loadData("Members", url)
         .then((memberData: any) => {
           setLoading(false);
           setData(memberData.members);
@@ -102,6 +112,23 @@ const MemberPayoutSummary = () => {
           Assist.showMessage(message, "error");
         });
     }, Assist.DEV_DELAY);
+  };
+
+  useEffect(() => {
+    //put audit action
+    Assist.auditAction(
+      user.userid,
+      user.sub,
+      user.jti,
+      pageConfig.Title,
+      null,
+      "View",
+      null,
+      null,
+      null,
+    );
+
+    loadData(periodYear);
   }, []);
 
   const updateValues = (data: any) => {
@@ -185,6 +212,32 @@ const MemberPayoutSummary = () => {
 
       {/* chart start */}
       <Row>
+        <Col sz={12} sm={12} lg={12}>
+          <Card title={"Knowledgebase"} showHeader={false}>
+            <Row>
+              <Col sz={12} sm={12} lg={2}>
+                <div className="form">
+                  <div className="dx-fieldset">
+                    <div className="dx-field">
+                      <div className="dx-field-label">Period</div>
+                      <SelectBox
+                        className="dx-field-value"
+                        placeholder="Meeting Attendance"
+                        dataSource={periodYearData}
+                        onValueChange={(value) => {
+                          UpdatePeriodYear(value);
+                          loadData(value);
+                        }}
+                        validationMessagePosition="left"
+                        value={periodYear}
+                      ></SelectBox>
+                    </div>
+                  </div>
+                </div>
+              </Col>
+            </Row>
+          </Card>
+        </Col>
         <Col sz={12} sm={12} lg={12}>
           <MemberTimeValueList
             data={data}

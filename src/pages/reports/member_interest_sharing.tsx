@@ -35,6 +35,8 @@ import Tabs from "devextreme-react/tabs";
 import { InterestSharingList } from "../../components/interestSharingList.js";
 import { MonthlyTotalList } from "../../components/monthlyTotalList.js";
 import { MemberMonthlySavingsList } from "../../components/memberMonthlySavingsList.js";
+import { usePeriod } from "../../context/PeriodContext.jsx";
+import SelectBox from "devextreme-react/select-box.js";
 
 const employees = [
   {
@@ -69,6 +71,8 @@ const employees = [
 
 const MemberInterestSharing = () => {
   //user
+  const { periodYear, UpdatePeriodYear, periodYearData } = usePeriod();
+
   const { user } = useAuth();
   const navigate = useNavigate();
   const [savings, setSavings] = useState(0);
@@ -121,26 +125,34 @@ const MemberInterestSharing = () => {
     `transactions/interest-sharing/all`,
   );
 
-  useEffect(() => {
+  const loadData = (year: number) => {
+    setLoading(true);
+
     //put audit action
     Assist.auditAction(
       user.userid,
       user.sub,
       user.jti,
-      selectedItem.text,
+      pageConfig.Title,
       null,
-      "View",
+      `View - ${year}`,
       null,
       null,
       null,
     );
 
+    const statisticUrl = `transactions/summary/${year}`;
+
+    const url = `transactions/interest-sharing/${year}`;
+
+    setLoading(true);
+
     setLoading(true);
 
     setTimeout(() => {
-      Assist.loadData("Dashboard", pageConfig.Url)
+      Assist.loadData("Dashboard", statisticUrl)
         .then((data: any) => {
-          Assist.loadData("Members", pageConfig.UpdateUrl)
+          Assist.loadData("Members", url)
             .then((memberData: any) => {
               setLoading(false);
               setData(memberData.members);
@@ -164,6 +176,24 @@ const MemberInterestSharing = () => {
           Assist.showMessage(message, "error");
         });
     }, Assist.DEV_DELAY);
+  };
+
+  useEffect(() => {
+    //put audit action
+    Assist.auditAction(
+      user.userid,
+      user.sub,
+      user.jti,
+      selectedItem.text,
+      null,
+      "View",
+      null,
+      null,
+      null,
+    );
+
+    loadData(periodYear);
+
   }, []);
 
   const updateValues = (data: any) => {
@@ -276,6 +306,32 @@ const MemberInterestSharing = () => {
 
       {/* chart start */}
       <Row>
+        <Col sz={12} sm={12} lg={12}>
+          <Card title={"Knowledgebase"} showHeader={false}>
+            <Row>
+              <Col sz={12} sm={12} lg={2}>
+                <div className="form">
+                  <div className="dx-fieldset">
+                    <div className="dx-field">
+                      <div className="dx-field-label">Period</div>
+                      <SelectBox
+                        className="dx-field-value"
+                        placeholder="Meeting Attendance"
+                        dataSource={periodYearData}
+                        onValueChange={(value) => {
+                          UpdatePeriodYear(value);
+                          loadData(value);
+                        }}
+                        validationMessagePosition="left"
+                        value={periodYear}
+                      ></SelectBox>
+                    </div>
+                  </div>
+                </div>
+              </Col>
+            </Row>
+          </Card>
+        </Col>
         <Col sz={12} sm={12} lg={12}>
           <Tabs
             dataSource={employees}

@@ -1,4 +1,10 @@
-import React, { useState, useEffect, useMemo, useRef } from "react";
+import React, {
+  useState,
+  useEffect,
+  useMemo,
+  useRef,
+  useCallback,
+} from "react";
 import { Ticker } from "../components/ticker.jsx";
 import { Titlebar } from "../components/titlebar.js";
 import { Card } from "../components/card.js";
@@ -30,9 +36,17 @@ import DataGrid, {
   Item,
 } from "devextreme-react/data-grid";
 import { useNavigate } from "react-router-dom";
+import { usePeriod } from "../context/PeriodContext.jsx";
+import SelectBox, { SelectBoxTypes } from "devextreme-react/select-box";
 
 const MyDashboard = () => {
   //user
+  const {
+    periodYear,
+    UpdatePeriodYear,
+    periodYearData,
+  } = usePeriod();
+
   const { user } = useAuth();
   const navigate = useNavigate();
   const [savings, setSavings] = useState(0);
@@ -51,16 +65,42 @@ const MyDashboard = () => {
   const [loadingArticles, setLoadingArticles] = useState(false);
   const [loadingText, setLoadingText] = useState("Loading data...");
   const hasRun = useRef(false);
-  
-  const pageConfig = new PageConfig(
-    `Dashboard`,
-    user.role == 2
-      ? `transactions/summary/all`
-      : `transactions/member-summary/${user.userid}`,
-    "",
-    "User",
-    `transactions/year-to-date/all`,
-  );
+
+  const pageConfig = new PageConfig(`Dashboard`, "", "", "User", ``);
+
+  const loadData = (year: number) => {
+    setLoading(true);
+
+    //put audit action
+    Assist.auditAction(
+      user.userid,
+      user.sub,
+      user.jti,
+      pageConfig.Title,
+      null,
+      `View - ${year}`,
+      null,
+      null,
+      null,
+    );
+
+    const url =
+      user.role == 2
+        ? `transactions/summary/${year}`
+        : `transactions/member-summary/${user.userid}/${year}`;
+
+    setTimeout(() => {
+      Assist.loadData("Dashboard", url)
+        .then((data: any) => {
+          updateValues(data);
+          setLoading(false);
+        })
+        .catch((message) => {
+          setLoading(false);
+          Assist.showMessage(message, "error");
+        });
+    }, Assist.DEV_DELAY);
+  };
 
   useEffect(() => {
     if (hasRun.current) return;
@@ -72,25 +112,13 @@ const MyDashboard = () => {
       user.jti,
       pageConfig.Title,
       null,
-      "View",
+      `View - ${periodYear}`,
       null,
       null,
-      null
+      null,
     );
 
-    setLoading(true);
-
-    setTimeout(() => {
-      Assist.loadData("Dashboard", pageConfig.Url)
-        .then((data: any) => {
-          updateValues(data);
-          setLoading(false);
-        })
-        .catch((message) => {
-          setLoading(false);
-          Assist.showMessage(message, "error");
-        });
-    }, Assist.DEV_DELAY);
+    loadData(periodYear);
 
     setLoadingAnnouncements(true);
     setTimeout(() => {
@@ -157,14 +185,6 @@ const MyDashboard = () => {
     setPenalty(penaltyItem.amount);
   };
 
-  const addButtonOptions = useMemo(
-    () => ({
-      icon: "add",
-      text: "New Monthly Posting",
-      onClick: () => navigate("/my/monthly-posting/post"),
-    }),
-    [],
-  );
 
   return (
     <div className="page-content" style={{ minHeight: "862px" }}>
@@ -238,109 +258,129 @@ const MyDashboard = () => {
 
       {/* chart start */}
       <Row>
+        <Col sz={12} sm={12} lg={12}>
+          <Card title={"Knowledgebase"} showHeader={false}>
+            <Row>
+              <Col sz={12} sm={12} lg={2}>
+                <div className="form">
+                  <div className="dx-fieldset">
+                    <div className="dx-field">
+                      <div className="dx-field-label">Period</div>
+                      <SelectBox
+                        className="dx-field-value"
+                        placeholder="Meeting Attendance"
+                        dataSource={periodYearData}
+                        onValueChange={(value) => {
+                          UpdatePeriodYear(value);
+                          loadData(value);
+                        }}
+                        validationMessagePosition="left"
+                        value={periodYear}
+                      ></SelectBox>
+                    </div>
+                  </div>
+                </div>
+              </Col>
+            </Row>
+          </Card>
+        </Col>
         <Col sz={12} sm={12} lg={6}>
           <Card title={"Announcements"} showHeader={true}>
-            <Card showHeader={false}>
-              <DataGrid
-                className={"dx-card wide-card"}
-                dataSource={announcementsData}
-                showColumnHeaders={false}
-                keyExpr={"id"}
-                noDataText={"No accouncements added yet"}
-                showBorders={false}
-                focusedRowEnabled={false}
-                defaultFocusedRowIndex={0}
-                columnAutoWidth={true}
-                columnHidingEnabled={true}
-              >
-                <Paging defaultPageSize={10} />
-                <Editing
-                  mode="row"
-                  allowUpdating={false}
-                  allowDeleting={false}
-                  allowAdding={false}
-                />
-                <Pager showPageSizeSelector={true} showInfo={true} />
-                <Column
-                  dataField="id"
-                  caption="ID"
-                  hidingPriority={3}
-                  visible={false}
-                ></Column>
-                <Column
-                  dataField="title"
-                  caption="Title"
-                  hidingPriority={2}
-                  cellRender={(e) => {
-                    return (
-                      <a href={`/announcements/view/id/${e.data.id}`}>
-                        {e.text}
-                      </a>
-                    );
-                  }}
-                ></Column>
-                <Column
-                  dataField="created_at"
-                  caption="Date"
-                  dataType="date"
-                  format={"dd MMMM yyy HH:mm"}
-                  hidingPriority={1}
-                ></Column>
-              </DataGrid>
-            </Card>
+            <DataGrid
+              className={"dx-card wide-card"}
+              dataSource={announcementsData}
+              showColumnHeaders={false}
+              keyExpr={"id"}
+              noDataText={"No accouncements added yet"}
+              showBorders={false}
+              focusedRowEnabled={false}
+              defaultFocusedRowIndex={0}
+              columnAutoWidth={true}
+              columnHidingEnabled={true}
+            >
+              <Paging defaultPageSize={10} />
+              <Editing
+                mode="row"
+                allowUpdating={false}
+                allowDeleting={false}
+                allowAdding={false}
+              />
+              <Pager showPageSizeSelector={true} showInfo={true} />
+              <Column
+                dataField="id"
+                caption="ID"
+                hidingPriority={3}
+                visible={false}
+              ></Column>
+              <Column
+                dataField="title"
+                caption="Title"
+                hidingPriority={2}
+                cellRender={(e) => {
+                  return (
+                    <a href={`/announcements/view/id/${e.data.id}`}>{e.text}</a>
+                  );
+                }}
+              ></Column>
+              <Column
+                dataField="created_at"
+                caption="Date"
+                dataType="date"
+                format={"dd MMMM yyy HH:mm"}
+                hidingPriority={1}
+              ></Column>
+            </DataGrid>
           </Card>
         </Col>
         <Col sz={12} sm={12} lg={6}>
           <Card title={"Knowledgebase"} showHeader={true}>
-            <Card showHeader={false}>
-              <DataGrid
-                className={"dx-card wide-card"}
-                dataSource={articlesData}
-                keyExpr={"id"}
-                showColumnHeaders={false}
-                noDataText={`No How To's added yet`}
-                showBorders={false}
-                focusedRowEnabled={false}
-                defaultFocusedRowIndex={0}
-                columnAutoWidth={true}
-                columnHidingEnabled={true}
-              >
-                <Paging defaultPageSize={10} />
-                <Editing
-                  mode="row"
-                  allowUpdating={false}
-                  allowDeleting={false}
-                  allowAdding={false}
-                />
-                <Pager showPageSizeSelector={true} showInfo={true} />
+            <DataGrid
+              className={"dx-card wide-card"}
+              dataSource={articlesData}
+              keyExpr={"id"}
+              showColumnHeaders={false}
+              noDataText={`No How To's added yet`}
+              showBorders={false}
+              focusedRowEnabled={false}
+              defaultFocusedRowIndex={0}
+              columnAutoWidth={true}
+              columnHidingEnabled={true}
+            >
+              <Paging defaultPageSize={10} />
+              <Editing
+                mode="row"
+                allowUpdating={false}
+                allowDeleting={false}
+                allowAdding={false}
+              />
+              <Pager showPageSizeSelector={true} showInfo={true} />
 
-                <Column
-                  dataField="id"
-                  caption="ID"
-                  hidingPriority={3}
-                  visible={false}
-                ></Column>
-                <Column
-                  dataField="title"
-                  caption="Title"
-                  hidingPriority={2}
-                  cellRender={(e) => {
-                    return (
-                      <a href={`/knowledge-base/article/view/id/${e.data.id}`}>
-                        {e.text}
-                      </a>
-                    );
-                  }}
-                ></Column>
-                <Column
-                  dataField="created_at"
-                  caption="Date"
-                  dataType="date"
-                  format={"dd MMMM yyy HH:mm"}
-                  hidingPriority={1}
-                ></Column>
-              </DataGrid>
-            </Card>
+              <Column
+                dataField="id"
+                caption="ID"
+                hidingPriority={3}
+                visible={false}
+              ></Column>
+              <Column
+                dataField="title"
+                caption="Title"
+                hidingPriority={2}
+                cellRender={(e) => {
+                  return (
+                    <a href={`/knowledge-base/article/view/id/${e.data.id}`}>
+                      {e.text}
+                    </a>
+                  );
+                }}
+              ></Column>
+              <Column
+                dataField="created_at"
+                caption="Date"
+                dataType="date"
+                format={"dd MMMM yyy HH:mm"}
+                hidingPriority={1}
+              ></Column>
+            </DataGrid>
           </Card>
         </Col>
       </Row>

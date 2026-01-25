@@ -39,10 +39,10 @@ const Unauthorized = () => {
       <Row>
         <Col sz={12} sm={12} lg={12}>
 
-            <section class="sign-in">
-              <div class="container">
-                <div class="signin-content pb-5">
-                  <div class="signin-image">
+            <section className="sign-in">
+              <div className="container">
+                <div className="signin-content pb-5">
+                  <div className="signin-image">
                     <figure>
                       <img
                         src="/images/401.jpg"
@@ -50,15 +50,15 @@ const Unauthorized = () => {
                       ></img>
                     </figure>
                   </div>
-                  <div class="signin-form">
-                    <h2 class="form-title">Error 401</h2>
+                  <div className="signin-form">
+                    <h2 className="form-title">Error 401</h2>
                     <p>
                       You do not have sufficient permission to view this resource or perform this action.
                     </p>
                     <br></br>
-                      <div class="form-group form-button">
+                      <div className="form-group form-button">
                         <button
-                          class="btn btn-round btn-primary"
+                          className="btn btn-round btn-primary"
                           name="home"
                           id="home"
                           onClick={() => navigate('/')}

@@ -18,7 +18,7 @@ export function PeriodProvider({ children }) {
   const [periodYearData, setPeriodYearData] = useState(() => {
     const years = [];
 
-    for (let i = 2025; i <= 2026; i++) {
+    for (let i = 2025; i <= 2030; i++) {
       years.push(i);
     }
 
