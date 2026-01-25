@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect, useMemo, useRef } from "react";
 import { Ticker } from "../components/ticker.jsx";
 import { Titlebar } from "../components/titlebar.js";
 import { Card } from "../components/card.js";
@@ -50,7 +50,8 @@ const MyDashboard = () => {
   const [articlesData, setArticleData] = useState([]);
   const [loadingArticles, setLoadingArticles] = useState(false);
   const [loadingText, setLoadingText] = useState("Loading data...");
-
+  const hasRun = useRef(false);
+  
   const pageConfig = new PageConfig(
     `Dashboard`,
     user.role == 2
@@ -62,6 +63,8 @@ const MyDashboard = () => {
   );
 
   useEffect(() => {
+    if (hasRun.current) return;
+    hasRun.current = true;
     //put audit action
     Assist.auditAction(
       user.userid,
@@ -72,6 +75,7 @@ const MyDashboard = () => {
       "View",
       null,
       null,
+      null
     );
 
     setLoading(true);

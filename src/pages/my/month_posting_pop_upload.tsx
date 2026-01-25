@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Titlebar } from "../../components/titlebar";
 import { Card } from "../../components/card";
 import { Row } from "../../components/row";
@@ -46,18 +46,29 @@ const MyMonthlyPosting = ({ props }: any) => {
   const [approvalComments, setApprovalComments] = useState("");
 
   const [monthlyPosting, setMonthlyPosting] = useState<any | null>(null);
+  const hasRun = useRef(false);
 
   const pageConfig = new PageConfig(
     "Upload Proof of Payment (POP)",
     `monthly-posting/id/${eId}`,
     "",
     "Monthly Posting",
-    `monthly-posting/review-update/${eId}`
+    `monthly-posting/review-update/${eId}`,
   );
 
   pageConfig.Id = eId == undefined ? 0 : Number(eId);
 
   useEffect(() => {
+    //check if initialized
+    if (hasRun.current) return;
+    hasRun.current = true;
+ 
+    //check permissions and audit
+    if (!Assist.checkPageAuditPermission(pageConfig, user)) {
+      Assist.redirectUnauthorized(navigate);
+      return;
+    }
+
     setLoading(true);
 
     setTimeout(() => {
@@ -103,7 +114,7 @@ const MyMonthlyPosting = ({ props }: any) => {
       //simulate process
       let result = confirm(
         "Are you sure you want to submit the POP without attaching a file?",
-        "Confirm changes"
+        "Confirm changes",
       );
 
       result.then((dialogResult) => {
@@ -115,7 +126,7 @@ const MyMonthlyPosting = ({ props }: any) => {
       //simulate process
       let result = confirm(
         "Are you sure you want to submit the POP for this monthly posting?",
-        "Confirm changes"
+        "Confirm changes",
       );
 
       result.then((dialogResult) => {
@@ -124,7 +135,6 @@ const MyMonthlyPosting = ({ props }: any) => {
         }
       });
     }
-
   };
 
   const submitPostingReview = (action: number, reviewComments: string) => {
@@ -144,7 +154,7 @@ const MyMonthlyPosting = ({ props }: any) => {
 
           Assist.showMessage(
             `You have successfully submitted the Proof of Payment!`,
-            "success"
+            "success",
           );
 
           navigate(`/admin/monthly-postings/list`);
@@ -208,7 +218,7 @@ const MyMonthlyPosting = ({ props }: any) => {
                               if (res === null) {
                                 Assist.showMessage(
                                   `The response from the server is invalid. Please try again`,
-                                  "error"
+                                  "error",
                                 );
                               } else {
                                 setUploadedFiles([res.attachment]);
@@ -217,7 +227,7 @@ const MyMonthlyPosting = ({ props }: any) => {
                             } else {
                               Assist.showMessage(
                                 `Unable to upload POP. Please try again`,
-                                "error"
+                                "error",
                               );
                             }
                           }}
@@ -251,7 +261,7 @@ const MyMonthlyPosting = ({ props }: any) => {
                               return (
                                 <a
                                   href={encodeURI(
-                                    `${AppInfo.apiUrl}static/${e.data.path}`
+                                    `${AppInfo.apiUrl}static/${e.data.path}`,
                                   )}
                                   target="_null"
                                 >

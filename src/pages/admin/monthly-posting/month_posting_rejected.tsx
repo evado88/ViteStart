@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { Titlebar } from "../../../components/titlebar";
 import { Row } from "../../../components/row";
 import { Col } from "../../../components/column";
@@ -14,13 +14,15 @@ const AdminMonthlyRejectedPostings = () => {
   const [loadingText, setLoadingText] = useState("Loading data...");
   const [loading, setLoading] = useState(true);
   const [status, setStatus] = useState(() => Assist.STATUS_REJECTED);
+  const hasRun = useRef(false);
 
   const pageConfig = new PageConfig(
     "Rejected Monthly Postings",
     ``,
     "",
     "Monthly Posting",
-    ""
+    "",
+    [Assist.ROLE_ADMIN],
   );
 
   const loadData = (url: string) => {
@@ -84,6 +86,7 @@ const AdminMonthlyRejectedPostings = () => {
             loadingText={loadingText}
             filterComponent={periodFilterComponent()}
             isMember={false}
+            title="Monthly Postings"
           />
         </Col>
       </Row>

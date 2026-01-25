@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Titlebar } from "../../../components/titlebar";
 import { Card } from "../../../components/card";
 import { Row } from "../../../components/row";
@@ -24,7 +24,7 @@ const AdminAnnouncement = () => {
 
   //posting
   const [announcementDetail, setAnnouncementDetail] = useState<null | any>(
-    null
+    null,
   );
 
   //service
@@ -39,18 +39,30 @@ const AdminAnnouncement = () => {
 
   const [rejectionReason, setRejectionReason] = useState("");
   const [approvalComments, setApprovalComments] = useState("");
+  const hasRun = useRef(false);
+
   const pageConfig = new PageConfig(
     `${status == "Approved" ? "View" : "Review"} Announcement `,
     "",
     "",
     "Announcement ",
     `announcements/review-update/${eId}`,
-    [2]
+    [Assist.ROLE_ADMIN],
   );
 
   pageConfig.Id = eId == undefined ? 0 : Number(eId);
 
   useEffect(() => {
+    //check if initialized
+    if (hasRun.current) return;
+    hasRun.current = true;
+
+    //check permissions and audit
+    if (!Assist.checkPageAuditPermission(pageConfig, user)) {
+      Assist.redirectUnauthorized(navigate);
+      return;
+    }
+
     //only load if viewing the item
     if (pageConfig.Id != 0) {
       setLoading(true);
@@ -107,7 +119,7 @@ const AdminAnnouncement = () => {
     //simulate process
     let result = confirm(
       `Are you sure you want to approve this ${pageConfig.Single}?`,
-      "Confirm changes"
+      "Confirm changes",
     );
 
     result.then((dialogResult) => {
@@ -115,7 +127,7 @@ const AdminAnnouncement = () => {
         submitPostingReview(
           Assist.REVIEW_ACTION_APPROVE,
           approvalComments,
-          "approved"
+          "approved",
         );
       }
     });
@@ -129,14 +141,14 @@ const AdminAnnouncement = () => {
 
     let result = confirm(
       `Are you sure you want to reject this ${pageConfig.Single}?`,
-      "Confirm changes"
+      "Confirm changes",
     );
     result.then((dialogResult) => {
       if (dialogResult) {
         submitPostingReview(
           Assist.REVIEW_ACTION_REJECT,
           rejectionReason,
-          "rejected"
+          "rejected",
         );
       }
     });
@@ -145,7 +157,7 @@ const AdminAnnouncement = () => {
   const submitPostingReview = (
     action: number,
     reviewComments: string,
-    verb: string
+    verb: string,
   ) => {
     setSaving(true);
 
@@ -162,7 +174,7 @@ const AdminAnnouncement = () => {
 
           Assist.showMessage(
             `You have successfully ${verb} the ${pageConfig.Single}!`,
-            "success"
+            "success",
           );
 
           navigate(`/admin/announcements/list`);
@@ -206,7 +218,7 @@ const AdminAnnouncement = () => {
   const onFormUnsubmit = () => {
     let result = confirm(
       `Are you sure you want to unsubmit this ${pageConfig.Single}?`,
-      "Confirm submission"
+      "Confirm submission",
     );
     result.then((dialogResult) => {
       if (dialogResult) {
@@ -231,14 +243,14 @@ const AdminAnnouncement = () => {
         pageConfig.Title,
         `announcements/update/${eId}`,
         postData,
-        1
+        1,
       )
         .then((data) => {
           setSaving(false);
 
           Assist.showMessage(
             `You have successfully unsubmitted the ${pageConfig.Single}!`,
-            "success"
+            "success",
           );
 
           navigate(`/admin/announcements/list`);

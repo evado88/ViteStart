@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, useCallback } from "react";
+import { useState, useEffect, useMemo, useCallback, useRef } from "react";
 import { Titlebar } from "../../../components/titlebar";
 import { Card } from "../../../components/card";
 import { Row } from "../../../components/row";
@@ -28,8 +28,10 @@ const AdminPostingPeriods = () => {
   const { period, periodData, updateSelectedPeriod } = usePeriod();
   const [loadingText, setLoadingText] = useState("Loading data...");
   const [loading, setLoading] = useState(true);
+  const hasRun = useRef(false);
 
-  const pageConfig = new PageConfig("Rejected Posting Periods", "", "", "", "");
+  const pageConfig = new PageConfig("Rejected Posting Periods", "", "", "", "",
+    [Assist.ROLE_ADMIN],);
 
   const loadData = (url: string) => {
     setLoading(true);
@@ -90,7 +92,6 @@ const AdminPostingPeriods = () => {
           <PostingPeriodingsList
             data={data}
             loadingText={loadingText}
-            filterComponent={periodFilterComponent()}
             isMember={false}
           />
         </Col>

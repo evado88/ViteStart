@@ -72,6 +72,7 @@ const MonthlySummary = () => {
       "View",
       null,
       null,
+      null
     );
 
     setLoading(true);

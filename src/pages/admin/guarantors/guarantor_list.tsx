@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Titlebar } from "../../../components/titlebar";
 import { Card } from "../../../components/card";
 import { Row } from "../../../components/row";
@@ -20,13 +20,15 @@ const AdminMemberQueries = () => {
   const [data, setData] = useState([]);
   const [loadingText, setLoadingText] = useState("Loading data...");
   const [loading, setLoading] = useState(true);
+  const hasRun = useRef(false);
 
   const pageConfig = new PageConfig(
     "Guarantors",
     "guarantors/list",
     "",
     "Duarantor",
-    ""
+    "",
+    [Assist.ROLE_ADMIN],
   );
 
   useEffect(() => {

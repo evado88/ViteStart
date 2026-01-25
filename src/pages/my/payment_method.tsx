@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Titlebar } from "../../components/titlebar";
 import { Card } from "../../components/card";
 import { Row } from "../../components/row";
@@ -40,18 +40,27 @@ const MyMemberQuery = () => {
   const [status, setStatus] = useState(null);
   const [createdBy, setCreatedBy] = useState("");
   const [approvalLevels, setApprovalLevels] = useState(1);
+  const hasRun = useRef(false);
 
   const pageConfig = new PageConfig(
     `Payment Method`,
     "",
     "",
     "Payment Method",
-    `paymentmethods/review-update/${eId}`
+    `paymentmethods/review-update/${eId}`,
+    [Assist.ROLE_MEMBER],
   );
 
   pageConfig.Id = eId == undefined ? 0 : Number(eId);
 
   useEffect(() => {
+
+    //check permissions and audit
+    if (!Assist.checkPageAuditPermission(pageConfig, user)) {
+      Assist.redirectUnauthorized(navigate);
+      return;
+    }
+
     //only load if viewing the item
     if (pageConfig.Id != 0) {
       setLoading(true);
@@ -87,7 +96,11 @@ const MyMemberQuery = () => {
   };
 
   const unsubmitButton = () => {
-    if (stage == "Submitted" && status == "Submitted" && createdBy == user.sub) {
+    if (
+      stage == "Submitted" &&
+      status == "Submitted" &&
+      createdBy == user.sub
+    ) {
       return (
         <div className="dx-field">
           <div className="dx-field-label"></div>
@@ -112,7 +125,7 @@ const MyMemberQuery = () => {
   const onFormUnsubmit = () => {
     let result = confirm(
       `Are you sure you want to unsubmit this ${pageConfig.Single}?`,
-      "Confirm submission"
+      "Confirm submission",
     );
     result.then((dialogResult) => {
       if (dialogResult) {
@@ -134,14 +147,14 @@ const MyMemberQuery = () => {
         pageConfig.Title,
         `paymentmethods/update/${eId}`,
         postData,
-        1
+        1,
       )
         .then((data) => {
           setSaving(false);
 
           Assist.showMessage(
             `You have successfully unsubmitted the ${pageConfig.Single}!`,
-            "success"
+            "success",
           );
 
           navigate(`/my/payment-methods/list`);

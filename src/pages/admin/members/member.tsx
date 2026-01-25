@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Titlebar } from "../../../components/titlebar";
 import { Card } from "../../../components/card";
 import { Row } from "../../../components/row";
@@ -42,12 +42,15 @@ const AdminMember = () => {
 
   const [rejectionReason, setRejectionReason] = useState("");
   const [approvalComments, setApprovalComments] = useState("");
+  const hasRun = useRef(false);
+
   const pageConfig = new PageConfig(
     `${status == "Approved" ? "View" : "Review"} Member`,
     "",
     "",
     "Member",
-    `members/review-update/${eId}`
+    `members/review-update/${eId}`,
+    [Assist.ROLE_ADMIN],
   );
 
   pageConfig.Id = eId == undefined ? 0 : Number(eId);
@@ -109,7 +112,7 @@ const AdminMember = () => {
     //simulate process
     let result = confirm(
       `Are you sure you want to approve this ${pageConfig.Single}?`,
-      "Confirm changes"
+      "Confirm changes",
     );
 
     result.then((dialogResult) => {
@@ -117,7 +120,7 @@ const AdminMember = () => {
         submitPostingReview(
           Assist.REVIEW_ACTION_APPROVE,
           approvalComments,
-          "approved"
+          "approved",
         );
       }
     });
@@ -131,14 +134,14 @@ const AdminMember = () => {
 
     let result = confirm(
       `Are you sure you want to reject this ${pageConfig.Single}?`,
-      "Confirm changes"
+      "Confirm changes",
     );
     result.then((dialogResult) => {
       if (dialogResult) {
         submitPostingReview(
           Assist.REVIEW_ACTION_REJECT,
           rejectionReason,
-          "rejected"
+          "rejected",
         );
       }
     });
@@ -153,10 +156,10 @@ const AdminMember = () => {
 
       setTimeout(() => {
         Assist.postPutData(
-          'WhatsApp Approved Notification',
+          "WhatsApp Approved Notification",
           "whatsapp/send-infobip-account-approved-message",
           postData,
-          0
+          0,
         )
           .then((data) => {
             console.log("Account approved notification sent", data);
@@ -171,7 +174,7 @@ const AdminMember = () => {
   const submitPostingReview = (
     action: number,
     reviewComments: string,
-    verb: string
+    verb: string,
   ) => {
     setSaving(true);
 
@@ -189,7 +192,7 @@ const AdminMember = () => {
 
           Assist.showMessage(
             `You have successfully ${verb} the ${pageConfig.Single}!`,
-            "success"
+            "success",
           );
 
           navigate(`/admin/members/list`);

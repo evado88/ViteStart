@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 import { Titlebar } from "../../../components/titlebar";
 import { Card } from "../../../components/card";
 import { Row } from "../../../components/row";
@@ -18,22 +18,36 @@ import DataGrid, {
 import Assist from "../../../classes/assist";
 import PageConfig from "../../../classes/page-config";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../../../context/AuthContext";
 
 const AdminExpenseEarningGroups = () => {
+  const { user } = useAuth();
   const navigate = useNavigate();
   const [data, setData] = useState([]);
   const [loadingText, setLoadingText] = useState("Loading data...");
   const [loading, setLoading] = useState(true);
+  const hasRun = useRef(false);
 
   const pageConfig = new PageConfig(
     "Expense & Earning Groups",
     "transaction-groups/list",
     "",
     "Expense & Earning Group",
-    ""
+    "",
+    [Assist.ROLE_ADMIN],
   );
 
   useEffect(() => {
+    //check if initialized
+    if (hasRun.current) return;
+    hasRun.current = true;
+
+    //check permissions and audit
+    if (!Assist.checkPageAuditPermission(pageConfig, user)) {
+      Assist.redirectUnauthorized(navigate);
+      return;
+    }
+
     setLoading(true);
 
     Assist.loadData(pageConfig.Title, pageConfig.Url)
@@ -57,9 +71,9 @@ const AdminExpenseEarningGroups = () => {
     () => ({
       icon: "add",
       text: "Refresh",
-      onClick: () => navigate('/admin/expense-earning/group/add'),
+      onClick: () => navigate("/admin/expense-earning/group/add"),
     }),
-    []
+    [],
   );
 
   return (
@@ -116,9 +130,7 @@ const AdminExpenseEarningGroups = () => {
                 sortOrder="asc"
                 cellRender={(e) => {
                   return (
-                    <a
-                      href={`/admin/expense-earning/group/edit/${e.data.id}`}
-                    >
+                    <a href={`/admin/expense-earning/group/edit/${e.data.id}`}>
                       {e.text}
                     </a>
                   );

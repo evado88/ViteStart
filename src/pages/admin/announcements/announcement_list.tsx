@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 import { Titlebar } from "../../../components/titlebar";
 import { Card } from "../../../components/card";
 import { Row } from "../../../components/row";
@@ -18,12 +18,15 @@ import DataGrid, {
 import Assist from "../../../classes/assist";
 import PageConfig from "../../../classes/page-config";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../../../context/AuthContext";
 
 const AdminAnnouncements = () => {
+  const { user } = useAuth();
   const navigate = useNavigate();
   const [data, setData] = useState([]);
   const [loadingText, setLoadingText] = useState("Loading data...");
   const [loading, setLoading] = useState(true);
+  const hasRun = useRef(false);
 
   const pageConfig = new PageConfig(
     "Annoucements",
@@ -31,10 +34,20 @@ const AdminAnnouncements = () => {
     "",
     "Annoucements",
     "",
-    [2]
+    [Assist.ROLE_ADMIN],
   );
 
   useEffect(() => {
+    //check if initialized
+    if (hasRun.current) return;
+    hasRun.current = true;
+
+    //check permissions and audit
+    if (!Assist.checkPageAuditPermission(pageConfig, user)) {
+      Assist.redirectUnauthorized(navigate);
+      return;
+    }
+
     setLoading(true);
 
     Assist.loadData(pageConfig.Title, pageConfig.Url)
@@ -60,7 +73,7 @@ const AdminAnnouncements = () => {
       text: "New Annoucement",
       onClick: () => navigate("/admin/announcements/add"),
     }),
-    []
+    [],
   );
 
   return (

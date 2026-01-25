@@ -80,6 +80,7 @@ const MemberPayoutSummary = () => {
       "View",
       null,
       null,
+      null
     );
 
     setLoading(true);

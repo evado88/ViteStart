@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Titlebar } from "../../../components/titlebar";
 import { Card } from "../../../components/card";
 import { Row } from "../../../components/row";
@@ -37,12 +37,15 @@ const AdminUser = () => {
 
   const [rejectionReason, setRejectionReason] = useState("");
   const [approvalComments, setApprovalComments] = useState("");
+  const hasRun = useRef(false);
+
   const pageConfig = new PageConfig(
     `${status == "Approved" ? "View" : "Review"} User `,
     "",
     "",
     "User ",
-    `users/review-update/${eId}`
+    `users/review-update/${eId}`,
+    [Assist.ROLE_ADMIN],
   );
 
   pageConfig.Id = eId == undefined ? 0 : Number(eId);
@@ -104,7 +107,7 @@ const AdminUser = () => {
     //simulate process
     let result = confirm(
       `Are you sure you want to approve this ${pageConfig.Single}?`,
-      "Confirm changes"
+      "Confirm changes",
     );
 
     result.then((dialogResult) => {
@@ -112,7 +115,7 @@ const AdminUser = () => {
         submitPostingReview(
           Assist.REVIEW_ACTION_APPROVE,
           approvalComments,
-          "approved"
+          "approved",
         );
       }
     });
@@ -126,14 +129,14 @@ const AdminUser = () => {
 
     let result = confirm(
       `Are you sure you want to reject this ${pageConfig.Single}?`,
-      "Confirm changes"
+      "Confirm changes",
     );
     result.then((dialogResult) => {
       if (dialogResult) {
         submitPostingReview(
           Assist.REVIEW_ACTION_REJECT,
           rejectionReason,
-          "rejected"
+          "rejected",
         );
       }
     });
@@ -142,7 +145,7 @@ const AdminUser = () => {
   const submitPostingReview = (
     action: number,
     reviewComments: string,
-    verb: string
+    verb: string,
   ) => {
     setSaving(true);
 
@@ -159,7 +162,7 @@ const AdminUser = () => {
 
           Assist.showMessage(
             `You have successfully ${verb} the ${pageConfig.Single}!`,
-            "success"
+            "success",
           );
 
           navigate(`/admin/users/list`);
@@ -174,7 +177,11 @@ const AdminUser = () => {
   };
 
   const unsubmitButton = () => {
-    if (stage == "Submitted" && status == "Submitted" && createdBy == user.sub) {
+    if (
+      stage == "Submitted" &&
+      status == "Submitted" &&
+      createdBy == user.sub
+    ) {
       return (
         <div className="dx-field">
           <div className="dx-field-label"></div>
@@ -199,7 +206,7 @@ const AdminUser = () => {
   const onFormUnsubmit = () => {
     let result = confirm(
       `Are you sure you want to unsubmit this ${pageConfig.Single}?`,
-      "Confirm submission"
+      "Confirm submission",
     );
     result.then((dialogResult) => {
       if (dialogResult) {
@@ -215,24 +222,18 @@ const AdminUser = () => {
       stage_id: Assist.STAGE_AWAITING_SUBMISSION,
     };
 
-
     const postData = { ...announcementDetail, ...newData };
 
     console.log(postData);
 
     setTimeout(() => {
-      Assist.postPutData(
-        pageConfig.Title,
-        `users/update/${eId}`,
-        postData,
-        1
-      )
+      Assist.postPutData(pageConfig.Title, `users/update/${eId}`, postData, 1)
         .then((data) => {
           setSaving(false);
 
           Assist.showMessage(
             `You have successfully unsubmitted the ${pageConfig.Single}!`,
-            "success"
+            "success",
           );
 
           navigate(`/admin/users/list`);

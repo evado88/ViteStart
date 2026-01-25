@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Titlebar } from "../../components/titlebar";
 import { Card } from "../../components/card";
 import { Row } from "../../components/row";
@@ -33,6 +33,7 @@ const MyMonthlyPosting = ({ props }: any) => {
   const [approvalComments, setApprovalComments] = useState("");
 
   const [monthlyPosting, setMonthlyPosting] = useState<any | null>(null);
+  const hasRun = useRef(false);
 
   const pageConfig = new PageConfig(
     "View Monthly Posting",
@@ -40,11 +41,22 @@ const MyMonthlyPosting = ({ props }: any) => {
     "",
     "Monthly Posting",
     `monthly-posting/review-update/${eId}`,
+    [Assist.ROLE_MEMBER],
   );
 
   pageConfig.Id = eId == undefined ? 0 : Number(eId);
 
   useEffect(() => {
+    //check if initialized
+    if (hasRun.current) return;
+    hasRun.current = true;
+   
+    //check permissions and audit
+    if (!Assist.checkPageAuditPermission(pageConfig, user)) {
+      Assist.redirectUnauthorized(navigate);
+      return;
+    }
+
     setLoading(true);
 
     setTimeout(() => {

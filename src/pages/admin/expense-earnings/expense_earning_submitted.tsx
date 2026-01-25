@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 import { Titlebar } from "../../../components/titlebar";
 import { Card } from "../../../components/card";
 import { Row } from "../../../components/row";
@@ -17,17 +17,28 @@ const MonthlyPostings = () => {
   const [data, setData] = useState([]);
   const [loadingText, setLoadingText] = useState("Loading data...");
   const [loading, setLoading] = useState(true);
-
+  const hasRun = useRef(false);
 
   const pageConfig = new PageConfig(
     "Submitted Expense & Earnings",
     `transactions/expense-earnings/status/${Assist.STATUS_SUBMITTED}`,
     "",
     "Expense & Earning",
-    ""
+    "",
+    [Assist.ROLE_ADMIN],
   );
 
   useEffect(() => {
+    //check if initialized
+    if (hasRun.current) return;
+    hasRun.current = true;
+
+    //check permissions and audit
+    if (!Assist.checkPageAuditPermission(pageConfig, user)) {
+      Assist.redirectUnauthorized(navigate);
+      return;
+    }
+    
     setLoading(true);
 
     setTimeout(() => {
@@ -55,7 +66,7 @@ const MonthlyPostings = () => {
       text: "New Monthly Posting",
       onClick: () => navigate("/my/monthly-posting/post"),
     }),
-    []
+    [],
   );
 
   return (

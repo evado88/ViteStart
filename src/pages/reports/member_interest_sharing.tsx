@@ -107,6 +107,7 @@ const MemberInterestSharing = () => {
         "View",
         null,
         null,
+        null,
       );
     },
     [setSelectedItem],
@@ -129,6 +130,7 @@ const MemberInterestSharing = () => {
       selectedItem.text,
       null,
       "View",
+      null,
       null,
       null,
     );

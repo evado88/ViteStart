@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Titlebar } from "../../../components/titlebar";
 import { Card } from "../../../components/card";
 import { Row } from "../../../components/row";
@@ -41,13 +41,15 @@ const AdminPostingPeriod = ({ props }: any) => {
   const [approvalComments, setApprovalComments] = useState("");
 
   const [postingPeriod, setPostingPeriod] = useState<any | null>(null);
+  const hasRun = useRef(false);
 
   const pageConfig = new PageConfig(
     "Review Posting Period",
     `posting-periods/id/${eId}`,
     "",
     "Posting Period",
-    `posting-periods/review-update/${eId}`
+    `posting-periods/review-update/${eId}`,
+    [Assist.ROLE_ADMIN],
   );
 
   pageConfig.Id = eId == undefined ? 0 : Number(eId);

@@ -89,7 +89,7 @@ export const MonthlyPostingsList: React.FC<MonthlyPostArgs> = ({
                 Assist.downloadExcel(
                   title,
                   data,
-                  gridRef.current?.instance.getVisibleColumns(),
+                  gridRef.current?.instance.getVisibleColumns(), 
                 ),
             }}
           />

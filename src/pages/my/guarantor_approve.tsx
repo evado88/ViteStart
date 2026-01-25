@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 import { Titlebar } from "../../components/titlebar";
 import { Card } from "../../components/card";
 import { Row } from "../../components/row";
@@ -43,17 +43,30 @@ const GuarantorApprove = () => {
 
   const [rejectionReason, setRejectionReason] = useState("");
   const [approvalComments, setApprovalComments] = useState("");
+  const hasRun = useRef(false);
+
   const pageConfig = new PageConfig(
     `${status == "Approved" ? "View" : "Review"} Member Guarantor`,
     "",
     "",
     "Member Guarantor",
     `guarantors/review-update/${eId}`,
+    [Assist.ROLE_MEMBER],
   );
 
   pageConfig.Id = eId == undefined ? 0 : Number(eId);
 
   useEffect(() => {
+    //check if initialized
+    if (hasRun.current) return;
+    hasRun.current = true;
+   
+    //check permissions and audit
+    if (!Assist.checkPageAuditPermission(pageConfig, user)) {
+      Assist.redirectUnauthorized(navigate);
+      return;
+    }
+
     //only load if viewing the item
     if (pageConfig.Id != 0) {
       setLoading(true);

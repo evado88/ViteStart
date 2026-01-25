@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Titlebar } from "../../components/titlebar";
 import { Card } from "../../components/card";
 import { Row } from "../../components/row";
@@ -19,7 +19,7 @@ import LoadIndicator from "devextreme-react/load-indicator";
 
 const MyMonthlyPosting = ({ props }: any) => {
   //user
-  const { user} = useAuth();
+  const { user } = useAuth();
   const navigate = useNavigate();
   const { eId } = useParams(); // Destructure the parameter directly
 
@@ -28,7 +28,7 @@ const MyMonthlyPosting = ({ props }: any) => {
   const [error, setError] = useState(false);
   const [saving, setSaving] = useState(false);
 
-  const [name, setName] = useState('');
+  const [name, setName] = useState("");
   const [status, setStatus] = useState(null);
   const [stage, setStage] = useState(null);
   const [guarantorUserId, setGuarantorUserId] = useState(null);
@@ -39,17 +39,30 @@ const MyMonthlyPosting = ({ props }: any) => {
 
   const [monthlyPosting, setMonthlyPosting] = useState<any | null>(null);
 
+  const hasRun = useRef(false);
+
   const pageConfig = new PageConfig(
     "Approve Monthly Posting",
     `monthly-posting/id/${eId}`,
     "",
     "Monthly Posting",
-    `monthly-posting/review-update/${eId}`
+    `monthly-posting/review-update/${eId}`,
+    [Assist.ROLE_MEMBER],
   );
 
   pageConfig.Id = eId == undefined ? 0 : Number(eId);
 
   useEffect(() => {
+    //check if initialized
+    if (hasRun.current) return;
+    hasRun.current = true;
+
+    //check permissions and audit
+    if (!Assist.checkPageAuditPermission(pageConfig, user)) {
+      Assist.redirectUnauthorized(navigate);
+      return;
+    }
+
     setLoading(true);
 
     setTimeout(() => {
@@ -72,7 +85,7 @@ const MyMonthlyPosting = ({ props }: any) => {
     setStage(res.stage.stage_name);
     setApprovalLevels(res.approval_levels);
     setGuarantorUserId(res.guarantor_user_email);
-    setName(`${res.user.fname} ${res.user.lname}`)
+    setName(`${res.user.fname} ${res.user.lname}`);
   };
 
   const onFormApproveSubmit = (e: React.FormEvent) => {
@@ -81,17 +94,12 @@ const MyMonthlyPosting = ({ props }: any) => {
     //simulate process
     let result = confirm(
       `Are you sure you want to approve this monthly posting for ${name}?`,
-      "Confirm changes"
+      "Confirm changes",
     );
 
     result.then((dialogResult) => {
       if (dialogResult) {
-
-        submitPostingReview(
-          Assist.RESPONSE_YES,
-          approvalComments,
-          "approved"
-        );
+        submitPostingReview(Assist.RESPONSE_YES, approvalComments, "approved");
       }
     });
 
@@ -104,7 +112,7 @@ const MyMonthlyPosting = ({ props }: any) => {
 
     let result = confirm(
       `Are you sure you want to reject this monthly posting for ${name}?`,
-      "Confirm changes"
+      "Confirm changes",
     );
     result.then((dialogResult) => {
       if (dialogResult) {
@@ -112,7 +120,6 @@ const MyMonthlyPosting = ({ props }: any) => {
       }
     });
   };
-
 
   const requiresApproval = () => {
     if (
@@ -129,7 +136,7 @@ const MyMonthlyPosting = ({ props }: any) => {
   const submitPostingReview = (
     action: number,
     reviewComments: string,
-    verb: string
+    verb: string,
   ) => {
     setSaving(true);
 
@@ -146,7 +153,7 @@ const MyMonthlyPosting = ({ props }: any) => {
 
           Assist.showMessage(
             `You have successfully ${verb} the monthly posting!`,
-            "success"
+            "success",
           );
 
           navigate(`/my/monthly-posting/approvals`);

@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Titlebar } from "../../../components/titlebar";
 import { Row } from "../../../components/row";
 import { Col } from "../../../components/column";
@@ -10,13 +10,15 @@ const AdminMembersRejected = () => {
   const [data, setData] = useState([]);
   const [loadingText, setLoadingText] = useState("Loading data...");
   const [loading, setLoading] = useState(true);
+  const hasRun = useRef(false);
 
   const pageConfig = new PageConfig(
     "Rejected Members",
     `members/status/${Assist.STATUS_REJECTED}`,
     "",
     "Member",
-    ""
+    "",
+    [Assist.ROLE_ADMIN],
   );
 
   useEffect(() => {
@@ -52,7 +54,7 @@ const AdminMembersRejected = () => {
       {/* chart start */}
       <Row>
         <Col sz={12} sm={12} lg={12}>
-          <MemberList data={data} loadingText={loadingText} />
+          <MemberList data={data} loadingText={loadingText} title="Member" />
         </Col>
       </Row>
     </div>

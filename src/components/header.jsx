@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useAuth } from "../context/AuthContext";
 import { Link, NavLink, useLocation } from "react-router-dom";
 import AppInfo from "../classes/app-info";
+import Assist from "../classes/assist";
 
 export const Header = ({ toggleSidebar }) => {
   const { user, logout } = useAuth();
@@ -13,7 +14,7 @@ export const Header = ({ toggleSidebar }) => {
   };
 
   const logoutUser = (e) => {
-    logout();
+    logout(user);
     e.preventDefault();
   };
   return (
@@ -91,11 +92,11 @@ export const Header = ({ toggleSidebar }) => {
                   showDropdown ? "show" : ""
                 }`}
               >
-                <li>
+                {user.role == Assist.ROLE_MEMBER && <li>
                   <Link to="/account/profile">
                     <i className="icon-user"></i> Profile
                   </Link>
-                </li>
+                </li>}
                 <li className="divider"></li>
                 <li>
                   <Link to="/account/security">

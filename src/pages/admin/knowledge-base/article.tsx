@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Titlebar } from "../../../components/titlebar";
 import { Card } from "../../../components/card";
 import { Row } from "../../../components/row";
@@ -42,12 +42,15 @@ const AdminMeeting = () => {
 
   const [rejectionReason, setRejectionReason] = useState("");
   const [approvalComments, setApprovalComments] = useState("");
+  const hasRun = useRef(false);
+
   const pageConfig = new PageConfig(
     `${status == "Approved" ? "View" : "Review"} Article`,
     "",
     "",
     "Article",
-    `knowledge-base-articles/review-update/${eId}`
+    `knowledge-base-articles/review-update/${eId}`,
+    [Assist.ROLE_ADMIN],
   );
 
   pageConfig.Id = eId == undefined ? 0 : Number(eId);
@@ -57,7 +60,10 @@ const AdminMeeting = () => {
     if (pageConfig.Id != 0) {
       setLoading(true);
       setTimeout(() => {
-        Assist.loadData(pageConfig.Title, `knowledge-base-articles/id/${pageConfig.Id}`)
+        Assist.loadData(
+          pageConfig.Title,
+          `knowledge-base-articles/id/${pageConfig.Id}`,
+        )
           .then((data) => {
             setLoading(false);
             updateVaues(data);
@@ -109,7 +115,7 @@ const AdminMeeting = () => {
     //simulate process
     let result = confirm(
       `Are you sure you want to approve this ${pageConfig.Single}?`,
-      "Confirm changes"
+      "Confirm changes",
     );
 
     result.then((dialogResult) => {
@@ -117,7 +123,7 @@ const AdminMeeting = () => {
         submitPostingReview(
           Assist.REVIEW_ACTION_APPROVE,
           approvalComments,
-          "approved"
+          "approved",
         );
       }
     });
@@ -131,14 +137,14 @@ const AdminMeeting = () => {
 
     let result = confirm(
       `Are you sure you want to reject this ${pageConfig.Single}?`,
-      "Confirm changes"
+      "Confirm changes",
     );
     result.then((dialogResult) => {
       if (dialogResult) {
         submitPostingReview(
           Assist.REVIEW_ACTION_REJECT,
           rejectionReason,
-          "rejected"
+          "rejected",
         );
       }
     });
@@ -147,7 +153,7 @@ const AdminMeeting = () => {
   const submitPostingReview = (
     action: number,
     reviewComments: string,
-    verb: string
+    verb: string,
   ) => {
     setSaving(true);
 
@@ -164,7 +170,7 @@ const AdminMeeting = () => {
 
           Assist.showMessage(
             `You have successfully ${verb} the ${pageConfig.Single}!`,
-            "success"
+            "success",
           );
 
           navigate(`/admin/knowledge-base/article/list`);
@@ -179,7 +185,11 @@ const AdminMeeting = () => {
   };
 
   const unsubmitButton = () => {
-    if (stage == "Submitted" && status == "Submitted" && createdBy == user.sub) {
+    if (
+      stage == "Submitted" &&
+      status == "Submitted" &&
+      createdBy == user.sub
+    ) {
       return (
         <div className="dx-field">
           <div className="dx-field-label"></div>
@@ -204,7 +214,7 @@ const AdminMeeting = () => {
   const onFormUnsubmit = () => {
     let result = confirm(
       `Are you sure you want to unsubmit this ${pageConfig.Single}?`,
-      "Confirm submission"
+      "Confirm submission",
     );
     result.then((dialogResult) => {
       if (dialogResult) {
@@ -226,14 +236,14 @@ const AdminMeeting = () => {
         pageConfig.Title,
         `knowledge-base-articles/update/${eId}`,
         postData,
-        1
+        1,
       )
         .then((data) => {
           setSaving(false);
 
           Assist.showMessage(
             `You have successfully unsubmitted the ${pageConfig.Single}!`,
-            "success"
+            "success",
           );
 
           navigate(`/admin/knowledge-base/article/list`);

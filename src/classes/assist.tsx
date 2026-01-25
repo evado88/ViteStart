@@ -3,8 +3,12 @@ import notify from "devextreme/ui/notify";
 import axios from "axios";
 import TaskResult from "./task-result.js";
 import { jwtDecode } from "jwt-decode";
+import PageConfig from "./page-config.js";
 
 class Assist {
+  static ROLE_MEMBER = 1;
+  static ROLE_ADMIN = 2;
+
   static LOAN_REFINANCE_NOLOAN = 1;
   static LOAN_REFINANCE_YES = 2;
   static LOAN_REFINANCE_NO = 3;
@@ -73,6 +77,35 @@ class Assist {
     messagingSenderId: "878075714362",
     appId: "1:878075714362:web:55575ac3647ff7d3cd0e03",
   };
+
+  static checkPageAuditPermission(
+    pageConfig: PageConfig,
+    user: any,
+  ) {
+    //put audit action
+    const authorized = pageConfig.Permissions?.includes(user.role);
+
+    Assist.auditAction(
+      user.userid,
+      user.sub,
+      user.jti,
+      pageConfig.Title,
+      null,
+      `View - ${authorized ? "Allowed" : "Permission Denied"}`,
+      null,
+      null,
+      null,
+    );
+
+    if (!authorized) {
+      return false;
+    }else{
+      return true;
+    }
+  }
+  static redirectUnauthorized(navigate: any){
+    navigate('/401');
+  }
 
   static getAgeUTC(mysqlDateString: string) {
     // Parse the date strictly as UTC
@@ -300,6 +333,23 @@ class Assist {
       };
     });
 
+    //attempt to get details
+    const authtoken = localStorage.getItem("token");
+    if (authtoken) {
+      const details = Assist.getTokenDetails(authtoken);
+      Assist.auditAction(
+        details.userid,
+        details.sub,
+        details.jti,
+        "Data Export - Excel",
+        null,
+        name,
+        null,
+        details,
+        null,
+      );
+    }
+
     const postData = {
       filename: name,
       jsonArray: dataArray,
@@ -405,6 +455,7 @@ class Assist {
     actionId: string,
     beforeData: unknown,
     afterData: unknown,
+    model: string | null,
   ) {
     const url = AppInfo.auditApiUrl;
 
@@ -501,6 +552,20 @@ class Assist {
 
           //check for response
           if (err.response != null) {
+            //check if failed login attempt
+            if (err.response.status == 401 && url == "auth/login") {
+              Assist.auditAction(
+                0,
+                postData.get("username"),
+                "public",
+                "Authentication",
+                null,
+                `Unauthorised`,
+                null,
+                null,
+                null,
+              );
+            }
             //check if error is present
             if (Array.isArray(err.response.data.detail)) {
               const field = err.response.data.detail[0].loc[1];

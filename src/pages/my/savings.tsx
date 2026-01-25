@@ -17,6 +17,7 @@ const MonthlyPostings = () => {
   const [data, setData] = useState([]);
   const [loadingText, setLoadingText] = useState("Loading data...");
   const [loading, setLoading] = useState(true);
+  const hasRun = useRef(false);
 
   const pageConfig = new PageConfig(
     "My Savings",
@@ -24,20 +25,19 @@ const MonthlyPostings = () => {
     "",
     "My Saving",
     "",
+    [Assist.ROLE_MEMBER],
   );
 
   useEffect(() => {
-    //put audit action
-    Assist.auditAction(
-      user.userid,
-      user.sub,
-      user.jti,
-      pageConfig.Title,
-      null,
-      "View",
-      null,
-      null,
-    );
+    //check if initialized
+    if (hasRun.current) return;
+    hasRun.current = true;
+
+    //check permissions and audit
+    if (!Assist.checkPageAuditPermission(pageConfig, user)) {
+      Assist.redirectUnauthorized(navigate);
+      return;
+    }
 
     setLoading(true);
 

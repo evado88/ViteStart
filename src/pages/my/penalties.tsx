@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 import { Titlebar } from "../../components/titlebar";
 import { Card } from "../../components/card";
 import { Row } from "../../components/row";
@@ -17,7 +17,8 @@ const MonthlyPostings = () => {
   const [data, setData] = useState([]);
   const [loadingText, setLoadingText] = useState("Loading data...");
   const [loading, setLoading] = useState(true);
-
+  const hasRun = useRef(false);
+  
   const pageConfig = new PageConfig(
     "My Penalties",
     `transactions/user/${user.userid}/type/${Assist.TRANSACTION_PENALTY_CHARGED}/status/${Assist.STATUS_APPROVED}`,
@@ -27,17 +28,15 @@ const MonthlyPostings = () => {
   );
 
   useEffect(() => {
-    //put audit action
-    Assist.auditAction(
-      user.userid,
-      user.sub,
-      user.jti,
-      pageConfig.Title,
-      null,
-      "View",
-      null,
-      null,
-    );
+  //check if initialized
+    if (hasRun.current) return;
+    hasRun.current = true;
+
+    //check permissions and audit
+    if (!Assist.checkPageAuditPermission(pageConfig, user)) {
+      Assist.redirectUnauthorized(navigate);
+      return;
+    }
 
     setLoading(true);
 

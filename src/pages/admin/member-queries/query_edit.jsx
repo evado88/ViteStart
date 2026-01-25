@@ -1,13 +1,10 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 import { Titlebar } from "../../../components/titlebar";
 import { Card } from "../../../components/card";
 import { Row } from "../../../components/row";
 import { Col } from "../../../components/column";
 import { TextBox } from "devextreme-react/text-box";
-import {
-  Validator,
-  RequiredRule,
-} from "devextreme-react/validator";
+import { Validator, RequiredRule } from "devextreme-react/validator";
 import Button from "devextreme-react/button";
 import ValidationSummary from "devextreme-react/validation-summary";
 import { LoadPanel } from "devextreme-react/load-panel";
@@ -16,9 +13,7 @@ import PageConfig from "../../../classes/page-config";
 import Assist from "../../../classes/assist";
 import { LoadIndicator } from "devextreme-react/load-indicator";
 import { useNavigate, useParams } from "react-router-dom";
-import HtmlEditor, {
-  MediaResizing,
-} from "devextreme-react/html-editor";
+import HtmlEditor, { MediaResizing } from "devextreme-react/html-editor";
 import AppInfo from "../../../classes/app-info";
 
 const MemberQueryEdit = () => {
@@ -35,8 +30,16 @@ const MemberQueryEdit = () => {
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState(false);
+  const hasRun = useRef(false);
 
-  const pageConfig = new PageConfig("Announcement", "", "", "Announcement", "");
+  const pageConfig = new PageConfig(
+    "Announcement",
+    "",
+    "",
+    "Announcement",
+    "",
+    [Assist.ROLE_ADMIN],
+  );
 
   pageConfig.id = eId == undefined ? 0 : Number(eId);
 
@@ -57,7 +60,7 @@ const MemberQueryEdit = () => {
             setError(true);
             Assist.showMessage(message, "error");
           });
-      },  Assist.DEV_DELAY);
+      }, Assist.DEV_DELAY);
     }
   }, []);
 
@@ -87,7 +90,7 @@ const MemberQueryEdit = () => {
           ? `announcements/create`
           : `announcements/update/${pageConfig.id}`,
         postData,
-        pageConfig.id
+        pageConfig.id,
       )
         .then((data) => {
           setSaving(false);
@@ -95,7 +98,7 @@ const MemberQueryEdit = () => {
 
           Assist.showMessage(
             `You have successfully updated the ${pageConfig.Title}!`,
-            "success"
+            "success",
           );
 
           if (pageConfig.id == 0) {
@@ -107,7 +110,7 @@ const MemberQueryEdit = () => {
           setSaving(false);
           Assist.showMessage(message, "error");
         });
-    },  Assist.DEV_DELAY);
+    }, Assist.DEV_DELAY);
   };
 
   const toolbar = useMemo(() => {

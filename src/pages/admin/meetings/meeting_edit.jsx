@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 import { Titlebar } from "../../../components/titlebar";
 import { Card } from "../../../components/card";
 import { Row } from "../../../components/row";
@@ -39,8 +39,11 @@ const MeetingEdit = () => {
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState(false);
+  const hasRun = useRef(false);
 
-  const pageConfig = new PageConfig(`New Meeting`, "", "", "Meeting", "");
+  const pageConfig = new PageConfig(`New Meeting`, "", "", "Meeting", "", [
+    Assist.ROLE_ADMIN,
+  ]);
 
   pageConfig.Id = eId == undefined ? 0 : Number(eId);
 
@@ -94,14 +97,14 @@ const MeetingEdit = () => {
     if (uploadedFiles.length == 0) {
       Assist.showMessage(
         "Please upload a valid Attendance file first ",
-        "error"
+        "error",
       );
       return;
     }
 
     let result = confirm(
       "Are you sure you want to submit this meeting?",
-      "Confirm submission"
+      "Confirm submission",
     );
     result.then((dialogResult) => {
       if (dialogResult) {
@@ -125,8 +128,6 @@ const MeetingEdit = () => {
       approval_levels: config.approval_levels,
     };
 
-    console.log('posting data', postData);
-
     setTimeout(() => {
       Assist.postPutData(
         pageConfig.Title,
@@ -134,14 +135,14 @@ const MeetingEdit = () => {
           ? `meetings/create`
           : `meetings/update/${pageConfig.Id}`,
         postData,
-        pageConfig.Id
+        pageConfig.Id,
       )
         .then((data) => {
           setSaving(false);
 
           Assist.showMessage(
             `You have successfully submitted the ${pageConfig.Title}!`,
-            "success"
+            "success",
           );
 
           //navigate
@@ -232,7 +233,7 @@ const MeetingEdit = () => {
                           if (res === null) {
                             Assist.showMessage(
                               `The response from the server is invalid. Please try again`,
-                              "error"
+                              "error",
                             );
                           } else {
                             setUploadedFiles([res.attachment]);
@@ -241,7 +242,7 @@ const MeetingEdit = () => {
                         } else {
                           Assist.showMessage(
                             `Unable to upload meeting attendance list. Please try again`,
-                            "error"
+                            "error",
                           );
                         }
                       }}
@@ -280,7 +281,7 @@ const MeetingEdit = () => {
                           return (
                             <a
                               href={encodeURI(
-                                `${AppInfo.apiUrl}static/${e.data.path}`
+                                `${AppInfo.apiUrl}static/${e.data.path}`,
                               )}
                               target="_null"
                             >

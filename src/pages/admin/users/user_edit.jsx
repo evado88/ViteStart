@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 import { Titlebar } from "../../../components/titlebar";
 import { Card } from "../../../components/card";
 import { Row } from "../../../components/row";
@@ -54,8 +54,11 @@ const UserEdit = () => {
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState(false);
+  const hasRun = useRef(false);
 
-  const pageConfig = new PageConfig(`New User`, "", "", "User", "");
+  const pageConfig = new PageConfig(`New User`, "", "", "User", "", [
+    Assist.ROLE_ADMIN,
+  ]);
 
   pageConfig.Id = eId == undefined ? 0 : Number(eId);
 
@@ -119,7 +122,7 @@ const UserEdit = () => {
 
     let result = confirm(
       `Are you sure you want to submit this ${pageConfig.Single}?`,
-      "Confirm submission"
+      "Confirm submission",
     );
     result.then((dialogResult) => {
       if (dialogResult) {
@@ -154,14 +157,14 @@ const UserEdit = () => {
         pageConfig.Title,
         pageConfig.Id == 0 ? `users/create` : `users/update/${pageConfig.Id}`,
         postData,
-        pageConfig.Id
+        pageConfig.Id,
       )
         .then((data) => {
           setSaving(false);
 
           Assist.showMessage(
             `You have successfully submitted the ${pageConfig.Title}!`,
-            "success"
+            "success",
           );
 
           //navigate

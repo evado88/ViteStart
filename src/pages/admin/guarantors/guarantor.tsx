@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 import { Titlebar } from "../../../components/titlebar";
 import { Card } from "../../../components/card";
 import { Row } from "../../../components/row";
@@ -37,13 +37,15 @@ const AdminGuarantor = () => {
   const [stageId, setStageId] = useState(1);
   const [status, setStatus] = useState(null);
   const [createdBy, setCreatedBy] = useState("");
+  const hasRun = useRef(false);
 
   const pageConfig = new PageConfig(
     `${status == "Approved" ? "View" : "Review"} Guarantor`,
     "",
     "",
     "Guarantor",
-    `guarantors/review-update/${eId}`
+    `guarantors/review-update/${eId}`,
+    [Assist.ROLE_ADMIN],
   );
 
   pageConfig.Id = eId == undefined ? 0 : Number(eId);

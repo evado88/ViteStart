@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Titlebar } from "../components/titlebar";
 import { Card } from "../components/card";
 import { Row } from "../components/row";
@@ -38,6 +38,7 @@ const Profile = () => {
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState(false);
+  const hasRun = useRef(false);
 
   const pageConfig = new PageConfig(
     "Profile",
@@ -45,26 +46,19 @@ const Profile = () => {
     "",
     "Profile",
     ``,
-    [1],
+    [Assist.ROLE_MEMBER],
   );
 
   useEffect(() => {
-    //put audit action
-    Assist.auditAction(
-      user.userid,
-      user.sub,
-      user.jti,
-      pageConfig.Title,
-      null,
-      "Update",
-      null,
-      null,
-    );
+    //check if initialized
+    if (hasRun.current) return;
+    hasRun.current = true;
 
-    if (!pageConfig.Permissions?.includes(user.role)) {
-      navigate("/404");
+    if (!Assist.checkPageAuditPermission(pageConfig, user)) {
+      Assist.redirectUnauthorized(navigate);
       return;
     }
+
     setLoading(true);
 
     setTimeout(() => {
@@ -158,6 +152,7 @@ const Profile = () => {
             "Updated",
             memberDetail,
             data,
+            "Member",
           );
         })
         .catch((message) => {

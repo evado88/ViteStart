@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Titlebar } from "../../../components/titlebar";
 import { Card } from "../../../components/card";
 import { Row } from "../../../components/row";
@@ -63,6 +63,7 @@ const Configuration = () => {
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState(false);
+  const hasRun = useRef(false);
 
   const pageConfig = new PageConfig(
     "SACCO Configuration",
@@ -70,14 +71,21 @@ const Configuration = () => {
     "",
     "SACCO Configuration",
     "sacco-config/update/1",
-    [2],
+    [Assist.ROLE_ADMIN],
   );
 
   useEffect(() => {
-    if (!pageConfig.Permissions?.includes(user.role)) {
-      navigate("/404");
+    //check if initialized
+    if (hasRun.current) return;
+    hasRun.current = true;
+
+    //check permissions and audit
+    if (!Assist.checkPageAuditPermission(pageConfig, user)) {
+      Assist.redirectUnauthorized(navigate);
       return;
     }
+
+
     setLoading(true);
 
     setTimeout(() => {
@@ -112,7 +120,7 @@ const Configuration = () => {
     setMissedMeetingFee(data.missed_meeting_rate);
 
     setApprovalLevels(data.approval_levels);
-    setEnable2FA(data.enable_2FA == 1 ? "Yes" : "No");
+    setEnable2FA(data.enable_2FA == Assist.RESPONSE_YES ? "Yes" : "No");
 
     setSmtpServer(data.smtp_server);
     setSmtpPort(data.smtp_port);
@@ -140,7 +148,7 @@ const Configuration = () => {
       late_meeting_rate: lateMeetingFee,
       incorrect_posting_rate: incorrectPostingFee,
       approval_levels: approvalLevels,
-      enable_2FA: enable2FA == "Yes" ? 1 : 2,
+      enable_2FA: enable2FA == "Yes" ? Assist.RESPONSE_YES : Assist.RESPONSE_NO,
       smtp_server: smtpServer,
       smtp_port: smtpPort,
       smtp_user: smtpUser,

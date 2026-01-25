@@ -80,6 +80,7 @@ const MemberTimeValueSummary = () => {
       "View",
       null,
       null,
+      null
     );
 
     setLoading(true);

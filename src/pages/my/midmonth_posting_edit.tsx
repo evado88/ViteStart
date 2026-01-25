@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Titlebar } from "../../components/titlebar";
 import { Card } from "../../components/card";
 import { Row } from "../../components/row";
@@ -87,6 +87,7 @@ const KnowledgebaseArticleEdit = () => {
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState(false);
+  const hasRun = useRef(false);
 
   const pageConfig = new PageConfig(
     `New Mid-Month Posting`,
@@ -94,9 +95,20 @@ const KnowledgebaseArticleEdit = () => {
     "",
     "Mid-Month Posting",
     `monthly-posting/param/${user.userid}`,
+    [Assist.ROLE_MEMBER],
   );
 
   useEffect(() => {
+    //check if initialized
+    if (hasRun.current) return;
+    hasRun.current = true;
+   
+    //check permissions and audit
+    if (!Assist.checkPageAuditPermission(pageConfig, user)) {
+      Assist.redirectUnauthorized(navigate);
+      return;
+    }
+
     //only load config for new items to get approval levels and other data
     setLoading(true);
     setTimeout(() => {

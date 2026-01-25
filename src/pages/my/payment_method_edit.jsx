@@ -46,18 +46,30 @@ const MemberQueryEdit = () => {
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState(false);
+  const hasRun = useRef(false);
 
   const pageConfig = new PageConfig(
     `New Payment Method`,
     "",
     "",
     "Payment Method",
-    ""
+    "",
+    [Assist.ROLE_MEMBER],
   );
 
   pageConfig.Id = eId == undefined ? 0 : Number(eId);
 
   useEffect(() => {
+    //check if initialized
+    if (hasRun.current) return;
+    hasRun.current = true;
+    
+    //check permissions and audit
+    if (!Assist.checkPageAuditPermission(pageConfig, user)) {
+      Assist.redirectUnauthorized(navigate);
+      return;
+    }
+
     //only load config for new items to get approval levels and other data
     setLoading(true);
     setTimeout(() => {
@@ -123,7 +135,7 @@ const MemberQueryEdit = () => {
 
     let result = confirm(
       `Are you sure you want to submit this ${pageConfig.Single}?`,
-      "Confirm submission"
+      "Confirm submission",
     );
     result.then((dialogResult) => {
       if (dialogResult) {
@@ -163,14 +175,14 @@ const MemberQueryEdit = () => {
           ? `paymentmethods/create`
           : `paymentmethods/update/${pageConfig.Id}`,
         postData,
-        pageConfig.Id
+        pageConfig.Id,
       )
         .then((data) => {
           setSaving(false);
 
           Assist.showMessage(
             `You have successfully submitted the ${pageConfig.Title}!`,
-            "success"
+            "success",
           );
 
           //navigate

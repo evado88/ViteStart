@@ -36,6 +36,7 @@ export function AuthProvider({ children }) {
       const now = Date.now() / 1000;
       if (details.exp < now) {
         setUser(null);
+        endSession(details, 'Expired')
       } else {
         setUser(details);
       }
@@ -43,9 +44,23 @@ export function AuthProvider({ children }) {
     setIsLoadingAuth(false);
   }, []);
 
-  const logout = () => {
+  const logout = (details) => {
     localStorage.removeItem("token");
     setUser(null);
+    endSession(details, 'Logout')
+  };
+
+  const endSession = (details, reason) => {
+    Assist.auditAction(
+      details.userid,
+      details.sub,
+      details.jti,
+      "Session",
+      null,
+      `End - ${reason}`,
+      null,
+      details,
+    );
   };
 
   return (

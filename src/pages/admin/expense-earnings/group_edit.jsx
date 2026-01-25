@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect, useMemo, useRef } from "react";
 import { Titlebar } from "../../../components/titlebar";
 import { Card } from "../../../components/card";
 import { Row } from "../../../components/row";
@@ -45,18 +45,39 @@ const ExpenseEarningGroupEdit = () => {
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState(false);
+  const hasRun = useRef(false);
 
-  const pageConfig = new PageConfig("Expense Earning Group", "", "", "Expense Earning Group", "");
+  const pageConfig = new PageConfig(
+    "Expense Earning Group",
+    "",
+    "",
+    "Expense Earning Group",
+    "",
+    [Assist.ROLE_ADMIN],
+  );
 
   pageConfig.Id = eId == undefined ? 0 : Number(eId);
 
   useEffect(() => {
+    //check if initialized
+    if (hasRun.current) return;
+    hasRun.current = true;
+
+    //check permissions and audit
+    if (!Assist.checkPageAuditPermission(pageConfig, user)) {
+      Assist.redirectUnauthorized(navigate);
+      return;
+    }
+    
     //only load if updating item
     if (pageConfig.Id != 0) {
       setLoading(true);
 
       setTimeout(() => {
-        Assist.loadData(pageConfig.Title, `transaction-groups/id/${pageConfig.Id}`)
+        Assist.loadData(
+          pageConfig.Title,
+          `transaction-groups/id/${pageConfig.Id}`,
+        )
           .then((data) => {
             setLoading(false);
             updateVaues(data);
@@ -67,7 +88,7 @@ const ExpenseEarningGroupEdit = () => {
             setError(true);
             Assist.showMessage(message, "error");
           });
-      },  Assist.DEV_DELAY);
+      }, Assist.DEV_DELAY);
     }
   }, []);
 
@@ -87,27 +108,22 @@ const ExpenseEarningGroupEdit = () => {
       description: groupDescription,
     };
 
-    console.log('pd', postData);
+    console.log("pd", postData);
 
-
-    const url = pageConfig.Id == 0
-          ? `transaction-groups/create`
-          : `transaction-groups/update/${pageConfig.Id}`;
+    const url =
+      pageConfig.Id == 0
+        ? `transaction-groups/create`
+        : `transaction-groups/update/${pageConfig.Id}`;
 
     setTimeout(() => {
-      Assist.postPutData(
-        pageConfig.Title,
-        url,
-        postData,
-        pageConfig.Id
-      )
+      Assist.postPutData(pageConfig.Title, url, postData, pageConfig.Id)
         .then((data) => {
           setSaving(false);
           updateVaues(data);
 
           Assist.showMessage(
             `You have successfully updated the ${pageConfig.Title}!`,
-            "success"
+            "success",
           );
 
           if (pageConfig.Id == 0) {
@@ -119,7 +135,7 @@ const ExpenseEarningGroupEdit = () => {
           setSaving(false);
           Assist.showMessage(message, "error");
         });
-    },  Assist.DEV_DELAY);
+    }, Assist.DEV_DELAY);
   };
 
   const toolbar = useMemo(() => {

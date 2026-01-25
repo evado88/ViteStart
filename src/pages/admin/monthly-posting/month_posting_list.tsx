@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useMemo } from "react";
+import { useState, useEffect, useCallback, useMemo, useRef } from "react";
 import { Titlebar } from "../../../components/titlebar";
 import { Row } from "../../../components/row";
 import { Col } from "../../../components/column";
@@ -26,13 +26,15 @@ const AdminMonthlyPostings = () => {
   } = usePeriod();
   const [loadingText, setLoadingText] = useState("Loading data...");
   const [loading, setLoading] = useState(true);
+  const hasRun = useRef(false);
 
   const pageConfig = new PageConfig(
     "All Monthly Postings",
     `monthly-posting/period/${periodId}`,
     "",
     "Monthly Posting",
-    ""
+    "",
+    [Assist.ROLE_ADMIN],
   );
 
   const loadData = (url: string) => {

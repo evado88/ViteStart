@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 import { Titlebar } from "../../../components/titlebar";
 import { Card } from "../../../components/card";
 import { Row } from "../../../components/row";
@@ -24,13 +24,15 @@ const AdminKnowledgebaseCategories = () => {
   const [data, setData] = useState([]);
   const [loadingText, setLoadingText] = useState("Loading data...");
   const [loading, setLoading] = useState(true);
+  const hasRun = useRef(false);
 
   const pageConfig = new PageConfig(
     "Knowledgebase Categories",
     "knowledge-base-categories/list",
     "",
     "Knowledgebase Category",
-    ""
+    "",
+    [Assist.ROLE_ADMIN],
   );
 
   useEffect(() => {
@@ -57,9 +59,9 @@ const AdminKnowledgebaseCategories = () => {
     () => ({
       icon: "add",
       text: "Refresh",
-      onClick: () => navigate('/admin/knowledge-base/category/add'),
+      onClick: () => navigate("/admin/knowledge-base/category/add"),
     }),
-    []
+    [],
   );
 
   return (

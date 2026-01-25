@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 import { Titlebar } from "../../../components/titlebar";
 import { Card } from "../../../components/card";
 import { Row } from "../../../components/row";
@@ -40,8 +40,11 @@ const KnowledgebaseArticleEdit = () => {
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState(false);
+  const hasRun = useRef(false);
 
-  const pageConfig = new PageConfig(`New Article`, "", "", "Article", "");
+  const pageConfig = new PageConfig(`New Article`, "", "", "Article", "", [
+    Assist.ROLE_ADMIN,
+  ]);
 
   pageConfig.Id = eId == undefined ? 0 : Number(eId);
 
@@ -64,7 +67,7 @@ const KnowledgebaseArticleEdit = () => {
           if (pageConfig.Id != 0) {
             Assist.loadData(
               pageConfig.Single,
-              `knowledge-base-articles/id/${eId}`
+              `knowledge-base-articles/id/${eId}`,
             )
               .then((postData) => {
                 setLoading(false);
@@ -102,7 +105,7 @@ const KnowledgebaseArticleEdit = () => {
 
     let result = confirm(
       `Are you sure you want to submit this ${pageConfig.Single}?`,
-      "Confirm submission"
+      "Confirm submission",
     );
     result.then((dialogResult) => {
       if (dialogResult) {
@@ -132,14 +135,14 @@ const KnowledgebaseArticleEdit = () => {
           ? `knowledge-base-articles/create`
           : `knowledge-base-articles/update/${pageConfig.Id}`,
         postData,
-        pageConfig.Id
+        pageConfig.Id,
       )
         .then((data) => {
           setSaving(false);
 
           Assist.showMessage(
             `You have successfully submitted the ${pageConfig.Title}!`,
-            "success"
+            "success",
           );
 
           //navigate
@@ -234,7 +237,7 @@ const KnowledgebaseArticleEdit = () => {
                           if (res === null) {
                             Assist.showMessage(
                               `The response from the server is invalid. Please try again`,
-                              "error"
+                              "error",
                             );
                           } else {
                             setUploadedFiles([res.attachment]);
@@ -243,7 +246,7 @@ const KnowledgebaseArticleEdit = () => {
                         } else {
                           Assist.showMessage(
                             `Unable to upload attachment file. Please try again`,
-                            "error"
+                            "error",
                           );
                         }
                       }}
@@ -277,7 +280,7 @@ const KnowledgebaseArticleEdit = () => {
                           return (
                             <a
                               href={encodeURI(
-                                `${AppInfo.apiUrl}static/${e.data.path}`
+                                `${AppInfo.apiUrl}static/${e.data.path}`,
                               )}
                               target="_null"
                             >

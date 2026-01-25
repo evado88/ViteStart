@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 import { Titlebar } from "../../../components/titlebar";
 import { Card } from "../../../components/card";
 import { Row } from "../../../components/row";
@@ -42,12 +42,15 @@ const MyMemberQuery = () => {
 
   const [rejectionReason, setRejectionReason] = useState("");
   const [approvalComments, setApprovalComments] = useState("");
+  const hasRun = useRef(false);
+
   const pageConfig = new PageConfig(
     `${status == "Approved" ? "View" : "Review"} Member Query`,
     "",
     "",
     "Member Query",
-    `member-queries/review-update/${eId}`
+    `member-queries/review-update/${eId}`,
+    [Assist.ROLE_ADMIN],
   );
 
   pageConfig.Id = eId == undefined ? 0 : Number(eId);
@@ -109,7 +112,7 @@ const MyMemberQuery = () => {
     //simulate process
     let result = confirm(
       `Are you sure you want to approve this ${pageConfig.Single}?`,
-      "Confirm changes"
+      "Confirm changes",
     );
 
     result.then((dialogResult) => {
@@ -117,7 +120,7 @@ const MyMemberQuery = () => {
         submitPostingReview(
           Assist.REVIEW_ACTION_APPROVE,
           approvalComments,
-          "approved"
+          "approved",
         );
       }
     });
@@ -131,14 +134,14 @@ const MyMemberQuery = () => {
 
     let result = confirm(
       `Are you sure you want to reject this ${pageConfig.Single}?`,
-      "Confirm changes"
+      "Confirm changes",
     );
     result.then((dialogResult) => {
       if (dialogResult) {
         submitPostingReview(
           Assist.REVIEW_ACTION_REJECT,
           rejectionReason,
-          "rejected"
+          "rejected",
         );
       }
     });
@@ -147,7 +150,7 @@ const MyMemberQuery = () => {
   const submitPostingReview = (
     action: number,
     reviewComments: string,
-    verb: string
+    verb: string,
   ) => {
     setSaving(true);
 
@@ -165,7 +168,7 @@ const MyMemberQuery = () => {
 
           Assist.showMessage(
             `You have successfully ${verb} the ${pageConfig.Single}!`,
-            "success"
+            "success",
           );
 
           navigate(`/admin/member-queries/list`);
@@ -264,23 +267,25 @@ const MyMemberQuery = () => {
             <Card title="Approval" showHeader={true}>
               <div className="form">
                 <form id="formMain" onSubmit={onFormApproveSubmit}>
-                  {stage == "Submitted" && <div className="dx-fieldset">
-                    <div className="dx-fieldset-header">Response</div>
-                    <div className="dx-field">
-                      <HtmlEditor
-                        height="425px"
-                        defaultValue={response}
-                        value={response}
-                        toolbar={toolbar}
-                        onValueChanged={(e) => setResponse(e.value)}
-                      >
-                        <MediaResizing enabled={true} />
-                        <Validator validationGroup="Approve">
-                          <RequiredRule message="Response is required" />
-                        </Validator>
-                      </HtmlEditor>
+                  {stage == "Submitted" && (
+                    <div className="dx-fieldset">
+                      <div className="dx-fieldset-header">Response</div>
+                      <div className="dx-field">
+                        <HtmlEditor
+                          height="425px"
+                          defaultValue={response}
+                          value={response}
+                          toolbar={toolbar}
+                          onValueChanged={(e) => setResponse(e.value)}
+                        >
+                          <MediaResizing enabled={true} />
+                          <Validator validationGroup="Approve">
+                            <RequiredRule message="Response is required" />
+                          </Validator>
+                        </HtmlEditor>
+                      </div>
                     </div>
-                  </div>}
+                  )}
                   <div className="dx-fieldset">
                     <div className="dx-fieldset-header">Submission</div>
                     <div className="dx-field">

@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, useCallback } from "react";
+import { useState, useEffect, useMemo, useCallback, useRef } from "react";
 import { Titlebar } from "../../../components/titlebar";
 import { Card } from "../../../components/card";
 import { Row } from "../../../components/row";
@@ -35,8 +35,11 @@ const AdminPostingPeriods = () => {
   } = usePeriod();
   const [loadingText, setLoadingText] = useState("Loading data...");
   const [loading, setLoading] = useState(true);
+  const hasRun = useRef(false);
 
-  const pageConfig = new PageConfig("All Posting Periods", "", "", "", "");
+  const pageConfig = new PageConfig("All Posting Periods", "", "", "", "", [
+    Assist.ROLE_ADMIN,
+  ]);
 
   const loadData = (url: string) => {
     setLoading(true);
@@ -59,7 +62,7 @@ const AdminPostingPeriods = () => {
 
   useEffect(() => {
     loadData(
-      `posting-periods/year/${periodYear}/month/${periodMonth}/status/0`
+      `posting-periods/year/${periodYear}/month/${periodMonth}/status/0`,
     );
   }, [periodYear, periodMonth]);
 
@@ -68,7 +71,7 @@ const AdminPostingPeriods = () => {
       console.log("period year changed", e);
       UpdatePeriodYear(e.value);
     },
-    []
+    [],
   );
 
   const changePostingMonthPeriod = useCallback(
@@ -76,7 +79,7 @@ const AdminPostingPeriods = () => {
       console.log("period month changed", e);
       UpdatePeriodMonth(e.value);
     },
-    []
+    [],
   );
 
   const periodYearFilterComponent = () => {

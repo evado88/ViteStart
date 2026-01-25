@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 import { Titlebar } from "../../../components/titlebar";
 import { Card } from "../../../components/card";
 import { Row } from "../../../components/row";
@@ -37,6 +37,7 @@ const AnnouncementEdit = () => {
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState(false);
+  const hasRun = useRef(false);
 
   const pageConfig = new PageConfig(
     `New Announcement`,
@@ -44,12 +45,22 @@ const AnnouncementEdit = () => {
     "",
     "Announcement",
     "",
-    [2],
+    [Assist.ROLE_ADMIN],
   );
 
   pageConfig.Id = eId == undefined ? 0 : Number(eId);
 
   useEffect(() => {
+    //check if initialized
+    if (hasRun.current) return;
+    hasRun.current = true;
+
+    //check permissions and audit
+    if (!Assist.checkPageAuditPermission(pageConfig, user)) {
+      Assist.redirectUnauthorized(navigate);
+      return;
+    }
+    
     //only load config for new items to get approval levels and other data
     setLoading(true);
     setTimeout(() => {
@@ -84,7 +95,7 @@ const AnnouncementEdit = () => {
   const updateVaues = (data) => {
     setTitle(data.title);
     setContent(data.content);
-    
+
     if (data.attachment != null) {
       setUploadedFiles([data.attachment]);
     }

@@ -93,6 +93,7 @@ import {
   MidMonthlyPostingsPage,
   GuarantorApprovalsPage,
   GuarantorApprovePage,
+  UnauthorizedPage,
 
 } from "./pages";
 import { BrowserRouter } from "react-router-dom";
@@ -113,7 +114,7 @@ function App() {
             </PrivateRoute>
           }
         >
-
+          <Route path="/401" element={<UnauthorizedPage/>} />
           <Route path="/home" element={<HomePage></HomePage>} />
           {/* ALL */}
           <Route path="/account/profile" element={<ProfilePage/>} />

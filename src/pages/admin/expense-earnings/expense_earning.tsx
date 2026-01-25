@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Titlebar } from "../../../components/titlebar";
 import { Card } from "../../../components/card";
 import { Row } from "../../../components/row";
@@ -43,17 +43,30 @@ const AdminMeeting = () => {
 
   const [rejectionReason, setRejectionReason] = useState("");
   const [approvalComments, setApprovalComments] = useState("");
+  const hasRun = useRef(false);
+
   const pageConfig = new PageConfig(
     `${status == "Approved" ? "View" : "Review"} Expense / Earning`,
     "",
     "",
     "Expense / Earning",
-    `transactions/review-update/${eId}`
+    `transactions/review-update/${eId}`,
+    [Assist.ROLE_ADMIN],
   );
 
   pageConfig.Id = eId == undefined ? 0 : Number(eId);
 
   useEffect(() => {
+    //check if initialized
+    if (hasRun.current) return;
+    hasRun.current = true;
+
+    //check permissions and audit
+    if (!Assist.checkPageAuditPermission(pageConfig, user)) {
+      Assist.redirectUnauthorized(navigate);
+      return;
+    }
+
     //only load if viewing the item
     if (pageConfig.Id != 0) {
       setLoading(true);
@@ -110,7 +123,7 @@ const AdminMeeting = () => {
     //simulate process
     let result = confirm(
       `Are you sure you want to approve this ${pageConfig.Single}?`,
-      "Confirm changes"
+      "Confirm changes",
     );
 
     result.then((dialogResult) => {
@@ -118,7 +131,7 @@ const AdminMeeting = () => {
         submitPostingReview(
           Assist.REVIEW_ACTION_APPROVE,
           approvalComments,
-          "approved"
+          "approved",
         );
       }
     });
@@ -132,14 +145,14 @@ const AdminMeeting = () => {
 
     let result = confirm(
       `Are you sure you want to reject this ${pageConfig.Single}?`,
-      "Confirm changes"
+      "Confirm changes",
     );
     result.then((dialogResult) => {
       if (dialogResult) {
         submitPostingReview(
           Assist.REVIEW_ACTION_REJECT,
           rejectionReason,
-          "rejected"
+          "rejected",
         );
       }
     });
@@ -148,7 +161,7 @@ const AdminMeeting = () => {
   const submitPostingReview = (
     action: number,
     reviewComments: string,
-    verb: string
+    verb: string,
   ) => {
     setSaving(true);
 
@@ -165,7 +178,7 @@ const AdminMeeting = () => {
 
           Assist.showMessage(
             `You have successfully ${verb} the ${pageConfig.Single}!`,
-            "success"
+            "success",
           );
 
           navigate(`/admin/expenses-earnings/list`);
@@ -180,7 +193,11 @@ const AdminMeeting = () => {
   };
 
   const unsubmitButton = () => {
-    if (stage == "Submitted" && status == "Submitted" && createdBy == user.sub) {
+    if (
+      stage == "Submitted" &&
+      status == "Submitted" &&
+      createdBy == user.sub
+    ) {
       return (
         <div className="dx-field">
           <div className="dx-field-label"></div>
@@ -205,7 +222,7 @@ const AdminMeeting = () => {
   const onFormUnsubmit = () => {
     let result = confirm(
       `Are you sure you want to unsubmit this ${pageConfig.Single}?`,
-      "Confirm submission"
+      "Confirm submission",
     );
     result.then((dialogResult) => {
       if (dialogResult) {
@@ -227,14 +244,14 @@ const AdminMeeting = () => {
         pageConfig.Title,
         `transactions/update/${eId}`,
         postData,
-        1
+        1,
       )
         .then((data) => {
           setSaving(false);
 
           Assist.showMessage(
             `You have successfully unsubmitted the ${pageConfig.Single}!`,
-            "success"
+            "success",
           );
 
           navigate(`/admin/expenses-earnings/list`);

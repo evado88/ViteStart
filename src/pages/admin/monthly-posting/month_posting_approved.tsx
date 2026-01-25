@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { Titlebar } from "../../../components/titlebar";
 import { Row } from "../../../components/row";
 import { Col } from "../../../components/column";
@@ -10,18 +10,19 @@ import { usePeriod } from "../../../context/PeriodContext";
 
 const AdminMonthlyApprovedPostings = () => {
   const [data, setData] = useState([]);
-  const { period, periodData ,  updateSelectedPeriod} = usePeriod();
+  const { period, periodData, updateSelectedPeriod } = usePeriod();
   const [loadingText, setLoadingText] = useState("Loading data...");
   const [loading, setLoading] = useState(true);
   const [status, setStatus] = useState(() => Assist.STATUS_APPROVED);
-
+  const hasRun = useRef(false);
 
   const pageConfig = new PageConfig(
     "Approved Monthly Postings",
     ``,
     "",
     "Monthly Posting",
-    ""
+    "",
+    [Assist.ROLE_ADMIN],
   );
 
   const loadData = (url: string) => {
@@ -52,7 +53,7 @@ const AdminMonthlyApprovedPostings = () => {
       updateSelectedPeriod(e.value);
       loadData(`monthly-posting/period/${e.value}/status/${status}`);
     },
-    []
+    [],
   );
 
   const periodFilterComponent = () => {
@@ -85,6 +86,7 @@ const AdminMonthlyApprovedPostings = () => {
             loadingText={loadingText}
             filterComponent={periodFilterComponent()}
             isMember={false}
+            title="Monthly Postings"
           />
         </Col>
       </Row>

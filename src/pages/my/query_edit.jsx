@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 import { Titlebar } from "../../components/titlebar";
 import { Card } from "../../components/card";
 import { Row } from "../../components/row";
@@ -40,8 +40,16 @@ const MemberQueryEdit = () => {
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState(false);
+  const hasRun = useRef(false);
 
-  const pageConfig = new PageConfig(`New Member Query`, "", "", "Member Query", "");
+  const pageConfig = new PageConfig(
+    `New Member Query`,
+    "",
+    "",
+    "Member Query",
+    "",
+    [Assist.ROLE_MEMBER],
+  );
 
   pageConfig.Id = eId == undefined ? 0 : Number(eId);
 
@@ -56,16 +64,23 @@ const MemberQueryEdit = () => {
   }, []);
 
   useEffect(() => {
+    //check if initialized
+    if (hasRun.current) return;
+    hasRun.current = true;
+ 
+    //check permissions and audit
+    if (!Assist.checkPageAuditPermission(pageConfig, user)) {
+      Assist.redirectUnauthorized(navigate);
+      return;
+    }
+
     //only load config for new items to get approval levels and other data
     setLoading(true);
     setTimeout(() => {
       Assist.loadData("Configuration", AppInfo.configApiUrl)
         .then((data) => {
           if (pageConfig.Id != 0) {
-            Assist.loadData(
-              pageConfig.Single,
-              `member-queries/id/${eId}`
-            )
+            Assist.loadData(pageConfig.Single, `member-queries/id/${eId}`)
               .then((postData) => {
                 setLoading(false);
                 updateVaues(postData, true);
@@ -102,7 +117,7 @@ const MemberQueryEdit = () => {
 
     let result = confirm(
       `Are you sure you want to submit this ${pageConfig.Single}?`,
-      "Confirm submission"
+      "Confirm submission",
     );
     result.then((dialogResult) => {
       if (dialogResult) {
@@ -132,14 +147,14 @@ const MemberQueryEdit = () => {
           ? `member-queries/create`
           : `member-queries/update/${pageConfig.Id}`,
         postData,
-        pageConfig.Id
+        pageConfig.Id,
       )
         .then((data) => {
           setSaving(false);
 
           Assist.showMessage(
             `You have successfully submitted the ${pageConfig.Title}!`,
-            "success"
+            "success",
           );
 
           //navigate
@@ -234,7 +249,7 @@ const MemberQueryEdit = () => {
                           if (res === null) {
                             Assist.showMessage(
                               `The response from the server is invalid. Please try again`,
-                              "error"
+                              "error",
                             );
                           } else {
                             setUploadedFiles([res.attachment]);
@@ -243,7 +258,7 @@ const MemberQueryEdit = () => {
                         } else {
                           Assist.showMessage(
                             `Unable to upload attachment file. Please try again`,
-                            "error"
+                            "error",
                           );
                         }
                       }}
@@ -277,7 +292,7 @@ const MemberQueryEdit = () => {
                           return (
                             <a
                               href={encodeURI(
-                                `${AppInfo.apiUrl}static/${e.data.path}`
+                                `${AppInfo.apiUrl}static/${e.data.path}`,
                               )}
                               target="_null"
                             >

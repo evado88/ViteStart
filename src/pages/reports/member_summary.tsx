@@ -45,6 +45,7 @@ const MemberSummary = () => {
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState([]);
   const [loadingText, setLoadingText] = useState("Loading data...");
+  const hasRun = useRef(false);
 
   const pageConfig = new PageConfig(
     user.role == 2
@@ -59,6 +60,8 @@ const MemberSummary = () => {
   );
 
   useEffect(() => {
+    if (hasRun.current) return;
+    hasRun.current = true;
     //put audit action
     Assist.auditAction(
       user.userid,
@@ -69,6 +72,7 @@ const MemberSummary = () => {
       "View",
       null,
       null,
+      null
     );
 
     setLoading(true);
