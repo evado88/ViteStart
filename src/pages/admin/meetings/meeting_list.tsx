@@ -19,8 +19,10 @@ import Assist from "../../../classes/assist";
 import PageConfig from "../../../classes/page-config";
 import { useNavigate } from "react-router-dom";
 import { usePeriod } from "../../../context/PeriodContext";
+import { useAuth } from "../../../context/AuthContext";
 
 const AdminMeetings = () => {
+  const { user } = useAuth();
   const navigate = useNavigate();
   const [data, setData] = useState([]);
   const [loadingText, setLoadingText] = useState("Loading data...");
@@ -37,6 +39,16 @@ const AdminMeetings = () => {
   );
 
   useEffect(() => {
+    //check if initialized
+    if (hasRun.current) return;
+    hasRun.current = true;
+
+    //check permissions and audit
+    if (!Assist.checkPageAuditPermission(pageConfig, user)) {
+      Assist.redirectUnauthorized(navigate);
+      return;
+    }
+
     setLoading(true);
 
     Assist.loadData(pageConfig.Title, pageConfig.Url)
@@ -62,7 +74,7 @@ const AdminMeetings = () => {
       text: "Refresh",
       onClick: () => navigate("/admin/meetings/add"),
     }),
-    []
+    [],
   );
 
   return (

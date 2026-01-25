@@ -7,10 +7,15 @@ import PageConfig from "../../../classes/page-config";
 import { MonthlyPostingsList } from "../../../components/monthlyPostingList";
 import SelectBox, { SelectBoxTypes } from "devextreme-react/select-box";
 import { usePeriod } from "../../../context/PeriodContext";
+import { useAuth } from "../../../context/AuthContext";
+import { useNavigate } from "react-router-dom";
 
 const AdminMonthlySubmittedPostings = () => {
+  const navigate = useNavigate();
+  const { user } = useAuth();
+
   const [data, setData] = useState([]);
-  const { period, periodData ,  updateSelectedPeriod} = usePeriod();
+  const { period, periodData, updateSelectedPeriod } = usePeriod();
   const [loadingText, setLoadingText] = useState("Loading data...");
   const [loading, setLoading] = useState(true);
   const [status, setStatus] = useState(() => Assist.STATUS_SUBMITTED);
@@ -45,6 +50,16 @@ const AdminMonthlySubmittedPostings = () => {
   };
 
   useEffect(() => {
+    //check if initialized
+    if (hasRun.current) return;
+    hasRun.current = true;
+
+    //check permissions and audit
+    if (!Assist.checkPageAuditPermission(pageConfig, user)) {
+      Assist.redirectUnauthorized(navigate);
+      return;
+    }
+
     loadData(`monthly-posting/period/${period}/status/${status}`);
   }, []);
 
@@ -53,7 +68,7 @@ const AdminMonthlySubmittedPostings = () => {
       updateSelectedPeriod(e.value);
       loadData(`monthly-posting/period/${e.value}/status/${status}`);
     },
-    []
+    [],
   );
 
   const periodFilterComponent = () => {

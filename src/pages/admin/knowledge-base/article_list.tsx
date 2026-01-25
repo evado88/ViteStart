@@ -18,9 +18,12 @@ import DataGrid, {
 import Assist from "../../../classes/assist";
 import PageConfig from "../../../classes/page-config";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../../../context/AuthContext";
 
 const AdminKnowledgebaseArticles = () => {
   const navigate = useNavigate();
+  const { user } = useAuth();
+
   const [data, setData] = useState([]);
   const [loadingText, setLoadingText] = useState("Loading data...");
   const [loading, setLoading] = useState(true);
@@ -36,6 +39,16 @@ const AdminKnowledgebaseArticles = () => {
   );
 
   useEffect(() => {
+    //check if initialized
+    if (hasRun.current) return;
+    hasRun.current = true;
+
+    //check permissions and audit
+    if (!Assist.checkPageAuditPermission(pageConfig, user)) {
+      Assist.redirectUnauthorized(navigate);
+      return;
+    }
+
     setLoading(true);
 
     Assist.loadData(pageConfig.Title, pageConfig.Url)

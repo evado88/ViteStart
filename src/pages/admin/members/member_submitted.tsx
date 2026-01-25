@@ -5,8 +5,12 @@ import { Col } from "../../../components/column";
 import Assist from "../../../classes/assist";
 import PageConfig from "../../../classes/page-config";
 import { MemberList } from "../../../components/memberList";
+import { useAuth } from "../../../context/AuthContext";
+import { useNavigate } from "react-router-dom";
 
 const AdminMembersSubmitted = () => {
+  const navigate = useNavigate();
+  const { user } = useAuth();
   const [data, setData] = useState([]);
   const [loadingText, setLoadingText] = useState("Loading data...");
   const [loading, setLoading] = useState(true);
@@ -22,6 +26,16 @@ const AdminMembersSubmitted = () => {
   );
 
   useEffect(() => {
+    //check if initialized
+    if (hasRun.current) return;
+    hasRun.current = true;
+
+    //check permissions and audit
+    if (!Assist.checkPageAuditPermission(pageConfig, user)) {
+      Assist.redirectUnauthorized(navigate);
+      return;
+    }
+
     setLoading(true);
 
     Assist.loadData(pageConfig.Title, pageConfig.Url)

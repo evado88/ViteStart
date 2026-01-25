@@ -49,6 +49,16 @@ const KnowledgebaseArticleEdit = () => {
   pageConfig.Id = eId == undefined ? 0 : Number(eId);
 
   useEffect(() => {
+    //check if initialized
+    if (hasRun.current) return;
+    hasRun.current = true;
+
+    //check permissions and audit
+    if (!Assist.checkPageAuditPermission(pageConfig, user)) {
+      Assist.redirectUnauthorized(navigate);
+      return;
+    }
+
     Assist.loadData("Categories", "knowledge-base-categories/list")
       .then((res) => {
         setCategories(res);

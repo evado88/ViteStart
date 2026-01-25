@@ -57,6 +57,16 @@ const AdminMonthlyPosting = ({ props }: any) => {
   pageConfig.Id = eId == undefined ? 0 : Number(eId);
 
   useEffect(() => {
+    //check if initialized
+    if (hasRun.current) return;
+    hasRun.current = true;
+
+    //check permissions and audit
+    if (!Assist.checkPageAuditPermission(pageConfig, user)) {
+      Assist.redirectUnauthorized(navigate);
+      return;
+    }
+
     setLoading(true);
 
     setTimeout(() => {
@@ -159,7 +169,8 @@ const AdminMonthlyPosting = ({ props }: any) => {
       user_id: user.userid,
       review_action: action,
       comments: reviewComments,
-      penalize: assignPenalty == "Yes" ? Assist.RESPONSE_YES : Assist.RESPONSE_NO,
+      penalize:
+        assignPenalty == "Yes" ? Assist.RESPONSE_YES : Assist.RESPONSE_NO,
     };
 
     setTimeout(() => {

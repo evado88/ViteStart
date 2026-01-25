@@ -44,6 +44,16 @@ const MemberQueryEdit = () => {
   pageConfig.id = eId == undefined ? 0 : Number(eId);
 
   useEffect(() => {
+    //check if initialized
+    if (hasRun.current) return;
+    hasRun.current = true;
+
+    //check permissions and audit
+    if (!Assist.checkPageAuditPermission(pageConfig, user)) {
+      Assist.redirectUnauthorized(navigate);
+      return;
+    }
+
     //only load if updating item
     if (pageConfig.id != 0) {
       setLoading(true);

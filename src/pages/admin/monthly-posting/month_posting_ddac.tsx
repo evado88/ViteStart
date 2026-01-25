@@ -9,8 +9,12 @@ import SelectBox, { SelectBoxTypes } from "devextreme-react/select-box";
 import { usePeriod } from "../../../context/PeriodContext";
 import { MonthlyPostingsListDDAC } from "../../../components/monthlyPostingListDDAC";
 import { useNavigate, useParams } from "react-router-dom";
+import { useAuth } from "../../../context/AuthContext";
 
 const AdminMonthlyApprovedPostings = () => {
+  const navigate = useNavigate();
+  const { user } = useAuth();
+
   const { eId } = useParams(); // Destructure the parameter directly
 
   const [data, setData] = useState([]);
@@ -48,6 +52,16 @@ const AdminMonthlyApprovedPostings = () => {
   };
 
   useEffect(() => {
+    //check if initialized
+    if (hasRun.current) return;
+    hasRun.current = true;
+
+    //check permissions and audit
+    if (!Assist.checkPageAuditPermission(pageConfig, user)) {
+      Assist.redirectUnauthorized(navigate);
+      return;
+    }
+
     loadData(`posting-periods/ddac/${eId}`);
   }, []);
 

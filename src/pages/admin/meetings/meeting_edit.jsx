@@ -48,6 +48,16 @@ const MeetingEdit = () => {
   pageConfig.Id = eId == undefined ? 0 : Number(eId);
 
   useEffect(() => {
+    //check if initialized
+    if (hasRun.current) return;
+    hasRun.current = true;
+
+    //check permissions and audit
+    if (!Assist.checkPageAuditPermission(pageConfig, user)) {
+      Assist.redirectUnauthorized(navigate);
+      return;
+    }
+
     //only load config for new items to get approval levels and other data
     setLoading(true);
     setTimeout(() => {

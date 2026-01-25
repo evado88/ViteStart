@@ -9,9 +9,12 @@ import { MonthlyPostingsList } from "../../../components/monthlyPostingList";
 import SelectBox, { SelectBoxTypes } from "devextreme-react/select-box";
 import { usePeriod } from "../../../context/PeriodContext";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../../../context/AuthContext";
 
 const AdminMonthlyPostings = () => {
   const navigate = useNavigate();
+  const { user } = useAuth();
+
   const [data, setData] = useState([]);
   const {
     periodYear,
@@ -57,6 +60,16 @@ const AdminMonthlyPostings = () => {
   };
 
   useEffect(() => {
+    //check if initialized
+    if (hasRun.current) return;
+    hasRun.current = true;
+
+    //check permissions and audit
+    if (!Assist.checkPageAuditPermission(pageConfig, user)) {
+      Assist.redirectUnauthorized(navigate);
+      return;
+    }
+
     loadData(`monthly-posting/period/${periodId}`);
   }, []);
 
@@ -65,7 +78,7 @@ const AdminMonthlyPostings = () => {
       UpdatePeriodId(e.value);
       loadData(`monthly-posting/period/${e.value}`);
     },
-    []
+    [],
   );
 
   const periodFilterComponent = () => {
