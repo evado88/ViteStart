@@ -23,6 +23,7 @@ interface MonthlyPostArgs {
   isPenalty: boolean;
   isExpenseEarning?: boolean;
   title: string;
+  filterComponent?: React.ReactElement | null;
 }
 export const TransactionList: React.FC<MonthlyPostArgs> = ({
   data,
@@ -32,6 +33,7 @@ export const TransactionList: React.FC<MonthlyPostArgs> = ({
   isPenalty,
   isExpenseEarning,
   title,
+  filterComponent,
 }: MonthlyPostArgs) => {
   const gridRef = useRef<any>(null);
 
@@ -70,6 +72,11 @@ export const TransactionList: React.FC<MonthlyPostArgs> = ({
               widget="dxButton"
               options={addButtonOptions}
             />
+          )}
+          {filterComponent != null && (
+            <Item location="before" locateInMenu="auto">
+              {filterComponent}
+            </Item>
           )}
           <Item name="columnChooserButton" />
           <Item

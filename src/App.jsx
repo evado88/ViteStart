@@ -94,6 +94,13 @@ import {
   GuarantorApprovalsPage,
   GuarantorApprovePage,
   UnauthorizedPage,
+  AdminSavingsPage,
+  AdminSocialFundsPage,
+  AdminLoansPage,
+  AdminSharesPage,
+  AdminPenaltiesPage,
+  MemberMeetingsPage,
+  MemberMeetingPage,
 
 } from "./pages";
 import { BrowserRouter } from "react-router-dom";
@@ -150,7 +157,12 @@ function App() {
           <Route path="/admin/monthly-postings/view/:eId" element={<AdminMonthlyPostingPage/>} />
           {/* mid-month posting */}
 
-
+          {/* transactions */}
+          <Route path="/admin/savings/approved" element={<AdminSavingsPage/>} />
+          <Route path="/admin/social-fund/approved" element={<AdminSocialFundsPage/>} />
+          <Route path="/admin/loans/approved" element={<AdminLoansPage/>} />
+          <Route path="/admin/shares/approved" element={<AdminSharesPage/>} />
+          <Route path="/admin/penalties/approved" element={<AdminPenaltiesPage/>} />
           {/*expense and earnings*/}
           <Route path="/admin/expense-earning/group/list" element={<AdminExpenseEarningGroupsPage/>} />
           <Route path="/admin/expense-earning/group/add" element={<AdminExpenseEarningGroupsEditPage/>} />
@@ -194,6 +206,7 @@ function App() {
           {/* payment-methods */}
           <Route path="/admin/payment-methods/list" element={<AdminPaymentMethodsPage/>} />
           <Route path="/admin/payment-methods/view/:eId" element={<AdminPaymentMethodPage/>} />
+
           {/* guarantors */}
           <Route path="/admin/guarantors/list" element={<AdminGuarantorsPage/>} />
           <Route path="/admin/guarantors/view/:eId" element={<AdminGuarantorPage/>} />
@@ -238,6 +251,8 @@ function App() {
           <Route path="/my/payment-methods/add" element={<PaymentMethodSubmitPage/>} />
           <Route path="/my/payment-methods/edit/:eId" element={<PaymentMethodSubmitPage/>} />
           <Route path="/my/payment-methods/view/:eId" element={<PaymentMethodPage/>} />
+          <Route path="/my/meetings/list" element={<MemberMeetingsPage/>} />
+          <Route path="/my/meetings/view/:eId" element={<MemberMeetingPage/>} />
           {/* Error */}   
           <Route path="*" element={<NotFoundPage></NotFoundPage>} />
         </Route>

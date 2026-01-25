@@ -18,17 +18,18 @@ const MonthlyPostings = () => {
   const [loadingText, setLoadingText] = useState("Loading data...");
   const [loading, setLoading] = useState(true);
   const hasRun = useRef(false);
-  
+
   const pageConfig = new PageConfig(
     "My Penalties",
     `transactions/user/${user.userid}/type/${Assist.TRANSACTION_PENALTY_CHARGED}/status/${Assist.STATUS_APPROVED}`,
     "",
     "My Penalties",
     "",
+    [Assist.ROLE_MEMBER],
   );
 
   useEffect(() => {
-  //check if initialized
+    //check if initialized
     if (hasRun.current) return;
     hasRun.current = true;
 

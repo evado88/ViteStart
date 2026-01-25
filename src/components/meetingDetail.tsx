@@ -128,6 +128,7 @@ export const MeetingDetail = ({
                 dataField="penaltyId"
                 format={",##0.###"}
                 caption="Penalty ID"
+                visible={false}
                 hidingPriority={1}
               />
             </DataGrid>

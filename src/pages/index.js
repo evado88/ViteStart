@@ -45,9 +45,13 @@ export { default as AdminMonthlyRejectedPostingsPage } from './admin/monthly-pos
 export { default as AdminMonthlyPostingsDDACPage } from './admin/monthly-posting/month_posting_ddac'
 export { default as AdminMonthlyPostingPage } from './admin/monthly-posting/month_posting'
 
-//mid-month posting
 
-
+//transactions
+export { default as AdminLoansPage } from './admin/loans/loans'
+export { default as AdminPenaltiesPage } from './admin/penalties/penalties'
+export { default as AdminSavingsPage } from './admin/savings/savings'
+export { default as AdminSocialFundsPage } from './admin/savings/social'
+export { default as AdminSharesPage } from './admin/shares/shares'
 //expense and earnings
 export { default as AdminExpenseEarningGroupsPage } from './admin/expense-earnings/group_list'
 export { default as AdminExpenseEarningGroupsEditPage } from './admin/expense-earnings/group_edit'
@@ -116,3 +120,5 @@ export { default as GuarantorApprovePage} from './my/guarantor_approve'
 export { default as PaymentMethodsPage} from './my/payment_methods'
 export { default as PaymentMethodSubmitPage} from './my/payment_method_edit'
 export { default as PaymentMethodPage} from './my/payment_method'
+export { default as MemberMeetingsPage} from './my/meeting_list'
+export { default as MemberMeetingPage} from './my/meeting'

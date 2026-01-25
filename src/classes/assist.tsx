@@ -81,9 +81,14 @@ class Assist {
   static checkPageAuditPermission(
     pageConfig: PageConfig,
     user: any,
+    action?: string
   ) {
     //put audit action
     const authorized = pageConfig.Permissions?.includes(user.role);
+
+    const result = authorized ? "Allowed" : "Permission Denied";
+
+    const auditAction = action ? `${action} - ${result}`: `View - ${result}`
 
     Assist.auditAction(
       user.userid,
@@ -91,7 +96,7 @@ class Assist {
       user.jti,
       pageConfig.Title,
       null,
-      `View - ${authorized ? "Allowed" : "Permission Denied"}`,
+      auditAction,
       null,
       null,
       null,
