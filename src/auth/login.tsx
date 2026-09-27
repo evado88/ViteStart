@@ -96,7 +96,7 @@ const Login = () => {
     setLoading(true);
     const newCode = Math.floor(100000 + Math.random() * 900000);
 
-    console.log(`Now sending OTP ${newCode} to client ${userPhone}`);
+    console.log(`Now sending OTP to client ${userPhone}`);
 
     setOTP(`${newCode}`);
 

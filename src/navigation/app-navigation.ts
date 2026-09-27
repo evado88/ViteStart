@@ -216,7 +216,7 @@ export const navigation: MenuItem[] = [
       },
     ],
   },
-    {
+  {
     key: "my-meetings",
     text: "Meetings",
     icon: "fa fa-suitcase",
@@ -286,6 +286,31 @@ export const navigation: MenuItem[] = [
         icon: "",
         path: "/reports/expense-earnings-summary",
         roles: [1, 2],
+        items: [],
+      },
+    ],
+  },
+  {
+    key: "audit",
+    text: "Adut Trails",
+    icon: "fa  fa-history",
+    path: "#",
+    roles: [2],
+    items: [
+      {
+        key: "all-sessions",
+        text: "All Sessions",
+        icon: "",
+        path: "/admin/audit/sessions/list",
+        roles: [2],
+        items: [],
+      },
+      {
+        key: "all-events",
+        text: "All Events",
+        icon: "",
+        path: "/admin/audit/events/list",
+        roles: [2],
         items: [],
       },
     ],
@@ -619,7 +644,7 @@ export const navigation: MenuItem[] = [
     roles: [2],
     items: [
       {
-       key: "penalties-approved-list",
+        key: "penalties-approved-list",
         text: "Approved",
         icon: "",
         path: "/admin/penalties/approved",

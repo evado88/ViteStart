@@ -21,7 +21,7 @@ import { useNavigate } from "react-router-dom";
 import { usePeriod } from "../../../context/PeriodContext";
 import { useAuth } from "../../../context/AuthContext";
 
-const AdminAudits = () => {
+const AdminSessions = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
   const [data, setData] = useState([]);
@@ -30,10 +30,10 @@ const AdminAudits = () => {
   const hasRun = useRef(false);
 
   const pageConfig = new PageConfig(
-    "Meetings",
-    "meetings/list",
+    "Audit Sessions",
+    "audits/sessions/list",
     "",
-    "Meetings",
+    "Session",
     "",
     [Assist.ROLE_ADMIN],
   );
@@ -44,10 +44,6 @@ const AdminAudits = () => {
     hasRun.current = true;
 
     //check permissions and audit
-    if (!Assist.checkPageAuditPermission(pageConfig, user)) {
-      Assist.redirectUnauthorized(navigate);
-      return;
-    }
 
     setLoading(true);
 
@@ -106,7 +102,7 @@ const AdminAudits = () => {
               <Editing
                 mode="row"
                 allowUpdating={false}
-                allowDeleting={true}
+                allowDeleting={false}
                 allowAdding={false}
               />
               <Pager showPageSizeSelector={true} showInfo={true} />
@@ -125,36 +121,32 @@ const AdminAudits = () => {
               </Toolbar>
               <Column dataField="id" caption="ID" hidingPriority={6}></Column>
               <Column
-                dataField="title"
-                caption="Title"
-                dataType="date"
-                format={"dd MMMM yyy"}
-                hidingPriority={5}
-                cellRender={(e) => {
-                  const getLink = () => {
-                    if (e.data.status.status_name == "Draft") {
-                      return `/admin/meetings/edit/${e.data.id}`;
-                    } else {
-                      return `/admin/meetings/view/${e.data.id}`;
-                    }
-                  };
-
-                  return <a href={getLink()}>{e.text}</a>;
-                }}
+                dataField="user_id"
+                caption="User ID"
+                minWidth={120}
+                hidingPriority={2}
               ></Column>
               <Column
-                dataField="status.status_name"
-                caption="Status"
-                hidingPriority={4}
+                dataField="user_email"
+                caption="User Email"
+                minWidth={120}
+                hidingPriority={2}
               ></Column>
               <Column
-                dataField="stage.stage_name"
-                caption="Stage"
-                hidingPriority={3}
+                dataField="token"
+                caption="Token"
+                minWidth={120}
+                hidingPriority={2}
               ></Column>
               <Column
-                dataField="user.email"
-                caption="User"
+                dataField="feature"
+                caption="Token"
+                minWidth={120}
+                hidingPriority={2}
+              ></Column>
+              <Column
+                dataField="action"
+                caption="Action"
                 minWidth={120}
                 hidingPriority={2}
               ></Column>
@@ -173,4 +165,4 @@ const AdminAudits = () => {
   );
 };
 
-export default AdminAudits;
+export default AdminSessions;

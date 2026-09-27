@@ -1,35 +1,34 @@
-import { useState, useEffect, useMemo, useRef } from "react";
-import { Titlebar } from "../../components/titlebar";
-import { Card } from "../../components/card";
-import { Row } from "../../components/row";
-import { Col } from "../../components/column";
+import { useState, useEffect, useRef } from "react";
+import { Titlebar } from "../../../components/titlebar";
+import { Card } from "../../../components/card";
+import { Row } from "../../../components/row";
+import { Col } from "../../../components/column";
 import { Validator, RequiredRule } from "devextreme-react/validator";
 import Button from "devextreme-react/button";
 import { LoadPanel } from "devextreme-react/load-panel";
-import { useAuth } from "../../context/AuthContext";
-import PageConfig from "../../classes/page-config";
-import Assist from "../../classes/assist";
+import { useAuth } from "../../../context/AuthContext";
+import PageConfig from "../../../classes/page-config";
+import Assist from "../../../classes/assist";
 import { LoadIndicator } from "devextreme-react/load-indicator";
 import { useNavigate, useParams } from "react-router-dom";
 import HtmlEditor, { MediaResizing } from "devextreme-react/html-editor";
-import AppInfo from "../../classes/app-info";
+import AppInfo from "../../../classes/app-info";
 import DataGrid, { Column, Pager, Paging } from "devextreme-react/data-grid";
+import { MeetingDetail } from "../../../components/meetingDetail";
 import { confirm } from "devextreme/ui/dialog";
 import TextArea from "devextreme-react/text-area";
 import ValidationSummary from "devextreme-react/validation-summary";
-import { ArticleDetail } from "../../components/articleDetail";
-import { MemberQueryDetail } from "../../components/memberQueryDetail";
-import { PaymentMethodDetail } from "../../components/paymentMethodDetail";
-import { GuarantorDetail } from "../../components/guarantorDetail";
 
-const GuarantorApprove = () => {
+const AdminSession = () => {
   //user
   const navigate = useNavigate();
   const { user } = useAuth();
   const { eId } = useParams(); // Destructure the parameter directly
 
   //posting
-  const [queryDetail, setQueryDetail] = useState<null | any>(null);
+  const [meetingDetail, setMeetingDetail] = useState<null | any>(null);
+  const [attendanceList, setAttendanceList] = useState([]);
+
   //service
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -38,7 +37,6 @@ const GuarantorApprove = () => {
   const [stageId, setStageId] = useState(1);
   const [status, setStatus] = useState(null);
   const [createdBy, setCreatedBy] = useState("");
-  const [guarantorUserEmail, setGuarantorUserEmail] = useState(null);
   const [approvalLevels, setApprovalLevels] = useState(1);
 
   const [rejectionReason, setRejectionReason] = useState("");
@@ -46,12 +44,12 @@ const GuarantorApprove = () => {
   const hasRun = useRef(false);
 
   const pageConfig = new PageConfig(
-    `${status == "Approved" ? "View" : "Review"} Member Guarantor`,
+    `${status == "Approved" ? "View" : "Review"} Meeting`,
     "",
     "",
-    "Member Guarantor Approval",
-    `guarantors/review-update/${eId}`,
-    [Assist.ROLE_MEMBER],
+    "Meeting",
+    `meetings/review-update/${eId}`,
+    [Assist.ROLE_ADMIN],
   );
 
   pageConfig.Id = eId == undefined ? 0 : Number(eId);
@@ -60,7 +58,7 @@ const GuarantorApprove = () => {
     //check if initialized
     if (hasRun.current) return;
     hasRun.current = true;
-   
+
     //check permissions and audit
     if (!Assist.checkPageAuditPermission(pageConfig, user)) {
       Assist.redirectUnauthorized(navigate);
@@ -71,7 +69,7 @@ const GuarantorApprove = () => {
     if (pageConfig.Id != 0) {
       setLoading(true);
       setTimeout(() => {
-        Assist.loadData(pageConfig.Title, `guarantors/id/${pageConfig.Id}`)
+        Assist.loadData(pageConfig.Title, `meetings/id/${pageConfig.Id}`)
           .then((data) => {
             setLoading(false);
             updateVaues(data);
@@ -87,12 +85,13 @@ const GuarantorApprove = () => {
   }, []);
 
   const updateVaues = (res: any) => {
-    setQueryDetail(res);
+    setMeetingDetail(res);
+
     setStatus(res.status.status_name);
     setStage(res.stage.stage_name);
     setStageId(res.stage_id);
     setCreatedBy(res.created_by);
-    setGuarantorUserEmail(res.guar_email);
+    setAttendanceList(JSON.parse(res.attendanceList));
 
     setApprovalLevels(res.approval_levels);
   };
@@ -102,12 +101,16 @@ const GuarantorApprove = () => {
   };
 
   const requiresApproval = () => {
-    if (
-      status == "Submitted" &&
-      stage == "Submitted" &&
-      guarantorUserEmail == user.sub
-    ) {
-      return true;
+    if (status == "Submitted") {
+      if (
+        stage == "Submitted" ||
+        stage == "Primary Approval" ||
+        stage == "Secondary Approval"
+      ) {
+        return true;
+      } else {
+        return false;
+      }
     } else {
       return false;
     }
@@ -177,7 +180,7 @@ const GuarantorApprove = () => {
             "success",
           );
 
-          navigate(`/my/guarantors/approvals`);
+          navigate(`/admin/meetings/list`);
         })
         .catch((message) => {
           setSaving(false);
@@ -188,10 +191,77 @@ const GuarantorApprove = () => {
     }, Assist.DEV_DELAY);
   };
 
-  const toolbar: any = useMemo(() => {
-    return AppInfo.htmlToolbar;
-  }, []);
+  const unsubmitButton = () => {
+    if (
+      stage == "Submitted" &&
+      status == "Submitted" &&
+      createdBy == user.sub
+    ) {
+      return (
+        <div className="dx-field">
+          <div className="dx-field-label"></div>
+          <div className="dx-field-value">
+            <Button
+              width="100%"
+              type={saving ? "normal" : "default"}
+              disabled={loading || error || saving}
+              onClick={() => onFormUnsubmit()}
+            >
+              <LoadIndicator className="button-indicator" visible={saving} />
+              <span className="dx-button-text">Unsubmit</span>
+            </Button>
+          </div>
+        </div>
+      );
+    } else {
+      return null;
+    }
+  };
 
+  const onFormUnsubmit = () => {
+    let result = confirm(
+      "Are you sure you want to unsubmit this meeting?",
+      "Confirm submission",
+    );
+    result.then((dialogResult) => {
+      if (dialogResult) {
+        unsubmitPosting();
+      }
+    });
+  };
+  const unsubmitPosting = () => {
+    setSaving(true);
+
+    const newData = {
+      status_id: Assist.STATUS_DRAFT,
+      stage_id: Assist.STAGE_AWAITING_SUBMISSION,
+    };
+    const postData = { ...meetingDetail, ...newData };
+
+    setTimeout(() => {
+      Assist.postPutData(
+        pageConfig.Title,
+        `meetings/update/${eId}`,
+        postData,
+        1,
+      )
+        .then((data) => {
+          setSaving(false);
+
+          Assist.showMessage(
+            "You have successfully unsubmitted the meeting!",
+            "success",
+          );
+
+          navigate(`/admin/meetings/list`);
+        })
+        .catch((message) => {
+          setSaving(false);
+
+          Assist.showMessage(message, "error");
+        });
+    }, Assist.DEV_DELAY);
+  };
   return (
     <div id="pageRoot" className="page-content">
       <LoadPanel
@@ -213,12 +283,16 @@ const GuarantorApprove = () => {
 
       {/* chart start */}
       <Row>
-        <Col sz={12} sm={12} lg={6}>
-          {queryDetail != null && (
-            <GuarantorDetail guarantor={queryDetail} showMember={true} />
+        <Col sz={12} sm={12} lg={7}>
+          {meetingDetail != null && (
+            <MeetingDetail
+              meeting={meetingDetail}
+              attendanceList={attendanceList}
+              unsubmitComponent={unsubmitButton()}
+            />
           )}
         </Col>
-        <Col sz={12} sm={12} lg={6}>
+        <Col sz={12} sm={12} lg={5}>
           {requiresApproval() && (
             <Card title="Rejection" showHeader={true}>
               <div className="form">
@@ -325,20 +399,20 @@ const GuarantorApprove = () => {
                     <div className="dx-field-label">Date</div>
                     <div className="dx-field-value-static">
                       <strong>
-                        {Assist.getDateText(queryDetail.review1_at)}
+                        {Assist.getDateText(meetingDetail.review1_at)}
                       </strong>
                     </div>
                   </div>
                   <div className="dx-field">
                     <div className="dx-field-label">Reviewer</div>
                     <div className="dx-field-value-static">
-                      <strong>{queryDetail.review1_by}</strong>
+                      <strong>{meetingDetail.review1_by}</strong>
                     </div>
                   </div>
                   <div className="dx-field">
                     <div className="dx-field-label">Comments</div>
                     <div className="dx-field-value-static">
-                      <strong>{queryDetail.review1_comments}</strong>
+                      <strong>{meetingDetail.review1_comments}</strong>
                     </div>
                   </div>
                 </div>
@@ -350,20 +424,20 @@ const GuarantorApprove = () => {
                       <div className="dx-field-value-static">
                         {" "}
                         <strong>
-                          {Assist.getDateText(queryDetail.review2_at)}
+                          {Assist.getDateText(meetingDetail.review2_at)}
                         </strong>
                       </div>
                     </div>
                     <div className="dx-field">
                       <div className="dx-field-label">Reviewer</div>
                       <div className="dx-field-value-static">
-                        <strong> {queryDetail.review2_by}</strong>
+                        <strong> {meetingDetail.review2_by}</strong>
                       </div>
                     </div>
                     <div className="dx-field">
                       <div className="dx-field-label">Comments</div>
                       <div className="dx-field-value-static">
-                        <strong>{queryDetail.review2_comments}</strong>
+                        <strong>{meetingDetail.review2_comments}</strong>
                       </div>
                     </div>
                   </div>
@@ -376,20 +450,20 @@ const GuarantorApprove = () => {
                       <div className="dx-field-value-static">
                         {" "}
                         <strong>
-                          {Assist.getDateText(queryDetail.review3_at)}
+                          {Assist.getDateText(meetingDetail.review3_at)}
                         </strong>
                       </div>
                     </div>
                     <div className="dx-field">
                       <div className="dx-field-label">Reviewer</div>
                       <div className="dx-field-value-static">
-                        <strong>{queryDetail.review3_by}</strong>
+                        <strong>{meetingDetail.review3_by}</strong>
                       </div>
                     </div>
                     <div className="dx-field">
                       <div className="dx-field-label">Comments</div>
                       <div className="dx-field-value-static">
-                        <strong>{queryDetail.review3_comments}</strong>
+                        <strong>{meetingDetail.review3_comments}</strong>
                       </div>
                     </div>
                   </div>
@@ -403,4 +477,4 @@ const GuarantorApprove = () => {
   );
 };
 
-export default GuarantorApprove;
+export default AdminSession;

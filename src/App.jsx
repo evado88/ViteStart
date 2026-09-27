@@ -101,6 +101,9 @@ import {
   AdminPenaltiesPage,
   MemberMeetingsPage,
   MemberMeetingPage,
+  AdminSessionsPage,
+  AdminAuditsPage,
+  AdminAuditPage,
 
 } from "./pages";
 import { BrowserRouter } from "react-router-dom";
@@ -127,6 +130,11 @@ function App() {
           <Route path="/account/profile" element={<ProfilePage/>} />
           <Route path="/account/security" element={<PasswordPage/>} />
           {/* ADMIN */}
+          {/* users */}
+          <Route path="/admin/audit/sessions/list" element={<AdminSessionsPage/>} />
+          <Route path="/admin/audit/sessions/view/:eId" element={<AdminUserEditPage/>} />
+          <Route path="/admin/audit/events/list" element={<AdminAuditsPage/>} />
+          <Route path="/admin/users/event/view/:eId" element={<AdminAuditPage/>} />
           {/* users */}
           <Route path="/admin/users/list" element={<AdminUsersPage/>} />
           <Route path="/admin/users/edit/:eId" element={<AdminUserEditPage/>} />

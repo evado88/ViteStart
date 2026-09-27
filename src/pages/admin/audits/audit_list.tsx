@@ -29,25 +29,14 @@ const AdminAudits = () => {
   const [loading, setLoading] = useState(true);
   const hasRun = useRef(false);
 
-  const pageConfig = new PageConfig(
-    "Meetings",
-    "meetings/list",
-    "",
-    "Meetings",
-    "",
-    [Assist.ROLE_ADMIN],
-  );
+  const pageConfig = new PageConfig("Audit Events", "audits/list", "", "Audit", "", [
+    Assist.ROLE_ADMIN,
+  ]);
 
   useEffect(() => {
     //check if initialized
     if (hasRun.current) return;
     hasRun.current = true;
-
-    //check permissions and audit
-    if (!Assist.checkPageAuditPermission(pageConfig, user)) {
-      Assist.redirectUnauthorized(navigate);
-      return;
-    }
 
     setLoading(true);
 
@@ -125,36 +114,32 @@ const AdminAudits = () => {
               </Toolbar>
               <Column dataField="id" caption="ID" hidingPriority={6}></Column>
               <Column
-                dataField="title"
-                caption="Title"
-                dataType="date"
-                format={"dd MMMM yyy"}
-                hidingPriority={5}
-                cellRender={(e) => {
-                  const getLink = () => {
-                    if (e.data.status.status_name == "Draft") {
-                      return `/admin/meetings/edit/${e.data.id}`;
-                    } else {
-                      return `/admin/meetings/view/${e.data.id}`;
-                    }
-                  };
-
-                  return <a href={getLink()}>{e.text}</a>;
-                }}
+                dataField="user_id"
+                caption="User ID"
+                minWidth={120}
+                hidingPriority={2}
               ></Column>
               <Column
-                dataField="status.status_name"
-                caption="Status"
-                hidingPriority={4}
+                dataField="user_email"
+                caption="User Email"
+                minWidth={120}
+                hidingPriority={2}
               ></Column>
               <Column
-                dataField="stage.stage_name"
-                caption="Stage"
-                hidingPriority={3}
+                dataField="token"
+                caption="Token"
+                minWidth={120}
+                hidingPriority={2}
               ></Column>
               <Column
-                dataField="user.email"
-                caption="User"
+                dataField="feature"
+                caption="Token"
+                minWidth={120}
+                hidingPriority={2}
+              ></Column>
+              <Column
+                dataField="action"
+                caption="Action"
                 minWidth={120}
                 hidingPriority={2}
               ></Column>

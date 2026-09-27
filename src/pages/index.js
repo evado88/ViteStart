@@ -11,6 +11,11 @@ export { default as PasswordPage } from './password'
 export { default as ProfilePage } from './profile'
 //ADMIN
 //dahsboard
+//aduits
+export { default as AdminAuditsPage } from './admin/audits/audit_list'
+export { default as AdminAuditPage } from './admin/audits/audit'
+export { default as AdminSessionsPage } from './admin/audits/session_list'
+export { default as AdminSessionPage } from './admin/audits/session'
 //user
 export { default as AdminUsersPage } from './admin/users/user_list'
 export { default as AdminUserEditPage } from './admin/users/user_edit'
