@@ -27,10 +27,26 @@ import DataGrid, {
   Editing,
   Toolbar,
   Item,
+  Summary,
+  TotalItem,
 } from "devextreme-react/data-grid";
 import { useNavigate } from "react-router-dom";
 import { usePeriod } from "../../context/PeriodContext.jsx";
 import SelectBox from "devextreme-react/select-box.js";
+
+//columns with a total at the foot of the table
+const TOTALLED = [
+  Assist.TRANSACTION_SAVINGS,
+  Assist.TRANSACTION_SHARE,
+  Assist.TRANSACTION_LOAN,
+  Assist.TRANSACTION_LOAN_PAYMENT,
+  Assist.TRANSACTION_INTEREST_CHARGED,
+  Assist.TRANSACTION_INTEREST_PAID,
+  Assist.TRANSACTION_SOCIAL_FUND,
+  Assist.TRANSACTION_PENALTY_CHARGED,
+  Assist.TRANSACTION_PENALTY_PAID,
+  Assist.TRANSACTION_MEMBERSHIP_FEE,
+];
 
 const MemberSummary = () => {
   const gridRef = useRef<any>(null);
@@ -52,9 +68,7 @@ const MemberSummary = () => {
   const hasRun = useRef(false);
 
   const pageConfig = new PageConfig(
-    user.role == 2
-      ? `Dashboard - Group Summary`
-      : `Dashboard - Member Summary `,
+    "Member Summary",
     user.role == 2
       ? `transactions/summary/all`
       : `transactions/member-summary/${user.userid}`,
@@ -94,7 +108,10 @@ const MemberSummary = () => {
           Assist.loadData("Members", url)
             .then((memberData: any) => {
               setLoading(false);
-              setData(memberData);
+              setData(
+                memberData.map((r: any) => ({ ...r, member: `${r.fname} ${r.lname}` })),
+              );
+              setLoadingText(`Nothing recorded for ${year}`);
               updateValues(data);
             })
             .catch((message) => {
@@ -112,21 +129,8 @@ const MemberSummary = () => {
   useEffect(() => {
     if (hasRun.current) return;
     hasRun.current = true;
-    //put audit action
-    Assist.auditAction(
-      user.userid,
-      user.sub,
-      user.jti,
-      pageConfig.Title,
-      null,
-      `View - ${periodYear}`,
-      null,
-      null,
-      null,
-    );
-
     loadData(periodYear);
-    
+
   }, []);
 
   const updateValues = (data: any) => {
@@ -175,8 +179,8 @@ const MemberSummary = () => {
             text: "New Monthly Posting",
             onClick: () => navigate("/my/monthly-posting/post"),
           }
-        : { icon: "refresh", text: "Refresh", onClick: () => navigate(0) },
-    [],
+        : { icon: "refresh", text: "Refresh", onClick: () => loadData(periodYear) },
+    [periodYear],
   );
 
   return (
@@ -192,7 +196,7 @@ const MemberSummary = () => {
       />
       <Titlebar
         title={pageConfig.Title}
-        section={"Home"}
+        section={"Reports"}
         icon={"home"}
         url={""}
       ></Titlebar>
@@ -252,7 +256,7 @@ const MemberSummary = () => {
       {/* chart start */}
       <Row>
         <Col sz={12} sm={12} lg={12}>
-          <Card title={"Knowledgebase"} showHeader={false}>
+          <Card title={"Period"} showHeader={false}>
             <Row>
               <Col sz={12} sm={12} lg={2}>
                 <div className="form">
@@ -261,7 +265,7 @@ const MemberSummary = () => {
                       <div className="dx-field-label">Period</div>
                       <SelectBox
                         className="dx-field-value"
-                        placeholder="Meeting Attendance"
+                        placeholder="Year"
                         dataSource={periodYearData}
                         onValueChange={(value) => {
                           UpdatePeriodYear(value);
@@ -290,7 +294,6 @@ const MemberSummary = () => {
                 focusedRowEnabled={true}
                 defaultFocusedRowIndex={0}
                 columnAutoWidth={true}
-                columnHidingEnabled={true}
               >
                 <Paging defaultPageSize={10} />
                 <Editing
@@ -329,86 +332,84 @@ const MemberSummary = () => {
                   />
                 </Toolbar>
                 <Column
-                  dataField="id"
-                  caption="ID"
-                  hidingPriority={13}
-                ></Column>
-                <Column
-                  dataField="fname"
-                  caption="First Name"
-                  hidingPriority={12}
-                ></Column>
-                <Column
-                  dataField="lname"
-                  caption="Last name"
-                  hidingPriority={11}
+                  caption="Member"
+                  dataField="member"
+                  fixed={true}
+                  defaultSortOrder="asc"
+                  minWidth={170}
                 ></Column>
                 <Column
                   dataField="email"
                   caption="Email"
                   visible={false}
-                  hidingPriority={11}
                 ></Column>
                 <Column
                   dataField="phone"
                   caption="Phone"
                   visible={false}
-                  hidingPriority={11}
                 ></Column>
                 <Column
                   dataField={`tid${Assist.TRANSACTION_SAVINGS}`}
                   caption="Savings"
                   format={",##0.###"}
-                  hidingPriority={10}
                 ></Column>
                 <Column
                   dataField={`tid${Assist.TRANSACTION_SHARE}`}
                   caption="Shares"
                   format={",##0.###"}
-                  hidingPriority={10}
                 ></Column>
                 <Column
                   dataField={`tid${Assist.TRANSACTION_LOAN}`}
                   caption="Loans"
                   format={",##0.###"}
-                  hidingPriority={10}
                 ></Column>
                 <Column
                   dataField={`tid${Assist.TRANSACTION_LOAN_PAYMENT}`}
                   caption="Loan Payment"
                   format={",##0.###"}
-                  hidingPriority={10}
                 ></Column>
                 <Column
                   dataField={`tid${Assist.TRANSACTION_INTEREST_CHARGED}`}
                   caption="Interest Charged"
                   format={",##0.###"}
-                  hidingPriority={10}
                 ></Column>
                 <Column
                   dataField={`tid${Assist.TRANSACTION_INTEREST_PAID}`}
                   caption="Interest Paid"
                   format={",##0.###"}
-                  hidingPriority={10}
                 ></Column>
                 <Column
                   dataField={`tid${Assist.TRANSACTION_SOCIAL_FUND}`}
                   caption="Social Fund"
                   format={",##0.###"}
-                  hidingPriority={10}
                 ></Column>
                 <Column
                   dataField={`tid${Assist.TRANSACTION_PENALTY_CHARGED}`}
                   caption="Penalty Charged"
                   format={",##0.###"}
-                  hidingPriority={10}
                 ></Column>
                 <Column
                   dataField={`tid${Assist.TRANSACTION_PENALTY_PAID}`}
                   caption="Penalty Paid"
                   format={",##0.###"}
-                  hidingPriority={10}
                 ></Column>
+                <Column
+                  dataField={`tid${Assist.TRANSACTION_MEMBERSHIP_FEE}`}
+                  caption="Membership Fee"
+                  format={",##0.###"}
+                ></Column>
+                <Summary>
+                  <TotalItem column="member" displayFormat="{0} members" summaryType="count" />
+                  {TOTALLED.map((id) => (
+                    <TotalItem
+                      key={id}
+                      column={`tid${id}`}
+                      summaryType="sum"
+                      valueFormat={",##0.##"}
+                      displayFormat="{0}"
+                    />
+                  ))}
+                </Summary>
               </DataGrid>
             </Card>
           </Card>

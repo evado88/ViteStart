@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect, useMemo, useRef } from "react";
 import { Ticker } from "../../components/ticker.jsx";
 import { Titlebar } from "../../components/titlebar.js";
 import { Card } from "../../components/card.js";
@@ -53,9 +53,10 @@ const MonthlySummary = () => {
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState([]);
   const [loadingText, setLoadingText] = useState("Loading data...");
+  const hasRun = useRef(false);
 
   const pageConfig = new PageConfig(
-    user.role == 2 ? `Monthly Group Summary` : `Monthly Member Summary`,
+    "Monthly Summary",
     user.role == 2
       ? `transactions/summary/all`
       : `transactions/member-summary/${user.userid}`,
@@ -109,19 +110,9 @@ const MonthlySummary = () => {
   };
 
   useEffect(() => {
-    //put audit action
-    Assist.auditAction(
-      user.userid,
-      user.sub,
-      user.jti,
-      pageConfig.Title,
-      null,
-      "View",
-      null,
-      null,
-      null,
-    );
-
+    //the page is audited once per load (in loadData)
+    if (hasRun.current) return;
+    hasRun.current = true;
     loadData(periodYear);
   }, []);
 
@@ -163,18 +154,21 @@ const MonthlySummary = () => {
     setPenalty(penaltyItem.amount);
   };
 
-  const dataSource = new PivotGridDataSource({
+  const dataSource = useMemo(() => new PivotGridDataSource({
     fields: [
-      {
-        caption: "Member",
-        width: 120,
-        dataField: "name",
-        area: "row",
-      },
+      //by type first: adding savings to loans and repayments means nothing
       {
         caption: "Type",
         dataField: "type",
-        width: 150,
+        width: 160,
+        area: "row",
+        expanded: false,
+      },
+      {
+        caption: "Member",
+        width: 200,
+        dataField: "name",
+        sortBy: "displayText",
         area: "row",
       },
       {
@@ -193,7 +187,7 @@ const MonthlySummary = () => {
       },
     ],
     store: data,
-  });
+  }), [data]);
 
   return (
     <div className="page-content" style={{ minHeight: "862px" }}>
@@ -208,7 +202,7 @@ const MonthlySummary = () => {
       />
       <Titlebar
         title={pageConfig.Title}
-        section={"Home"}
+        section={"Reports"}
         icon={"home"}
         url={""}
       ></Titlebar>
@@ -268,7 +262,7 @@ const MonthlySummary = () => {
       {/* chart start */}
       <Row>
         <Col sz={12} sm={12} lg={12}>
-          <Card title={"Knowledgebase"} showHeader={false}>
+          <Card title={"Period"} showHeader={false}>
             <Row>
               <Col sz={12} sm={12} lg={2}>
                 <div className="form">
@@ -277,7 +271,7 @@ const MonthlySummary = () => {
                       <div className="dx-field-label">Period</div>
                       <SelectBox
                         className="dx-field-value"
-                        placeholder="Meeting Attendance"
+                        placeholder="Year"
                         dataSource={periodYearData}
                         onValueChange={(value) => {
                           UpdatePeriodYear(value);
@@ -303,6 +297,7 @@ const MonthlySummary = () => {
                 height={620}
                 showBorders={true}
                 rowHeaderLayout="tree"
+                showRowGrandTotals={false}
                 dataSource={dataSource}
               >
                 <Scrolling mode="virtual" />

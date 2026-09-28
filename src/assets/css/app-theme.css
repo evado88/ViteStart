@@ -744,3 +744,16 @@ body .reading-attachment {
   word-break: break-word;
   margin: 0;
 }
+
+/* ---- ticker amounts: never split inside the number ---- */
+.comp-card h3.info-box-title {
+  font-size: clamp(15px, 1.25vw, 20px);
+  white-space: normal;
+}
+.comp-card .ticker-part {
+  white-space: nowrap;
+}
+/* flex columns grow to fit a long amount unless allowed to shrink */
+.comp-card .col {
+  min-width: 0;
+}
