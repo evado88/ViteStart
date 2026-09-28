@@ -84,6 +84,13 @@ class Assist {
   static STATE_OPEN = 1;
   static STATE_CLOSED = 2;
 
+  //titles of the Pending / Approved / Rejected list views
+  static STATUS_VIEW_LABELS: Record<number, string> = {
+    2: "Pending",
+    4: "Approved",
+    5: "Rejected",
+  };
+
   static REVIEW_ACTION_REJECT = 1;
   static REVIEW_ACTION_APPROVE = 2;
 

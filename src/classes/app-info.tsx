@@ -66,11 +66,6 @@ const AppInfo = {
   },
   countryCodes: [
     {
-      name: "Zambia",
-      dial_code: "+260",
-      code: "ZM",
-    },
-    {
       name: "Afghanistan",
       dial_code: "+93",
       code: "AF",
@@ -1269,6 +1264,11 @@ const AppInfo = {
       name: "Yemen",
       dial_code: "+967",
       code: "YE",
+    },
+    {
+      name: "Zambia",
+      dial_code: "+260",
+      code: "ZM",
     },
     {
       name: "Zimbabwe",

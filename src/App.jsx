@@ -112,6 +112,13 @@ import AttendanceTypes from "./pages/admin/dictionairies/attendance_types";
 import ReviewStages from "./pages/admin/dictionairies/review_stages";
 import AdminMonthlySubmittedPostings from "./pages/admin/monthly-posting/month_posting_submitted";
 import AdminApprovalsPage from "./pages/admin/approvals/approvals";
+import { PendingAnnouncements, ApprovedAnnouncements, RejectedAnnouncements } from "./pages/admin/announcements/announcement_list";
+import { PendingMeetings, ApprovedMeetings, RejectedMeetings } from "./pages/admin/meetings/meeting_list";
+import { PendingMemberQueries, ApprovedMemberQueries, RejectedMemberQueries } from "./pages/admin/member-queries/query_list";
+import { PendingPaymentMethods, ApprovedPaymentMethods, RejectedPaymentMethods } from "./pages/admin/payment-methods/payment_method_list";
+import { PendingGuarantors, ApprovedGuarantors, RejectedGuarantors } from "./pages/admin/guarantors/guarantor_list";
+import { PendingArticles, ApprovedArticles, RejectedArticles } from "./pages/admin/knowledge-base/article_list";
+import { PendingUsers, ApprovedUsers, RejectedUsers } from "./pages/admin/users/user_list";
 import {
   AnnouncementsPage,
   AnnouncementViewPage,
@@ -145,6 +152,27 @@ function App() {
           <Route path="/admin/users/event/view/:eId" element={<AdminAuditPage/>} />
           {/* users */}
           <Route path="/admin/users/list" element={<AdminUsersPage/>} />
+          <Route path="/admin/users/pending" element={<PendingUsers/>} />
+          <Route path="/admin/users/approved" element={<ApprovedUsers/>} />
+          <Route path="/admin/users/rejected" element={<RejectedUsers/>} />
+          <Route path="/admin/announcements/pending" element={<PendingAnnouncements/>} />
+          <Route path="/admin/announcements/approved" element={<ApprovedAnnouncements/>} />
+          <Route path="/admin/announcements/rejected" element={<RejectedAnnouncements/>} />
+          <Route path="/admin/meetings/pending" element={<PendingMeetings/>} />
+          <Route path="/admin/meetings/approved" element={<ApprovedMeetings/>} />
+          <Route path="/admin/meetings/rejected" element={<RejectedMeetings/>} />
+          <Route path="/admin/member-queries/pending" element={<PendingMemberQueries/>} />
+          <Route path="/admin/member-queries/approved" element={<ApprovedMemberQueries/>} />
+          <Route path="/admin/member-queries/rejected" element={<RejectedMemberQueries/>} />
+          <Route path="/admin/payment-methods/pending" element={<PendingPaymentMethods/>} />
+          <Route path="/admin/payment-methods/approved" element={<ApprovedPaymentMethods/>} />
+          <Route path="/admin/payment-methods/rejected" element={<RejectedPaymentMethods/>} />
+          <Route path="/admin/guarantors/pending" element={<PendingGuarantors/>} />
+          <Route path="/admin/guarantors/approved" element={<ApprovedGuarantors/>} />
+          <Route path="/admin/guarantors/rejected" element={<RejectedGuarantors/>} />
+          <Route path="/admin/knowledge-base/article/pending" element={<PendingArticles/>} />
+          <Route path="/admin/knowledge-base/article/approved" element={<ApprovedArticles/>} />
+          <Route path="/admin/knowledge-base/article/rejected" element={<RejectedArticles/>} />
           <Route path="/admin/users/edit/:eId" element={<AdminUserEditPage/>} />
           <Route path="/admin/users/add" element={<AdminUserEditPage/>} />
           <Route path="/admin/users/view/:eId" element={<AdminUserPage/>} />

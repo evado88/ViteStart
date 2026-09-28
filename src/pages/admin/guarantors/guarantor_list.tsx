@@ -18,7 +18,7 @@ import PageConfig from "../../../classes/page-config";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../../context/AuthContext";
 
-const AdminMemberQueries = () => {
+const AdminMemberQueries = ({ status }: { status?: number }) => {
   const navigate = useNavigate();
   const { user } = useAuth();
 
@@ -28,7 +28,7 @@ const AdminMemberQueries = () => {
   const hasRun = useRef(false);
 
   const pageConfig = new PageConfig(
-    "Guarantors",
+    status ? `${Assist.STATUS_VIEW_LABELS[status]} Guarantors` : "Guarantors",
     "guarantors/list",
     "",
     "Duarantor",
@@ -50,7 +50,9 @@ const AdminMemberQueries = () => {
     setLoading(true);
 
     Assist.loadData(pageConfig.Title, pageConfig.Url)
-      .then((res: any) => {
+      .then((all: any) => {
+        //a status view shows only the records with that status
+        const res = status ? all.filter((r: any) => (r.status_id ?? r.status?.id) == status) : all;
         setData(res);
         setLoading(false);
 
@@ -175,3 +177,7 @@ const AdminMemberQueries = () => {
 };
 
 export default AdminMemberQueries;
+
+export const PendingGuarantors = () => <AdminMemberQueries status={Assist.STATUS_SUBMITTED} />;
+export const ApprovedGuarantors = () => <AdminMemberQueries status={Assist.STATUS_APPROVED} />;
+export const RejectedGuarantors = () => <AdminMemberQueries status={Assist.STATUS_REJECTED} />;

@@ -21,7 +21,7 @@ import { useNavigate } from "react-router-dom";
 import { usePeriod } from "../../../context/PeriodContext";
 import { useAuth } from "../../../context/AuthContext";
 
-const AdminMeetings = () => {
+const AdminMeetings = ({ status }: { status?: number }) => {
   const { user } = useAuth();
   const navigate = useNavigate();
   const [data, setData] = useState([]);
@@ -30,7 +30,7 @@ const AdminMeetings = () => {
   const hasRun = useRef(false);
 
   const pageConfig = new PageConfig(
-    "Meetings",
+    status ? `${Assist.STATUS_VIEW_LABELS[status]} Meetings` : "Meetings",
     "meetings/list",
     "",
     "Meetings",
@@ -52,7 +52,9 @@ const AdminMeetings = () => {
     setLoading(true);
 
     Assist.loadData(pageConfig.Title, pageConfig.Url)
-      .then((res: any) => {
+      .then((all: any) => {
+        //a status view shows only the records with that status
+        const res = status ? all.filter((r: any) => (r.status_id ?? r.status?.id) == status) : all;
         setData(res);
         setLoading(false);
 
@@ -174,3 +176,7 @@ const AdminMeetings = () => {
 };
 
 export default AdminMeetings;
+
+export const PendingMeetings = () => <AdminMeetings status={Assist.STATUS_SUBMITTED} />;
+export const ApprovedMeetings = () => <AdminMeetings status={Assist.STATUS_APPROVED} />;
+export const RejectedMeetings = () => <AdminMeetings status={Assist.STATUS_REJECTED} />;

@@ -20,7 +20,14 @@ import PageConfig from "../../../classes/page-config";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../../context/AuthContext";
 
-const AdminUsers = () => {
+//one page for all users and for each status (the Users menu)
+const STATUS_TITLES: Record<number, string> = {
+  [Assist.STATUS_SUBMITTED]: "Pending Users",
+  [Assist.STATUS_APPROVED]: "Approved Users",
+  [Assist.STATUS_REJECTED]: "Rejected Users",
+};
+
+const AdminUsers = ({ status }: { status?: number }) => {
   const navigate = useNavigate();
   const { user } = useAuth();
   const [data, setData] = useState([]);
@@ -28,9 +35,14 @@ const AdminUsers = () => {
   const [loading, setLoading] = useState(true);
   const hasRun = useRef(false);
 
-  const pageConfig = new PageConfig("Users", "users/list", "", "Users", "", [
-    Assist.ROLE_ADMIN,
-  ]);
+  const pageConfig = new PageConfig(
+    status ? STATUS_TITLES[status] : "All Users",
+    status ? `users/status/${status}` : "users/list",
+    "",
+    "Users",
+    "",
+    [Assist.ROLE_ADMIN],
+  );
 
   useEffect(() => {
     //check if initialized
@@ -51,13 +63,14 @@ const AdminUsers = () => {
         setLoading(false);
 
         if (res.length === 0) {
-          setLoadingText("No users added yet");
+          setLoadingText(status ? "There are no users with this status" : "No users added yet");
         } else {
           setLoadingText("");
         }
       })
-      .catch((ex) => {
-        Assist.showMessage(ex.Message, "error");
+      .catch((message) => {
+        setLoading(false);
+        Assist.showMessage(message, "error");
         setLoadingText("Could not show information");
       });
   }, []);
@@ -170,7 +183,7 @@ const AdminUsers = () => {
                 dataField="created_at"
                 caption="Date"
                 dataType="date"
-                format="dd MMM yyy HH:MM"
+                format="dd MMM yyy HH:mm"
                 hidingPriority={1}
               ></Column>
             </DataGrid>
@@ -182,3 +195,7 @@ const AdminUsers = () => {
 };
 
 export default AdminUsers;
+
+export const PendingUsers = () => <AdminUsers status={Assist.STATUS_SUBMITTED} />;
+export const ApprovedUsers = () => <AdminUsers status={Assist.STATUS_APPROVED} />;
+export const RejectedUsers = () => <AdminUsers status={Assist.STATUS_REJECTED} />;

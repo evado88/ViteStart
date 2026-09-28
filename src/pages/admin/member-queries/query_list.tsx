@@ -18,7 +18,7 @@ import PageConfig from "../../../classes/page-config";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../../context/AuthContext";
 
-const AdminMemberQueries = () => {
+const AdminMemberQueries = ({ status }: { status?: number }) => {
   const navigate = useNavigate();
   const { user } = useAuth();
   const [data, setData] = useState([]);
@@ -27,7 +27,7 @@ const AdminMemberQueries = () => {
   const hasRun = useRef(false);
 
   const pageConfig = new PageConfig(
-    "Member Queries",
+    status ? `${Assist.STATUS_VIEW_LABELS[status]} Member Queries` : "Member Queries",
     "member-queries/list",
     "",
     "Member Query",
@@ -49,7 +49,9 @@ const AdminMemberQueries = () => {
     setLoading(true);
 
     Assist.loadData(pageConfig.Title, pageConfig.Url)
-      .then((res: any) => {
+      .then((all: any) => {
+        //a status view shows only the records with that status
+        const res = status ? all.filter((r: any) => (r.status_id ?? r.status?.id) == status) : all;
         setData(res);
         setLoading(false);
 
@@ -148,3 +150,7 @@ const AdminMemberQueries = () => {
 };
 
 export default AdminMemberQueries;
+
+export const PendingMemberQueries = () => <AdminMemberQueries status={Assist.STATUS_SUBMITTED} />;
+export const ApprovedMemberQueries = () => <AdminMemberQueries status={Assist.STATUS_APPROVED} />;
+export const RejectedMemberQueries = () => <AdminMemberQueries status={Assist.STATUS_REJECTED} />;

@@ -20,7 +20,7 @@ import PageConfig from "../../../classes/page-config";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../../context/AuthContext";
 
-const AdminKnowledgebaseArticles = () => {
+const AdminKnowledgebaseArticles = ({ status }: { status?: number }) => {
   const navigate = useNavigate();
   const { user } = useAuth();
 
@@ -30,7 +30,7 @@ const AdminKnowledgebaseArticles = () => {
   const hasRun = useRef(false);
 
   const pageConfig = new PageConfig(
-    "Knowledgebase Articles",
+    status ? `${Assist.STATUS_VIEW_LABELS[status]} Knowledgebase Articles` : "Knowledgebase Articles",
     "knowledge-base-articles/list",
     "",
     "Knowledgebase Article",
@@ -52,7 +52,9 @@ const AdminKnowledgebaseArticles = () => {
     setLoading(true);
 
     Assist.loadData(pageConfig.Title, pageConfig.Url)
-      .then((res: any) => {
+      .then((all: any) => {
+        //a status view shows only the records with that status
+        const res = status ? all.filter((r: any) => (r.status_id ?? r.status?.id) == status) : all;
         setData(res);
         setLoading(false);
 
@@ -177,3 +179,7 @@ const AdminKnowledgebaseArticles = () => {
 };
 
 export default AdminKnowledgebaseArticles;
+
+export const PendingArticles = () => <AdminKnowledgebaseArticles status={Assist.STATUS_SUBMITTED} />;
+export const ApprovedArticles = () => <AdminKnowledgebaseArticles status={Assist.STATUS_APPROVED} />;
+export const RejectedArticles = () => <AdminKnowledgebaseArticles status={Assist.STATUS_REJECTED} />;

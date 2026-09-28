@@ -20,7 +20,7 @@ import PageConfig from "../../../classes/page-config";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../../context/AuthContext";
 
-const AdminAnnouncements = () => {
+const AdminAnnouncements = ({ status }: { status?: number }) => {
   const { user } = useAuth();
   const navigate = useNavigate();
   const [data, setData] = useState([]);
@@ -29,7 +29,7 @@ const AdminAnnouncements = () => {
   const hasRun = useRef(false);
 
   const pageConfig = new PageConfig(
-    "Announcements",
+    status ? `${Assist.STATUS_VIEW_LABELS[status]} Announcements` : "Announcements",
     "announcements/list",
     "",
     "Announcements",
@@ -51,7 +51,9 @@ const AdminAnnouncements = () => {
     setLoading(true);
 
     Assist.loadData(pageConfig.Title, pageConfig.Url)
-      .then((res: any) => {
+      .then((all: any) => {
+        //a status view shows only the records with that status
+        const res = status ? all.filter((r: any) => (r.status_id ?? r.status?.id) == status) : all;
         setData(res);
         setLoading(false);
 
@@ -173,3 +175,7 @@ const AdminAnnouncements = () => {
 };
 
 export default AdminAnnouncements;
+
+export const PendingAnnouncements = () => <AdminAnnouncements status={Assist.STATUS_SUBMITTED} />;
+export const ApprovedAnnouncements = () => <AdminAnnouncements status={Assist.STATUS_APPROVED} />;
+export const RejectedAnnouncements = () => <AdminAnnouncements status={Assist.STATUS_REJECTED} />;
