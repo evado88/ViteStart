@@ -366,6 +366,7 @@ const PostingPeriodEdit = () => {
                           );
                         }
                       }}
+                      uploadHeaders={Assist.authHeaders()}
                       uploadUrl={`${AppInfo.apiUrl}attachments/create/type/postingPeriod/parent/0`}
                       onUploadError={(e) => {
                         const error = JSON.parse(e.error.response);

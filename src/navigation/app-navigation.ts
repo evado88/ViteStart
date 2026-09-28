@@ -16,6 +16,14 @@ export const navigation: MenuItem[] = [
     items: [],
   },
   {
+    key: "approvals",
+    text: "Approvals",
+    icon: "fa fa-check-square-o",
+    path: "/admin/approvals",
+    roles: [2],
+    items: [],
+  },
+  {
     key: "my-monthly-postings",
     text: "Monthly Posting",
     icon: "fa fa-calendar",

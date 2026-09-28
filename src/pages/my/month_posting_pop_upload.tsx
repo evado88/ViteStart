@@ -110,18 +110,15 @@ const MyMonthlyPosting = ({ props }: any) => {
   const onFormApproveSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (uploadedFiles.length == 0) {
-      //simulate process
-      let result = confirm(
-        "Are you sure you want to submit the POP without attaching a file?",
-        "Confirm changes",
+    if (uploadedFiles.length == 0 && monthlyPosting?.deposit_total > 0) {
+      //money is owed, so the proof of payment is required
+      Assist.showMessage(
+        `Please upload the proof of your payment of ${Assist.formatCurrency(monthlyPosting.deposit_total)}`,
+        "error",
       );
-
-      result.then((dialogResult) => {
-        if (dialogResult) {
-          submitPostingReview(Assist.REVIEW_ACTION_APPROVE, approvalComments);
-        }
-      });
+    } else if (uploadedFiles.length == 0) {
+      //the loan covers the contributions: nothing to pay, just confirm
+      submitPostingReview(Assist.REVIEW_ACTION_APPROVE, approvalComments);
     } else {
       //simulate process
       let result = confirm(
@@ -231,6 +228,7 @@ const MyMonthlyPosting = ({ props }: any) => {
                               );
                             }
                           }}
+                          uploadHeaders={Assist.authHeaders()}
                           uploadUrl={`${AppInfo.apiUrl}attachments/create/type/monthlyPost/parent/${eId}`}
                         />
                       </div>

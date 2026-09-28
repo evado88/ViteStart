@@ -12,6 +12,12 @@ import { TransactionList } from "../../../components/transactionList";
 import config from "devextreme/core/config";
 import { usePeriod } from "../../../context/PeriodContext";
 import SelectBox, { SelectBoxTypes } from "devextreme-react/select-box";
+import { Popup } from "devextreme-react/popup";
+import { NumberBox } from "devextreme-react/number-box";
+import TextArea from "devextreme-react/text-area";
+import Button from "devextreme-react/button";
+import { Validator, RequiredRule, RangeRule } from "devextreme-react/validator";
+import ValidationSummary from "devextreme-react/validation-summary";
 
 const AdminPenalties = () => {
   const { periodYear, UpdatePeriodYear, periodYearData } = usePeriod();
@@ -21,6 +27,17 @@ const AdminPenalties = () => {
   const [loadingText, setLoadingText] = useState("Loading data...");
   const [loading, setLoading] = useState(true);
   const hasRun = useRef(false);
+
+  //post a penalty against a member's account; it stays outstanding until
+  //the member pays it with their next monthly posting
+  const [showPost, setShowPost] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [members, setMembers] = useState<any[]>([]);
+  const [penaltyTypes, setPenaltyTypes] = useState<any[]>([]);
+  const [penaltyUser, setPenaltyUser] = useState<number | null>(null);
+  const [penaltyType, setPenaltyType] = useState<number | null>(null);
+  const [penaltyAmount, setPenaltyAmount] = useState<number | null>(null);
+  const [penaltyComments, setPenaltyComments] = useState("");
 
   const pageConfig = new PageConfig(
     "Administration - Approved Penalties",
@@ -103,13 +120,70 @@ const AdminPenalties = () => {
     );
   };
 
+  const openPostPenalty = () => {
+    setPenaltyUser(null);
+    setPenaltyType(null);
+    setPenaltyAmount(null);
+    setPenaltyComments("");
+    setShowPost(true);
+
+    if (members.length === 0) {
+      Promise.all([
+        Assist.loadData("Members", `members/status/${Assist.STATUS_APPROVED}`),
+        Assist.loadData("Penalty Types", "penalty-types/"),
+      ])
+        .then(([memberData, typeData]: any[]) => {
+          setMembers(
+            memberData
+              .filter((m: any) => m.user_id != null)
+              .map((m: any) => ({
+                id: m.user_id,
+                name: `${m.fname} ${m.lname} (${m.email})`,
+              })),
+          );
+          setPenaltyTypes(typeData);
+        })
+        .catch((message) => Assist.showMessage(message, "error"));
+    }
+  };
+
+  const onPostPenalty = (e: React.FormEvent) => {
+    e.preventDefault();
+    setSaving(true);
+
+    Assist.postPutData(
+      "Penalty",
+      "transactions/penalty",
+      {
+        user_id: penaltyUser,
+        penalty_type_id: penaltyType,
+        amount: penaltyAmount,
+        comments: penaltyComments,
+      },
+      0,
+    )
+      .then(() => {
+        setSaving(false);
+        setShowPost(false);
+        Assist.showMessage(
+          "The penalty has been posted to the member's account",
+          "success",
+        );
+        loadData(periodYear);
+      })
+      .catch((message) => {
+        setSaving(false);
+        Assist.showMessage(message, "error");
+      });
+  };
+
   const addButtonOptions = useMemo(
     () => ({
       icon: "add",
-      text: "New Monthly Posting",
-      onClick: () => navigate("/my/monthly-posting/post"),
+      text: "Post Penalty",
+      onClick: () => openPostPenalty(),
     }),
-    [],
+    [members],
   );
 
   return (
@@ -136,6 +210,84 @@ const AdminPenalties = () => {
           />
         </Col>
       </Row>
+      <Popup
+        visible={showPost}
+        onHiding={() => setShowPost(false)}
+        title="Post Penalty"
+        showCloseButton={true}
+        width={560}
+        height="auto"
+        maxWidth="95vw"
+      >
+        <form onSubmit={onPostPenalty}>
+          <div className="dx-fieldset">
+            <div className="dx-field">
+              <div className="dx-field-label">Member</div>
+              <SelectBox
+                className="dx-field-value"
+                dataSource={members}
+                valueExpr="id"
+                displayExpr="name"
+                searchEnabled={true}
+                placeholder="Member"
+                value={penaltyUser}
+                onValueChange={(value) => setPenaltyUser(value)}
+              >
+                <Validator>
+                  <RequiredRule message="Member is required" />
+                </Validator>
+              </SelectBox>
+            </div>
+            <div className="dx-field">
+              <div className="dx-field-label">Penalty Type</div>
+              <SelectBox
+                className="dx-field-value"
+                dataSource={penaltyTypes}
+                valueExpr="id"
+                displayExpr="type_name"
+                placeholder="Penalty Type"
+                value={penaltyType}
+                onValueChange={(value) => setPenaltyType(value)}
+              >
+                <Validator>
+                  <RequiredRule message="Penalty type is required" />
+                </Validator>
+              </SelectBox>
+            </div>
+            <div className="dx-field">
+              <div className="dx-field-label">Amount ZMW</div>
+              <NumberBox
+                className="dx-field-value"
+                placeholder="Amount"
+                value={penaltyAmount!}
+                onValueChange={(value) => setPenaltyAmount(value)}
+              >
+                <Validator>
+                  <RequiredRule message="Amount is required" />
+                  <RangeRule min={1} message="Amount must be more than zero" />
+                </Validator>
+              </NumberBox>
+            </div>
+            <div className="dx-field">
+              <div className="dx-field-label">Comments</div>
+              <TextArea
+                className="dx-field-value"
+                height={70}
+                value={penaltyComments}
+                onValueChange={(value) => setPenaltyComments(value)}
+              />
+            </div>
+            <ValidationSummary />
+            <Button
+              width="100%"
+              type="success"
+              text="Post Penalty"
+              disabled={saving}
+              useSubmitBehavior={true}
+            />
+          </div>
+        </form>
+      </Popup>
     </div>
   );
 };

@@ -1,0 +1,644 @@
+/*
+ * OSAWE application theme.
+ *
+ * One stylesheet, loaded after the template and DevExtreme styles (see
+ * App.jsx), that gives every page the same look: the brand green from the
+ * sign-in page and emails, a dark sidebar, a white header, and consistent
+ * cards, tables, forms and buttons. Page files are not changed.
+ *
+ * Selectors are prefixed with `body` where the template's own rules need to be
+ * outranked; there are no page-specific rules here.
+ */
+:root {
+  --osawe-brand: #1f6f4a;
+  --osawe-brand-dark: #154d34;
+  --osawe-brand-soft: #e8f3ed;
+  --osawe-accent: #3fcc7e;
+  --osawe-sidebar: #12352a;
+  --osawe-sidebar-2: #0f2c23;
+  --osawe-ink: #1f2937;
+  --osawe-muted: #6b7280;
+  --osawe-line: #e5e7eb;
+  --osawe-bg: #f3f5f4;
+  --osawe-radius: 10px;
+  --osawe-radius-sm: 6px;
+  --osawe-shadow: 0 1px 2px rgba(16, 24, 40, 0.04), 0 4px 16px rgba(16, 24, 40, 0.06);
+}
+
+/* ---------- page ---------- */
+body,
+body .page-container,
+body .page-content-wrapper .page-content {
+  background-color: var(--osawe-bg);
+  color: var(--osawe-ink);
+}
+
+body .page-content-wrapper .page-content {
+  padding-top: 24px;
+}
+
+/* ---------- header ---------- */
+body .page-header.navbar {
+  background: #ffffff;
+  border-bottom: 1px solid var(--osawe-line);
+  box-shadow: 0 1px 3px rgba(16, 24, 40, 0.06);
+}
+
+body .page-header.navbar .page-logo {
+  background: var(--osawe-sidebar);
+}
+
+body .page-header.navbar .page-logo a,
+body .page-header.navbar .page-logo .logo-default,
+body .page-header.navbar .page-logo .logo-icon {
+  color: #ffffff;
+}
+
+body .page-header.navbar .page-logo .logo-default {
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  font-size: 20px;
+}
+
+body .page-header.navbar .page-logo .logo-icon {
+  background: rgba(255, 255, 255, 0.12);
+  border-radius: 8px;
+  padding: 4px;
+}
+
+body .page-header.navbar .top-menu .navbar-nav > li > a,
+body .page-header.navbar .top-menu .navbar-nav > li > a > .username,
+body .page-header.navbar .top-menu .navbar-nav > li > a > i,
+body .page-header.navbar .top-menu .navbar-nav .dropdown-toggle,
+body .page-header.navbar .menu-toggler,
+body .page-header.navbar .top-menu .mdl-button {
+  color: var(--osawe-ink);
+}
+
+body .page-header.navbar .top-menu .navbar-nav > li > a:hover {
+  background: var(--osawe-brand-soft);
+}
+
+body .page-header.navbar .menu-toggler span,
+body .page-header.navbar .menu-toggler span:before,
+body .page-header.navbar .menu-toggler span:after {
+  background: var(--osawe-ink);
+}
+
+body .page-header.navbar .dropdown-menu {
+  border: 1px solid var(--osawe-line);
+  border-radius: var(--osawe-radius);
+  box-shadow: var(--osawe-shadow);
+}
+
+/* ---------- sidebar ---------- */
+body .sidemenu-container,
+body .sidebar-container,
+body .page-container .sidemenu-container {
+  background: linear-gradient(180deg, var(--osawe-sidebar) 0%, var(--osawe-sidebar-2) 100%);
+}
+
+body .sidemenu-container .sidemenu > li,
+body .sidemenu-container .sidemenu > li > a,
+body .sidemenu-container .sidemenu .sub-menu,
+body .sidemenu-container .sidemenu .sub-menu > li,
+body .sidemenu-container .sidemenu .sub-menu > li > a {
+  background: transparent;
+  border: none;
+  box-shadow: none;
+}
+
+body .sidemenu-container .sidemenu > li {
+  margin: 2px 0;
+}
+
+body .sidemenu-container .sidemenu > li > a {
+  color: rgba(255, 255, 255, 0.78);
+  border-radius: 8px;
+  padding: 10px 12px;
+  font-size: 14px;
+  font-weight: 500;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+body .sidemenu-container .sidemenu > li > a > i {
+  color: rgba(255, 255, 255, 0.6);
+  width: 22px;
+  text-align: center;
+}
+
+body .sidemenu-container .sidemenu > li:hover > a,
+body .sidemenu-container .sidemenu > li.open > a {
+  background: rgba(255, 255, 255, 0.07);
+  color: #ffffff;
+}
+
+body .sidemenu-container .sidemenu > li:hover > a > i,
+body .sidemenu-container .sidemenu > li.open > a > i {
+  color: #ffffff;
+}
+
+body .sidemenu-container .sidemenu > li.active > a,
+body .sidemenu-container .sidemenu > li.active.open > a {
+  background: rgba(63, 204, 126, 0.16);
+  color: #ffffff;
+  box-shadow: inset 3px 0 0 var(--osawe-accent);
+}
+
+body .sidemenu-container .sidemenu > li.active > a > i {
+  color: var(--osawe-accent);
+}
+
+/* sub-menus */
+body .sidemenu-container .sidemenu .sub-menu {
+  padding: 2px 0 6px;
+}
+
+body .sidemenu-container .sidemenu .sub-menu > li > a {
+  color: rgba(255, 255, 255, 0.68);
+  font-size: 13px;
+  padding: 7px 12px 7px 46px;
+  border-radius: 8px;
+}
+
+body .sidemenu-container .sidemenu .sub-menu > li:hover > a,
+body .sidemenu-container .sidemenu .sub-menu > li.active > a {
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.06);
+}
+
+body .sidemenu-container .sidemenu .sub-menu > li.active > a {
+  color: var(--osawe-accent);
+}
+
+/* ---------- page title and breadcrumb ---------- */
+body .page-bar {
+  margin-bottom: 20px;
+}
+
+body .page-bar .page-title-breadcrumb {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+body .page-bar .page-title-breadcrumb::after,
+body .page-bar .page-title-breadcrumb::before {
+  display: none;
+}
+
+body .page-bar .page-title {
+  color: var(--osawe-ink);
+  font-size: 22px;
+  font-weight: 600;
+  letter-spacing: 0;
+  margin: 0;
+}
+
+body .page-bar .page-breadcrumb {
+  background: transparent;
+  box-shadow: none;
+  border-radius: 0;
+  padding: 0;
+  margin: 0;
+  font-size: 13px;
+  color: var(--osawe-muted);
+}
+
+body .page-bar .page-breadcrumb > li,
+body .page-bar .page-breadcrumb > li > a,
+body .page-bar .page-breadcrumb > li > i {
+  color: var(--osawe-muted);
+  font-size: 13px;
+}
+
+body .page-bar .page-breadcrumb > li.active {
+  color: var(--osawe-ink);
+  font-weight: 500;
+}
+
+/* ---------- cards ---------- */
+body .card {
+  background: #ffffff;
+  border: 1px solid var(--osawe-line);
+  border-radius: var(--osawe-radius);
+  box-shadow: var(--osawe-shadow);
+  margin-bottom: 20px;
+}
+
+body .card .card-head {
+  border-bottom: 1px solid var(--osawe-line);
+  padding: 14px 20px;
+  min-height: auto;
+  background: transparent;
+}
+
+body .card .card-head header {
+  color: var(--osawe-ink);
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: 0;
+  padding: 0;
+  text-transform: none;
+}
+
+body .card .card-body {
+  padding: 20px;
+}
+
+/* ---------- forms ---------- */
+body .dx-fieldset {
+  margin: 0 0 20px;
+  padding: 0;
+}
+
+body .dx-fieldset-header {
+  color: var(--osawe-ink);
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 14px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--osawe-line);
+}
+
+body .dx-field {
+  margin-bottom: 12px;
+  min-height: 36px;
+  align-items: center;
+}
+
+body .dx-field-label {
+  color: #4b5563;
+  font-size: 13px;
+  font-weight: 500;
+  padding-top: 9px;
+}
+
+body .dx-field-value-static {
+  color: var(--osawe-ink);
+  font-size: 13px;
+  padding-top: 9px;
+}
+
+body .dx-texteditor.dx-editor-filled,
+body .dx-texteditor.dx-editor-outlined,
+body .dx-texteditor.dx-editor-underlined {
+  background: #ffffff;
+  border: 1px solid #d1d5db;
+  border-radius: var(--osawe-radius-sm);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+body .dx-texteditor.dx-editor-filled.dx-state-hover,
+body .dx-texteditor.dx-editor-outlined.dx-state-hover {
+  border-color: #9ca3af;
+}
+
+body .dx-texteditor.dx-state-focused.dx-editor-filled,
+body .dx-texteditor.dx-state-focused.dx-editor-outlined {
+  border-color: var(--osawe-brand);
+  box-shadow: 0 0 0 3px rgba(31, 111, 74, 0.14);
+}
+
+body .dx-texteditor.dx-state-disabled,
+body .dx-texteditor.dx-state-readonly {
+  background: #f9fafb;
+}
+
+body .dx-texteditor .dx-texteditor-input {
+  font-size: 13px;
+  min-height: 34px;
+  color: var(--osawe-ink);
+}
+
+body .dx-texteditor.dx-invalid.dx-editor-filled,
+body .dx-texteditor.dx-invalid.dx-editor-outlined {
+  border-color: #dc2626;
+}
+
+body .dx-htmleditor {
+  border-radius: var(--osawe-radius-sm);
+}
+
+/* ---------- buttons ---------- */
+body .dx-button {
+  border-radius: var(--osawe-radius-sm);
+}
+
+body .dx-button .dx-button-text {
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  text-transform: none;
+}
+
+body .dx-button-mode-contained.dx-button-default,
+body .dx-button-mode-contained.dx-button-success {
+  background-color: var(--osawe-brand);
+  border-color: var(--osawe-brand);
+  color: #ffffff;
+}
+
+body .dx-button-mode-contained.dx-button-default.dx-state-hover,
+body .dx-button-mode-contained.dx-button-success.dx-state-hover,
+body .dx-button-mode-contained.dx-button-default.dx-state-focused,
+body .dx-button-mode-contained.dx-button-success.dx-state-focused,
+body .dx-button-mode-contained.dx-button-default.dx-state-active,
+body .dx-button-mode-contained.dx-button-success.dx-state-active {
+  background-color: var(--osawe-brand-dark);
+  border-color: var(--osawe-brand-dark);
+}
+
+body .dx-button-mode-contained.dx-button-default .dx-icon,
+body .dx-button-mode-contained.dx-button-success .dx-icon,
+body .dx-button-mode-contained.dx-button-default .dx-button-text,
+body .dx-button-mode-contained.dx-button-success .dx-button-text {
+  color: #ffffff;
+}
+
+body .dx-button-mode-contained.dx-button-danger {
+  background-color: #dc2626;
+  border-color: #dc2626;
+}
+
+body .dx-button-mode-contained.dx-button-danger.dx-state-hover {
+  background-color: #b91c1c;
+}
+
+body .dx-button-mode-outlined.dx-button-normal,
+body .dx-button-mode-contained.dx-button-normal {
+  border-color: #d1d5db;
+  background-color: #ffffff;
+}
+
+body .dx-button-mode-outlined.dx-button-normal.dx-state-hover,
+body .dx-button-mode-contained.dx-button-normal.dx-state-hover {
+  background-color: var(--osawe-brand-soft);
+  border-color: var(--osawe-brand);
+}
+
+body .dx-button.dx-state-disabled {
+  opacity: 0.55;
+}
+
+/* ---------- data grids ---------- */
+body .dx-datagrid {
+  color: var(--osawe-ink);
+  font-size: 13px;
+}
+
+body .dx-datagrid-borders > .dx-datagrid-headers,
+body .dx-datagrid-borders > .dx-datagrid-rowsview,
+body .dx-datagrid-borders > .dx-datagrid-total-footer,
+body .dx-datagrid-borders > .dx-datagrid-filter-panel,
+body .dx-datagrid-borders > .dx-datagrid-pager {
+  border-color: var(--osawe-line);
+}
+
+body .dx-datagrid-headers {
+  background: #f9fafb;
+  color: #4b5563;
+  border-bottom: 1px solid var(--osawe-line);
+}
+
+body .dx-datagrid-headers .dx-header-row > td {
+  font-weight: 600;
+  font-size: 12px;
+  color: #4b5563;
+  padding-top: 11px;
+  padding-bottom: 11px;
+}
+
+body .dx-datagrid .dx-row > td {
+  border-color: #f0f1f3;
+}
+
+body .dx-datagrid-rowsview .dx-row.dx-data-row > td {
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
+
+body .dx-datagrid-rowsview .dx-row.dx-data-row.dx-state-hover > td {
+  background: var(--osawe-brand-soft);
+}
+
+body .dx-datagrid .dx-row-alt > td {
+  background: #fbfbfc;
+}
+
+body .dx-datagrid-rowsview .dx-selection.dx-row > td,
+body .dx-datagrid-rowsview .dx-row-focused.dx-data-row > td {
+  background: #d6ecdf;
+  color: var(--osawe-ink);
+}
+
+body .dx-datagrid-filter-row {
+  background: #ffffff;
+}
+
+body .dx-datagrid-header-panel {
+  border-bottom: none;
+  padding-bottom: 8px;
+}
+
+body .dx-datagrid-group-panel,
+body .dx-datagrid-headers .dx-datagrid-group-row {
+  color: var(--osawe-muted);
+}
+
+body .dx-datagrid .dx-link,
+body .dx-datagrid a {
+  color: var(--osawe-brand);
+  font-weight: 500;
+}
+
+body .dx-datagrid-total-footer {
+  background: #f9fafb;
+}
+
+body .dx-datagrid .dx-datagrid-summary-item {
+  color: var(--osawe-ink);
+  font-weight: 600;
+}
+
+body .dx-datagrid-nodata {
+  color: var(--osawe-muted);
+}
+
+/* pager */
+body .dx-pager .dx-pages .dx-selection,
+body .dx-pager .dx-page-sizes .dx-selection {
+  background-color: var(--osawe-brand);
+  color: #ffffff;
+  border-radius: var(--osawe-radius-sm);
+}
+
+body .dx-pager .dx-page,
+body .dx-pager .dx-page-size {
+  border-radius: var(--osawe-radius-sm);
+}
+
+body .dx-pager {
+  color: var(--osawe-muted);
+}
+
+/* ---------- lists, checkboxes, tabs, popups, toasts ---------- */
+body .dx-list-item.dx-list-item-selected,
+body .dx-list-item.dx-state-focused {
+  background-color: var(--osawe-brand-soft);
+  color: var(--osawe-ink);
+}
+
+body .dx-checkbox-checked .dx-checkbox-icon {
+  background-color: var(--osawe-brand);
+  border-color: var(--osawe-brand);
+}
+
+body .dx-tab.dx-tab-selected,
+body .dx-tabs .dx-tab.dx-tab-selected::after {
+  color: var(--osawe-brand);
+  border-color: var(--osawe-brand);
+}
+
+body .dx-popup-wrapper > .dx-overlay-content {
+  border-radius: var(--osawe-radius);
+  box-shadow: 0 20px 48px rgba(16, 24, 40, 0.18);
+}
+
+body .dx-popup-title {
+  border-bottom: 1px solid var(--osawe-line);
+  font-weight: 600;
+}
+
+body .dx-toast-content {
+  border-radius: var(--osawe-radius-sm);
+  box-shadow: var(--osawe-shadow);
+}
+
+body .dx-toast-success {
+  background-color: var(--osawe-brand);
+}
+
+body .dx-validationsummary-item {
+  color: #dc2626;
+}
+
+/* ---------- links, badges ---------- */
+body a {
+  color: var(--osawe-brand);
+}
+
+body a:hover {
+  color: var(--osawe-brand-dark);
+}
+
+body .text-success {
+  color: var(--osawe-brand) !important;
+}
+
+body .badge-warning {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+/* ---------- footer ---------- */
+body .page-footer {
+  background: #ffffff;
+  border-top: 1px solid var(--osawe-line);
+}
+
+body .page-footer .page-footer-inner {
+  color: var(--osawe-muted);
+  font-size: 12px;
+}
+
+/* ---------- outranking the template's colour-scheme classes on <body> ----------
+ * index.html sets header-dark, logo-green and blue-sidebar-color on <body>; the
+ * template styles those with body-class selectors, so these repeat the rules
+ * above with the same classes (and !important where the template uses it). */
+body.header-dark .page-header.navbar,
+body .page-header.navbar.navbar-fixed-top {
+  background: #ffffff !important;
+}
+
+body.logo-green .page-header.navbar .page-logo,
+body .page-header.navbar .page-logo {
+  background: var(--osawe-sidebar) !important;
+}
+
+body.header-dark .page-header.navbar .top-menu .navbar-nav > li > a,
+body.header-dark .page-header.navbar .top-menu .navbar-nav > li > a > .username,
+body.header-dark .page-header.navbar .top-menu .navbar-nav > li > a svg,
+body.header-dark .page-header.navbar .top-menu .navbar-nav > li > a i {
+  color: var(--osawe-ink) !important;
+}
+
+body.blue-sidebar-color .sidemenu-container,
+body.blue-sidebar-color .sidebar-container {
+  background: linear-gradient(180deg, var(--osawe-sidebar) 0%, var(--osawe-sidebar-2) 100%) !important;
+}
+
+/* closed sub-menus are 0px high: no background or padding, or they show as a strip */
+body .sidemenu-container .sidemenu li .sub-menu,
+body.blue-sidebar-color .sidemenu-container .sidemenu li .sub-menu {
+  background: transparent !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  border: none !important;
+}
+
+body.blue-sidebar-color .sidemenu-container .sidemenu > li > a {
+  background: transparent;
+  color: rgba(255, 255, 255, 0.78);
+}
+
+body.blue-sidebar-color .sidemenu-container .sidemenu > li:hover > a,
+body.blue-sidebar-color .sidemenu-container .sidemenu > li.open > a {
+  background: rgba(255, 255, 255, 0.07) !important;
+  color: #ffffff;
+}
+
+body.blue-sidebar-color .sidemenu-container .sidemenu > li.active > a,
+body.blue-sidebar-color .sidemenu-container .sidemenu > li.active.open > a {
+  background: rgba(63, 204, 126, 0.16) !important;
+  color: #ffffff !important;
+  box-shadow: inset 3px 0 0 var(--osawe-accent);
+}
+
+body.blue-sidebar-color .sidemenu-container .sidemenu .sub-menu > li > a {
+  background: transparent !important;
+}
+
+body.blue-sidebar-color .sidemenu-container .sidemenu .sub-menu > li:hover > a {
+  background: rgba(255, 255, 255, 0.06) !important;
+}
+
+/* the page title sits on the page, not on a grey band */
+body .page-bar,
+body .page-content .page-bar {
+  background: transparent !important;
+  border: none;
+  box-shadow: none;
+  padding-left: 0;
+  padding-right: 0;
+}
+
+/* line the page title up with the cards below it */
+body .page-content .page-bar {
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+}
+
+/* bootstrap outline buttons used on a few pages follow the brand */
+body .btn-outline-primary {
+  color: var(--osawe-brand);
+  border-color: var(--osawe-brand);
+}
+
+body .btn-outline-primary:hover {
+  background: var(--osawe-brand);
+  border-color: var(--osawe-brand);
+  color: #ffffff;
+}

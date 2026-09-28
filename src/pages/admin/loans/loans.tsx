@@ -9,6 +9,7 @@ import PageConfig from "../../../classes/page-config";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../../context/AuthContext";
 import { TransactionList } from "../../../components/transactionList";
+import { LoanScheduleList } from "../../../components/loanScheduleList";
 import { usePeriod } from "../../../context/PeriodContext";
 import SelectBox, { SelectBoxTypes } from "devextreme-react/select-box";
 
@@ -133,6 +134,11 @@ const AdminLoans = () => {
             title={pageConfig.Title}
             filterComponent={periodYearFilterComponent()}
           />
+        </Col>
+      </Row>
+      <Row>
+        <Col sz={12} sm={12} lg={12}>
+          <LoanScheduleList />
         </Col>
       </Row>
     </div>

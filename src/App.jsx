@@ -1,5 +1,7 @@
 import "./App.css";
 import "devextreme/dist/css/dx.greenmist.compact.css";
+// the app-wide theme goes last so it applies over the template and DevExtreme
+import "./assets/css/app-theme.css";
 import MainLayout from "./components/MainLayout";
 import AuthLayout from "./components/AuthLayout";
 import PrivateRoute from "./auth/PrivateRoute";
@@ -11,7 +13,6 @@ import {
   NotFoundPage,
   //Auth
   LoginPage,
-  SignupPage,
   //dictionairies
   StatusesPage,
   TransactionSourcesPage,
@@ -110,6 +111,7 @@ import { BrowserRouter } from "react-router-dom";
 import AttendanceTypes from "./pages/admin/dictionairies/attendance_types";
 import ReviewStages from "./pages/admin/dictionairies/review_stages";
 import AdminMonthlySubmittedPostings from "./pages/admin/monthly-posting/month_posting_submitted";
+import AdminApprovalsPage from "./pages/admin/approvals/approvals";
 import AdminMembersApproved from "./pages/admin/members/member_approved";
 import AdminMembersRejected from "./pages/admin/members/member_rejected";
 
@@ -159,6 +161,7 @@ function App() {
           {/* monthly postings */}
           <Route path="/admin/monthly-postings/list" element={<AdminMonthlyPostingsPage/>} />
           <Route path="/admin/monthly-postings/submitted" element={<AdminMonthlySubmittedPostings/>} />
+          <Route path="/admin/approvals" element={<AdminApprovalsPage/>} />
           <Route path="/admin/monthly-postings/approved" element={<AdminMonthlyApprovedPostingsPage/>} />
           <Route path="/admin/monthly-postings/rejected" element={<AdminMonthlyRejectedPostingsPage/>} />
           <Route path="/admin/monthly-postings/ddac-report/:eId" element={<AdminMonthlyPostingsDDACPage/>} />
@@ -266,7 +269,6 @@ function App() {
         </Route>
         <Route element={<AuthLayout />}>
           <Route path="/login" element={<LoginPage></LoginPage>} />
-          <Route path="/signup" element={<SignupPage></SignupPage>} />
         </Route>
       </Routes>
     </BrowserRouter>

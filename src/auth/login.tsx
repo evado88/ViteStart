@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { TextBox } from "devextreme-react/text-box";
+import { TextBox, Button as TextBoxButton } from "devextreme-react/text-box";
 import Button from "devextreme-react/button";
 import {
   Validator,
@@ -10,50 +10,44 @@ import ValidationSummary from "devextreme-react/validation-summary";
 import { LoadIndicator } from "devextreme-react/load-indicator";
 import { useAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
-import { Link } from "react-router-dom";
 import Assist from "../classes/assist";
-import AppInfo from "../classes/app-info";
 import { LoadPanel } from "devextreme-react/load-panel";
 
 const Login = () => {
   const { user, login } = useAuth();
   const navigate = useNavigate();
 
-  const [error, setError] = useState(false);
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
 
-  const [accessToken, setAccessToken] = useState(null);
+  //two-factor: the server sends the code and checks it; the page only
+  //holds the short-lived ticket that identifies this login attempt
+  const [otpToken, setOtpToken] = useState<string | null>(null);
+  const [mobileHint, setMobileHint] = useState("");
   const [code, setCode] = useState("");
-  const [OTP, setOTP] = useState("");
 
   const [stage, setStage] = useState(1);
-
-  const [config, setConfig] = useState<any | null>(null);
 
   useEffect(() => {
     // Redirect if already logged in
     if (user) {
       navigate("/");
-    } else {
-      setLoading(true);
-      setTimeout(() => {
-        Assist.loadData("Configuration", AppInfo.configApiUrl)
-          .then((data) => {
-            setLoading(false);
-            setConfig(data);
-            setError(false);
-          })
-          .catch((message) => {
-            setLoading(false);
-            setError(true);
-            Assist.showMessage(message, "error");
-          });
-      }, Assist.DEV_DELAY);
     }
   }, [user, navigate]);
+
+  const startOTP = (data: any) => {
+    setOtpToken(data.otp_token);
+    setMobileHint(data.mobile_hint);
+    setCode("");
+    setStage(2);
+    Assist.showMessage(
+      `A one time password has been sent to your WhatsApp number ${data.mobile_hint} and your email ${data.email_hint}`,
+      "success",
+    );
+  };
 
   const onFormSubmit = async (e: React.FormEvent) => {
     setSaving(true);
@@ -70,18 +64,9 @@ const Login = () => {
         .then((data: any) => {
           setSaving(false);
 
-          //navigate
-          //check if two factor is active
-
-          if (config.enable_2FA == Assist.RESPONSE_YES) {
-            //active
-            const details = Assist.getTokenDetails(data.access_token);
-            setAccessToken(data.access_token);
-
-            sendWhatsappOTP(details.mobile);
-            setStage(2);
+          if (data.otp_required) {
+            startOTP(data);
           } else {
-            //disabled, login immediately
             login(data.access_token);
           }
         })
@@ -92,193 +77,232 @@ const Login = () => {
     }, Assist.DEV_DELAY);
   };
 
-  const sendWhatsappOTP = (userPhone: string) => {
+  const resendOTP = () => {
     setLoading(true);
-    const newCode = Math.floor(100000 + Math.random() * 900000);
-
-    console.log(`Now sending OTP to client ${userPhone}`);
-
-    setOTP(`${newCode}`);
-
-    const postData = {
-      mobile: userPhone,
-      code: newCode,
-    };
-
-    setTimeout(() => {
-      Assist.postPutData(
-        "WhatsApp Code",
-        `whatsapp/send-infobip-auth-message`,
-        postData,
-        0,
-      )
-        .then((data) => {
-          setLoading(false);
-          console.log(data);
-          Assist.showMessage(
-            `The OTP has been successfully sent to ${userPhone}`,
-            "success",
-          );
-        })
-        .catch((message) => {
-          setLoading(false);
-          console.log(message);
-          Assist.showMessage(
-            `Error sending OTP to ${userPhone}. Please try again`,
-            "error",
-          );
-        });
-    }, Assist.DEV_DELAY);
+    Assist.postPutData("Resend Code", "auth/resend-otp", { otp_token: otpToken }, 0)
+      .then((data: any) => {
+        setLoading(false);
+        startOTP(data);
+      })
+      .catch((message) => {
+        setLoading(false);
+        Assist.showMessage(message, "error");
+      });
   };
 
   const onOTPFormSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
 
-    setTimeout(() => {
-      setLoading(false);
-      if (code == OTP) {
-        login(accessToken);
-      } else {
-        Assist.showMessage(
-          `The specified code ${code} is not correct. Please try again.`,
-          "error",
-        );
-      }
-    }, Assist.DEV_DELAY);
+    Assist.postPutData(
+      "Verify Code",
+      "auth/verify-otp",
+      { otp_token: otpToken, code: code },
+      0,
+    )
+      .then((data: any) => {
+        setLoading(false);
+        login(data.access_token);
+      })
+      .catch((message) => {
+        setLoading(false);
+        Assist.showMessage(message, "error");
+      });
   };
   return (
-    <section className="sign-in">
-      <div className="container">
-        <div className="signin-content">
-          <LoadPanel
-            shadingColor="rgba(0,0,0,0.4)"
-            position={{ of: "#pageRoot" }}
-            visible={loading}
-            showIndicator={true}
-            shading={true}
-            showPane={true}
-            hideOnOutsideClick={false}
-          />
-          <div className="signin-form">
-            <h2 className="form-title">{AppInfo.appCode}</h2>
-            {stage == 1 && (
-              <form
-                className="register-form"
-                id="login-form"
-                onSubmit={onFormSubmit}
-              >
-                <div className="dx-fieldset">
-                  <div className="dx-fieldset-header">Login</div>
-                  <div className="dx-field">
-                    <div className="dx-field-label">Username</div>
-                    <TextBox
-                      className="dx-field-value"
-                      validationMessagePosition="left"
-                      inputAttr={{ "aria-label": "Userame" }}
-                      placeholder="Username"
-                      disabled={loading}
-                      value={username}
-                      onValueChange={(text) => setUsername(text)}
-                    >
-                      {" "}
-                      <Validator>
-                        <RequiredRule message="Username is required" />
-                      </Validator>
-                    </TextBox>
-                  </div>
-                  <div className="dx-field">
-                    <div className="dx-field-label">Password</div>
-                    <TextBox
-                      className="dx-field-value"
-                      validationMessagePosition="left"
-                      inputAttr={{ "aria-label": "Password" }}
-                      placeholder="Password"
-                      disabled={loading}
-                      mode="password"
-                      value={password}
-                      onValueChange={(text) => setPassword(text)}
-                    >
-                      {" "}
-                      <Validator>
-                        <RequiredRule message="Password is required" />
-                      </Validator>
-                    </TextBox>
-                  </div>
-                </div>
-                <div className="form-group">
-                  <ValidationSummary id="summary" />
-                </div>
-                <div className="form-group form-button">
-                  <Button
-                    width="100%"
-                    type={saving ? "normal" : "default"}
-                    disabled={loading || error || saving}
-                    useSubmitBehavior={true}
-                  >
-                    <LoadIndicator
-                      className="button-indicator"
-                      visible={saving}
-                    />
-                    <span className="dx-button-text">Login</span>
-                  </Button>
-                  <Link to={"/signup"} className="signup-image-link">
-                    Create an account
-                  </Link>
-                </div>
-              </form>
-            )}
-            {stage == 2 && (
-              <form
-                className="register-form"
-                id="login-form"
-                onSubmit={onOTPFormSubmit}
-              >
-                <div className="dx-fieldset">
-                  <div className="dx-fieldset-header">One Time Password</div>
-                  <div className="dx-field">
-                    <div className="dx-field-label">Code</div>
-                    <TextBox
-                      className="dx-field-value"
-                      placeholder="Code"
-                      value={code}
-                      onValueChange={(text) => setCode(text)}
-                    >
-                      {" "}
-                      <Validator>
-                        <RequiredRule message="OTP code required" />
-                        <CustomRule
-                          validationCallback={(e) => e.value == OTP}
-                          message={`The specified code is not valid. Please try again`}
-                        />
-                      </Validator>
-                    </TextBox>
-                  </div>
-                </div>
-                <div className="form-group">
-                  <ValidationSummary id="summary" />
-                </div>
-                <div className="form-group form-button">
-                  <Button
-                    width="100%"
-                    text="Login"
-                    type={loading ? "normal" : "default"}
-                    disabled={loading}
-                    useSubmitBehavior={true}
-                  >
-                    <LoadIndicator
-                      className="button-indicator"
-                      visible={loading}
-                    />
-                    <span className="dx-button-text">Verify OTP</span>
-                  </Button>
-                </div>
-              </form>
-            )}
+    <div id="pageRoot" className="auth-page">
+      <LoadPanel
+        shadingColor="rgba(0,0,0,0.2)"
+        position={{ of: "#pageRoot" }}
+        visible={loading}
+        showIndicator={true}
+        shading={true}
+        showPane={true}
+        hideOnOutsideClick={false}
+      />
+
+      {/* brand panel */}
+      <aside className="auth-brand">
+        <div className="auth-brand-top">
+          <div className="auth-logo">
+            <span className="material-icons">people</span>
+          </div>
+          <div>
+            <div className="auth-brand-name">OSAWE</div>
+            <div className="auth-brand-sub">Village Bank</div>
           </div>
         </div>
-      </div>
-    </section>
+
+        <div className="auth-brand-body">
+          <h1>Your savings, loans and contributions in one place.</h1>
+          <ul className="auth-features">
+            <li>
+              <span className="material-icons">account_balance_wallet</span>
+              <div>
+                <strong>Monthly postings</strong>
+                <span>Submit savings, shares and repayments online.</span>
+              </div>
+            </li>
+            <li>
+              <span className="material-icons">account_balance</span>
+              <div>
+                <strong>Loans</strong>
+                <span>See your balance, schedule and what is due.</span>
+              </div>
+            </li>
+            <li>
+              <span className="material-icons">receipt</span>
+              <div>
+                <strong>Statements</strong>
+                <span>Every transaction, open to all members.</span>
+              </div>
+            </li>
+          </ul>
+        </div>
+
+        <div className="auth-brand-foot">
+          © {new Date().getFullYear()} OSAWE Cooperative (OSACCO)
+        </div>
+      </aside>
+
+      {/* sign-in panel */}
+      <main className="auth-main">
+        <div className="auth-card">
+          {stage == 1 && (
+            <form id="login-form" onSubmit={onFormSubmit} noValidate>
+              <h2 className="auth-title">Sign in</h2>
+              <p className="auth-lead">
+                Welcome back. Use the email address registered with the village bank.
+              </p>
+
+              <label className="auth-label" htmlFor="auth-email">
+                Email address
+              </label>
+              <TextBox
+                className="auth-input"
+                stylingMode="outlined"
+                mode="email"
+                inputAttr={{ id: "auth-email", autocomplete: "username", "aria-label": "Email address" }}
+                placeholder="name@example.com"
+                disabled={saving}
+                value={username}
+                onValueChange={(text) => setUsername(text.trim())}
+              >
+                <Validator>
+                  <RequiredRule message="Please enter your email address" />
+                </Validator>
+              </TextBox>
+
+              <label className="auth-label" htmlFor="auth-password">
+                Password
+              </label>
+              <TextBox
+                className="auth-input"
+                stylingMode="outlined"
+                mode={showPassword ? "text" : "password"}
+                inputAttr={{ id: "auth-password", autocomplete: "current-password", "aria-label": "Password" }}
+                placeholder="Your password"
+                disabled={saving}
+                value={password}
+                onValueChange={(text) => setPassword(text)}
+              >
+                <TextBoxButton
+                  name="toggle"
+                  location="after"
+                  options={{
+                    icon: showPassword ? "eyeclose" : "eyeopen",
+                    stylingMode: "text",
+                    hint: showPassword ? "Hide password" : "Show password",
+                    onClick: () => setShowPassword(!showPassword),
+                  }}
+                />
+                <Validator>
+                  <RequiredRule message="Please enter your password" />
+                </Validator>
+              </TextBox>
+
+              <ValidationSummary id="summary" className="auth-summary" />
+
+              <Button
+                className="auth-submit"
+                width="100%"
+                type="default"
+                disabled={saving}
+                useSubmitBehavior={true}
+              >
+                <LoadIndicator className="button-indicator" visible={saving} />
+                <span className="dx-button-text">{saving ? "Signing in..." : "Sign in"}</span>
+              </Button>
+
+              <p className="auth-help">
+                Forgotten your password? Please contact the secretariat.
+              </p>
+            </form>
+          )}
+
+          {stage == 2 && (
+            <form id="otp-form" onSubmit={onOTPFormSubmit} noValidate>
+              <div className="auth-otp-icon">
+                <span className="material-icons">mail_outline</span>
+              </div>
+              <h2 className="auth-title">Check your phone and email</h2>
+              <p className="auth-lead">
+                We sent a 6-digit code to your WhatsApp number {mobileHint} and your email.
+                Enter it below to finish signing in.
+              </p>
+
+              <label className="auth-label" htmlFor="auth-code">
+                Verification code
+              </label>
+              <TextBox
+                className="auth-input auth-code"
+                stylingMode="outlined"
+                inputAttr={{
+                  id: "auth-code",
+                  inputmode: "numeric",
+                  autocomplete: "one-time-code",
+                  maxlength: 6,
+                  "aria-label": "Verification code",
+                }}
+                placeholder="000000"
+                value={code}
+                onValueChange={(text) => setCode(text.replace(/\D/g, ""))}
+              >
+                <Validator>
+                  <RequiredRule message="Please enter the code" />
+                  <CustomRule
+                    validationCallback={(e) => /^\d{6}$/.test(e.value)}
+                    message={`The code is the 6 digits sent to your WhatsApp and email`}
+                  />
+                </Validator>
+              </TextBox>
+
+              <ValidationSummary id="summary" className="auth-summary" />
+
+              <Button
+                className="auth-submit"
+                width="100%"
+                type="default"
+                disabled={loading}
+                useSubmitBehavior={true}
+              >
+                <LoadIndicator className="button-indicator" visible={loading} />
+                <span className="dx-button-text">Verify and sign in</span>
+              </Button>
+
+              <div className="auth-links">
+                <a href="#" onClick={(e) => { e.preventDefault(); resendOTP(); }}>
+                  Send a new code
+                </a>
+                <a href="#" onClick={(e) => { e.preventDefault(); setStage(1); setCode(""); }}>
+                  Back to sign in
+                </a>
+              </div>
+            </form>
+          )}
+        </div>
+      </main>
+    </div>
   );
 };
 

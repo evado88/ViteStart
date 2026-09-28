@@ -30,6 +30,7 @@ import { MemberHeader } from "../../components/memberHeader";
 import { confirm } from "devextreme/ui/dialog";
 import SelectBox from "devextreme-react/select-box";
 import AppInfo from "../../classes/app-info";
+import { PostingPrerequisites } from "../../components/postingPrerequisites";
 const PostMonthly = () => {
   //user
   const { user } = useAuth();
@@ -130,6 +131,8 @@ const PostMonthly = () => {
   const [lateMeetingFee, setLateMeetingFee] = useState<number | null>(null);
 
   const [currentLoan, setCurrentLoan] = useState<any | null>(null);
+  //the server's view of the open loan: interest due, schedule and arrears
+  const [loanSchedule, setLoanSchedule] = useState<any | null>(null);
   const [loanPayments, setLoanPayments] = useState<number>(0);
   const [loanBalance, setLoanBalance] = useState<number>(0);
   const [allowLoanAmountChange, setAllowLoanAmountChange] =
@@ -142,6 +145,8 @@ const PostMonthly = () => {
   );
 
   const [summryData, setSummaryData] = useState<any[] | null>([]);
+  //the posting form needs an approved guarantor and payment method first
+  const [param, setParam] = useState<any | null>(null);
   const hasRun = useRef(false);
 
   const pageConfig = new PageConfig(
@@ -238,7 +243,17 @@ const PostMonthly = () => {
       setError(false);
     }
   };
+  const reloadParam = () => {
+    Assist.loadData("Monthly Posting Param", pageConfig.UpdateUrl)
+      .then((data: any) => {
+        setParam(data);
+        updateVaues(data);
+      })
+      .catch((message) => Assist.showMessage(message, "error"));
+  };
+
   const updateVaues = (data: any) => {
+    setParam(data);
     setPostingMember(data.member);
 
     setPostingGuarantor(data.member.guarantor_id);
@@ -280,7 +295,9 @@ const PostMonthly = () => {
 
     //check loans
     if (data.loan) {
-      const balance = data.loan.amount - data.totalLoanPaymentsAmount;
+      const schedule = data.loanSchedule;
+      const balance = schedule.balance;
+      setLoanSchedule(schedule);
 
       setLoanBalance(balance);
 
@@ -298,31 +315,22 @@ const PostMonthly = () => {
       setLoanPayments(data.totalLoanPaymentsNo);
       setCurrentLoan(data.loan);
 
-      //calculate amount for interest
-      //check if user has loan and has not payment before
-      if (data.loan != null && data.totalLoanPaymentsNo == 0) {
-        //no payment
-        const interestAmount =
-          data.loan.amount * data.loan.interest_rate * 0.01;
+      //one-time interest, at the rate of the month the loan was taken
+      setPostingLoanInterestPayment(schedule.interest_due);
 
-        setPostingLoanInterestPayment(interestAmount);
-      }
-
-      //calculate amount for loan payment
-      //check if user has loan
-      if (data.loan != null) {
-        //check if user has made payment before
-        if (data.totalLoanPaymentsNo == 0) {
-          //no payment. Must pay assigned percent
-          const loanRepaymentAmount =
-            data.loan.amount * data.config.loan_repayment_rate * 0.01;
-          setPostingLoanMonthPayment(loanRepaymentAmount);
-          setMinPostingLoanMonthPayment(loanRepaymentAmount);
-          //setAllowLoanAmountChange(false);
-        } else {
-          //has paid, can pay any amount
-          setPostingLoanMonthPayment(null);
-        }
+      if (schedule.must_clear) {
+        //the loan term has ended: the whole balance is due
+        setPostingLoanMonthPayment(balance);
+        setMinPostingLoanMonthPayment(balance);
+      } else if (data.totalLoanPaymentsNo == 0) {
+        //first month: at least the first-month percentage
+        const loanRepaymentAmount = Math.min(schedule.first_repayment, balance);
+        setPostingLoanMonthPayment(loanRepaymentAmount);
+        setMinPostingLoanMonthPayment(loanRepaymentAmount);
+      } else {
+        //has paid, can pay any amount up to the balance
+        setPostingLoanMonthPayment(null);
+        setMinPostingLoanMonthPayment(0);
       }
     }
   };
@@ -415,8 +423,8 @@ const PostMonthly = () => {
   };
 
   const allowLoanInterestPayment = () => {
-    //check if there is a loan and no payment has been made
-    if (currentLoan != null && loanPayments == 0) {
+    //check if there is a loan whose interest has not been paid
+    if (currentLoan != null && loanSchedule?.interest_due > 0) {
       return true;
     } else {
       return false;
@@ -462,7 +470,7 @@ const PostMonthly = () => {
   };
 
   const loanInterestLabel = () => {
-    if (currentLoan != null && loanPayments == 0) {
+    if (allowLoanInterestPayment()) {
       //loan available
       return `${currentLoan.interest_rate}% Loan Interest`;
     } else {
@@ -631,6 +639,29 @@ const PostMonthly = () => {
 
     setSummaryData(summaryItems);
   };
+
+  const missingPrerequisites =
+    pageConfig.Id == 0 &&
+    param != null &&
+    (param.guarantors.length == 0 || param.paymentMethods.length == 0);
+
+  if (missingPrerequisites) {
+    return (
+      <div id="pageRoot" className="page-content">
+        <Titlebar
+          title={pageConfig.Title}
+          section={"Administration"}
+          icon={"home"}
+          url="#"
+        ></Titlebar>
+        <Row>
+          <Col sz={12} sm={12} lg={7}>
+            <PostingPrerequisites param={param} onChanged={reloadParam} />
+          </Col>
+        </Row>
+      </div>
+    );
+  }
 
   return (
     <div id="pageRoot" className="page-content">
@@ -815,7 +846,11 @@ const PostMonthly = () => {
                       dataSource={postingPayMethodData}
                       valueExpr={"id"}
                       displayExpr={"name"}
-                      itemTemplate={(twn) => `${twn.name} - ${twn.type}`}
+                      itemTemplate={(twn) =>
+                        `${twn.name} - ${twn.type}${
+                          twn.status_id == Assist.STATUS_APPROVED ? "" : " (awaiting approval)"
+                        }`
+                      }
                       onValueChange={(value) => setPostingPayMethod(value)}
                       validationMessagePosition="left"
                       value={postingPayMethod}
@@ -898,6 +933,30 @@ const PostMonthly = () => {
                       </div>
                     </div>
                   )}
+                  {allowLoanPayment() && loanSchedule && (
+                    <div className="dx-field">
+                      <div className="dx-field-label">Loan Month</div>
+                      <div className="dx-field-value-static">
+                        {loanSchedule.month} of {loanSchedule.term_months}
+                        {loanSchedule.must_clear && (
+                          <strong className="text-danger">
+                            {" "}
+                            - term ended, the full balance is due
+                          </strong>
+                        )}
+                      </div>
+                    </div>
+                  )}
+                  {allowLoanPayment() && loanSchedule?.arrears > 0 && (
+                    <div className="dx-field">
+                      <div className="dx-field-label">Arrears</div>
+                      <div className="dx-field-value-static">
+                        <strong className="text-danger">
+                          {Assist.formatCurrency(loanSchedule.arrears)}
+                        </strong>
+                      </div>
+                    </div>
+                  )}
                   <div className="dx-field">
                     <div className="dx-field-label">{loanPaymentLabel()}</div>
                     {allowLoanPayment() && (
@@ -918,15 +977,9 @@ const PostMonthly = () => {
                             message={`${loanPaymentLabel()} amount requred`}
                           />
                           <CustomRule
-                            validationCallback={(e) => {
-                              if (loanPayments == 0) {
-                                return (
-                                  Number(e.value) >= minPostingLoanMonthPayment
-                                );
-                              } else {
-                                return true;
-                              }
-                            }}
+                            validationCallback={(e) =>
+                              Number(e.value) >= minPostingLoanMonthPayment
+                            }
                             message={`Loan repayment must be >= ${Assist.formatCurrency(
                               minPostingLoanMonthPayment,
                             )}`}
@@ -1233,13 +1286,13 @@ const PostMonthly = () => {
                     <Column
                       dataField="name"
                       caption="Name"
-                      hidingPriority={4}
+                      hidingPriority={6}
                     ></Column>
                     <Column
                       dataField="amount"
                       caption="Amount ZMW"
                       format={",##0.###"}
-                      hidingPriority={5}
+                      hidingPriority={7}
                     ></Column>
                     <Summary>
                       <GroupItem

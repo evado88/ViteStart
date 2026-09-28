@@ -96,13 +96,13 @@ export const TransactionList: React.FC<MonthlyPostArgs> = ({
             }}
           />
         </Toolbar>
-        <Column dataField="id" caption="ID" hidingPriority={13}></Column>
+        <Column dataField="id" caption="ID" hidingPriority={3}></Column>
         <Column
           dataField="date"
           caption="Date"
           dataType="date"
           format={"dd MMMM yyy"}
-          hidingPriority={12}
+          hidingPriority={19}
           cellRender={(e) => {
             if (isExpenseEarning) {
               const getLink = () => {
@@ -122,49 +122,59 @@ export const TransactionList: React.FC<MonthlyPostArgs> = ({
         <Column
           dataField="post.period_id"
           caption="Period"
-          hidingPriority={11}
+          hidingPriority={15}
         ></Column>
         <Column
           dataField="type.type_name"
           caption="Type"
-          hidingPriority={11}
+          hidingPriority={16}
         ></Column>
         {isExpenseEarning && (
           <Column
             dataField="group.group_name"
             caption="Group"
-            hidingPriority={11}
+            hidingPriority={12}
           ></Column>
         )}
         {isPenalty && (
           <Column
             dataField="ptype.type_name"
             caption="Penalty Type"
-            hidingPriority={11}
+            hidingPriority={18}
+          ></Column>
+        )}
+        {isPenalty && (
+          <Column
+            dataField="state_id"
+            caption="Payment"
+            calculateCellValue={(row: any) =>
+              row.state_id == Assist.STATE_OPEN ? "Outstanding" : "Paid"
+            }
+            hidingPriority={17}
           ></Column>
         )}
         <Column
           dataField="stage.stage_name"
           caption="Stage"
-          hidingPriority={11}
+          hidingPriority={8}
         ></Column>
         <Column
           dataField="status.status_name"
           caption="Status"
-          hidingPriority={11}
+          hidingPriority={9}
         ></Column>
         <Column
           dataField="amount"
           caption="Amount"
           format={",##0.###"}
-          hidingPriority={10}
+          hidingPriority={20}
         ></Column>
         {isLoan && (
           <Column
             dataField="interest_rate"
             caption="Interest Rate"
             format={",##0.###"}
-            hidingPriority={10}
+            hidingPriority={7}
           ></Column>
         )}
         {isLoan && (
@@ -172,7 +182,7 @@ export const TransactionList: React.FC<MonthlyPostArgs> = ({
             dataField="term_months"
             caption="Duration"
             format={",##0.###"}
-            hidingPriority={10}
+            hidingPriority={6}
           ></Column>
         )}
         <Column

@@ -183,7 +183,17 @@ const AdminMonthlyPosting = ({ props }: any) => {
             "success",
           );
 
-          navigate(`/admin/monthly-postings/list`);
+          //carry on with the next posting waiting for this administrator
+          Assist.loadData("Approvals", "monthly-posting/awaiting-me")
+            .then((rows: any) => {
+              const next = rows.find((r: any) => r.id != eId);
+              if (next) {
+                window.location.assign(`/admin/monthly-postings/view/${next.id}`);
+              } else {
+                navigate(`/admin/approvals`);
+              }
+            })
+            .catch(() => navigate(`/admin/approvals`));
         })
         .catch((message) => {
           setSaving(false);

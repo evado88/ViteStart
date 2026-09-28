@@ -260,6 +260,7 @@ const KnowledgebaseArticleEdit = () => {
                           );
                         }
                       }}
+                      uploadHeaders={Assist.authHeaders()}
                       uploadUrl={`${AppInfo.apiUrl}attachments/create/type/${pageConfig.Single}/parent/0`}
                     />
                   </div>

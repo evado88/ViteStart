@@ -5,6 +5,41 @@ import TaskResult from "./task-result.js";
 import { jwtDecode } from "jwt-decode";
 import PageConfig from "./page-config.js";
 
+//the signed-in user's token (AuthContext stores it JSON-encoded)
+const storedToken = (): string | null => {
+  const raw = localStorage.getItem("token");
+  if (!raw) return null;
+  try {
+    const value = JSON.parse(raw);
+    return typeof value === "string" ? value : raw;
+  } catch {
+    return raw;
+  }
+};
+
+//every API call carries the signed-in user's token
+axios.interceptors.request.use((config) => {
+  const token = storedToken();
+  if (token) {
+    config.headers = config.headers ?? {};
+    config.headers["Authorization"] = `Bearer ${token}`;
+  }
+  return config;
+});
+
+//an expired or rejected session sends the user back to the login page
+axios.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    const onPublicPage = window.location.pathname.startsWith("/login");
+    if (error?.response?.status === 401 && !onPublicPage) {
+      localStorage.removeItem("token");
+      window.location.assign("/login");
+    }
+    return Promise.reject(error);
+  },
+);
+
 class Assist {
   static ROLE_MEMBER = 1;
   static ROLE_ADMIN = 2;
@@ -44,6 +79,7 @@ class Assist {
   static TRANSACTION_PENALTY_PAID = 9;
   static TRANSACTION_GROUP_EARNING = 10;
   static TRANSACTION_GROUP_EXPENSE = 11;
+  static TRANSACTION_MEMBERSHIP_FEE = 12;
 
   static STATE_OPEN = 1;
   static STATE_CLOSED = 2;
@@ -243,6 +279,14 @@ class Assist {
     // Date objects use 0-indexed months, so we subtract 1.
     const date = new Date(2000, monthNumber - 1, 1);
     return date.toLocaleString("en-US", { month: "long" });
+  }
+
+  /**
+   * Headers for requests made outside axios (e.g. FileUploader uploads)
+   */
+  static authHeaders(): Record<string, string> {
+    const token = storedToken();
+    return token ? { Authorization: `Bearer ${token}` } : {};
   }
 
   static isTokenExpired() {
@@ -515,6 +559,7 @@ class Assist {
     url: string,
     postData: any,
     id: Number,
+    headers?: Record<string, string>,
   ) {
     const method = id == 0 ? "post" : "put";
     const verb = id == 0 ? "post" : "put";
@@ -531,6 +576,7 @@ class Assist {
         method: method,
         url: `${AppInfo.apiUrl}${url}`,
         data: postData,
+        headers: headers,
       })
         .then((response) => {
           Assist.log(

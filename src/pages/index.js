@@ -4,7 +4,6 @@ export { default as NotFoundPage } from './404'
 export { default as UnauthorizedPage } from './401'
 //Auth
 export { default as LoginPage } from '../auth/login'
-export { default as SignupPage } from '../auth/signup'
 
 //All users
 export { default as PasswordPage } from './password'

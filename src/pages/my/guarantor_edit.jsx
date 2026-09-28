@@ -1,10 +1,10 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 import { Titlebar } from "../../components/titlebar";
 import { Card } from "../../components/card";
 import { Row } from "../../components/row";
 import { Col } from "../../components/column";
 import { TextBox } from "devextreme-react/text-box";
-import { Validator, RequiredRule } from "devextreme-react/validator";
+import { Validator, RequiredRule, EmailRule } from "devextreme-react/validator";
 import Button from "devextreme-react/button";
 import ValidationSummary from "devextreme-react/validation-summary";
 import { LoadPanel } from "devextreme-react/load-panel";
@@ -20,7 +20,7 @@ import FileUploader from "devextreme-react/file-uploader";
 import DataGrid, { Column, Pager, Paging } from "devextreme-react/data-grid";
 import { confirm } from "devextreme/ui/dialog";
 
-const MemberQueryEdit = () => {
+const GuarantorEdit = () => {
   //user
   const navigate = useNavigate();
   const { user } = useAuth();
@@ -39,6 +39,7 @@ const MemberQueryEdit = () => {
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState(false);
+  const hasRun = useRef(false);
 
   const pageConfig = new PageConfig(`New Guarantor`, "", "", "Guarantor", "", [
     Assist.ROLE_MEMBER,
@@ -213,7 +214,7 @@ const MemberQueryEdit = () => {
                     <div className="dx-field-label">Last name</div>
                     <TextBox
                       className="dx-field-value"
-                      placeholder="First name"
+                      placeholder="Last name"
                       value={guarantorLastname}
                       onValueChange={(text) => setGuarantorLastname(text)}
                     >
@@ -249,7 +250,11 @@ const MemberQueryEdit = () => {
                       placeholder="Mobile i.e. 977123456"
                       value={guarantorMobile}
                       onValueChange={(text) => setGuarantorMobile(text)}
-                    />
+                    >
+                      <Validator>
+                        <RequiredRule message="Guarantor mobile is required" />
+                      </Validator>
+                    </TextBox>
                   </div>
                   <div className="dx-field">
                     <div className="dx-field-label">Email</div>
@@ -261,7 +266,8 @@ const MemberQueryEdit = () => {
                     >
                       {" "}
                       <Validator>
-                        <RequiredRule message="Guarantor mobile is required" />
+                        <RequiredRule message="Guarantor email is required" />
+                        <EmailRule message="Please enter a valid email address" />
                       </Validator>
                     </TextBox>
                   </div>
@@ -295,4 +301,4 @@ const MemberQueryEdit = () => {
   );
 };
 
-export default MemberQueryEdit;
+export default GuarantorEdit;

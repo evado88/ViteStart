@@ -256,6 +256,7 @@ const MeetingEdit = () => {
                           );
                         }
                       }}
+                      uploadHeaders={Assist.authHeaders()}
                       uploadUrl={`${AppInfo.apiUrl}attachments/create/type/AttendanceList/parent/0`}
                       onUploadError={(e) => {
                         const error = JSON.parse(e.error.response);

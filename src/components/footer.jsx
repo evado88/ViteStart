@@ -6,7 +6,7 @@ export const Footer = ({ names, title }) => {
     /* start footer */
     <div className="page-footer">
       <div className="page-footer-inner">
-         &copy;2025 {AppInfo.appCode}. All Rights Reserved
+         &copy; {new Date().getFullYear()} OSAWE Village Bank. All rights reserved.
 
       </div>
       <div className="scroll-to-top" style={{ display: "none" }}>

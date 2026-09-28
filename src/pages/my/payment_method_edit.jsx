@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 import { Titlebar } from "../../components/titlebar";
 import { Card } from "../../components/card";
 import { Row } from "../../components/row";
@@ -20,7 +20,7 @@ import FileUploader from "devextreme-react/file-uploader";
 import DataGrid, { Column, Pager, Paging } from "devextreme-react/data-grid";
 import { confirm } from "devextreme/ui/dialog";
 
-const MemberQueryEdit = () => {
+const PaymentMethodEdit = () => {
   //user
   const navigate = useNavigate();
   const { user } = useAuth();
@@ -415,4 +415,4 @@ const MemberQueryEdit = () => {
   );
 };
 
-export default MemberQueryEdit;
+export default PaymentMethodEdit;

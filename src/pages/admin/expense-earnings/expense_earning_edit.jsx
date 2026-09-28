@@ -331,6 +331,7 @@ const KnowledgebaseArticleEdit = () => {
                           );
                         }
                       }}
+                      uploadHeaders={Assist.authHeaders()}
                       uploadUrl={`${AppInfo.apiUrl}attachments/create/type/expenseEarning/parent/0`}
                     />
                   </div>

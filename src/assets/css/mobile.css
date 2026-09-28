@@ -1,0 +1,85 @@
+/*
+ * Phone layout for the member screens (applies below 576px only; the admin
+ * screens are used on computers and are unaffected at desktop widths).
+ */
+@media (max-width: 575.98px) {
+  /* form rows: label above its value instead of a squeezed 40/60 split */
+  .dx-fieldset .dx-field {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    margin-bottom: 12px;
+  }
+  .dx-fieldset .dx-field > .dx-field-label {
+    float: none;
+    width: 100% !important;
+    padding: 0 0 4px 0;
+    white-space: normal;
+    overflow: visible;
+    text-overflow: clip;
+    font-weight: 600;
+  }
+  .dx-fieldset .dx-field > .dx-field-value,
+  .dx-fieldset .dx-field > .dx-field-value-static {
+    float: none;
+    width: 100% !important;
+    margin-left: 0 !important;
+    padding-left: 0;
+    white-space: normal;
+  }
+  .dx-fieldset {
+    padding-left: 0;
+    padding-right: 0;
+    margin-left: 0;
+    margin-right: 0;
+  }
+
+  /* comfortable tap targets and no iOS zoom-on-focus (needs >= 16px) */
+  .dx-texteditor-input,
+  .dx-selectbox .dx-texteditor-input {
+    font-size: 16px;
+    min-height: 40px;
+  }
+  form .dx-button,
+  .dx-fieldset .dx-button {
+    min-height: 40px;
+  }
+
+  /* page header: the title only; the breadcrumb repeats it */
+  .page-bar .page-breadcrumb {
+    display: none;
+  }
+  .page-bar .page-title-breadcrumb .pull-left {
+    float: none;
+  }
+  .page-content {
+    padding-left: 8px !important;
+    padding-right: 8px !important;
+  }
+
+  /* cards use the full width */
+  .card-box,
+  .card {
+    margin-left: 0;
+    margin-right: 0;
+  }
+  .card-body,
+  .card-box .card-body {
+    padding: 12px !important;
+  }
+
+  /* data grids: readable rows, toolbar wraps instead of overflowing */
+  .dx-datagrid .dx-row > td {
+    padding-top: 10px;
+    padding-bottom: 10px;
+  }
+  .dx-datagrid-header-panel .dx-toolbar-items-container {
+    flex-wrap: wrap;
+  }
+
+  /* pivot grids (reports) scroll sideways inside their card */
+  .dx-pivotgrid {
+    max-width: 100%;
+    overflow-x: auto;
+  }
+}

@@ -158,27 +158,7 @@ const AdminMember = () => {
   };
 
   const checkMemberStatus = async (mem: any) => {
-    //check if member has been approved or rejected
-    if (mem.status_id == Assist.STATUS_APPROVED) {
-      const postData = {
-        id: mem.id,
-      };
-
-      setTimeout(() => {
-        Assist.postPutData(
-          "WhatsApp Approved Notification",
-          "whatsapp/send-infobip-account-approved-message",
-          postData,
-          0,
-        )
-          .then((data) => {
-            console.log("Account approved notification sent", data);
-          })
-          .catch((message) => {
-            console.log("Account approved notification error", message);
-          });
-      }, Assist.DEV_DELAY);
-    }
+    //the server emails the member when their registration is approved or rejected
   };
 
   const submitPostingReview = (

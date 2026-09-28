@@ -42,7 +42,8 @@ const Password = () => {
   const [error, setError] = useState(false);
 
   const [code, setCode] = useState("");
-  const [OTP, setOTP] = useState("");
+  //the server emails the code and checks it
+  const [codeTicket, setCodeTicket] = useState<string | null>(null);
 
   const [stage, setStage] = useState(1);
 
@@ -58,95 +59,76 @@ const Password = () => {
   const onFormSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    sendWhatsappOTP(user.mobile);
-    setStage(2);
+    sendEmailCode();
   };
 
-  const sendWhatsappOTP = (userPhone: string) => {
+  const sendEmailCode = () => {
     setLoading(true);
-    const newCode = Math.floor(100000 + Math.random() * 900000);
-
-    console.log(`Now sending OTP ${newCode} to client ${userPhone}`);
-
-    setOTP(`${newCode}`);
-
-    const postData = {
-      mobile: userPhone,
-      code: newCode,
-    };
-
-    setTimeout(() => {
-      Assist.postPutData(
-        "WhatsApp Code",
-        `whatsapp/send-infobip-auth-message`,
-        postData,
-        0,
-      )
-        .then((data) => {
-          setLoading(false);
-          console.log(data);
-          Assist.showMessage(
-            `The OTP has been successfully sent to ${userPhone}`,
-            "success",
-          );
-        })
-        .catch((message) => {
-          setLoading(false);
-          console.log(message);
-          Assist.showMessage(
-            `Error sending OTP to ${userPhone}. Please try again`,
-            "error",
-          );
-        });
-    }, Assist.DEV_DELAY);
+    Assist.postPutData(
+      "Email Code",
+      "auth/email-code",
+      { email: user.sub, purpose: "password" },
+      0,
+    )
+      .then((data: any) => {
+        setLoading(false);
+        setCodeTicket(data.ticket);
+        setCode("");
+        setStage(2);
+        Assist.showMessage(
+          `A verification code has been sent to ${data.email_hint}`,
+          "success",
+        );
+      })
+      .catch((message) => {
+        setLoading(false);
+        Assist.showMessage(message, "error");
+      });
   };
 
   const onOTPFormSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSaving(true);
 
-    setTimeout(() => {
-      if (code == OTP) {
+    Assist.postPutData(
+      "Verify Code",
+      "auth/email-code/verify",
+      { ticket: codeTicket, code: code },
+      0,
+    )
+      .then((verified: any) => {
         const formData = new FormData();
 
         formData.append("username", user.sub);
         formData.append("current_password", currentPassword);
         formData.append("new_password", password);
 
-        setTimeout(() => {
-          Assist.postPutData(
-            pageConfig.Title,
-            `users/update-password`,
-            formData,
-            1,
-          )
-            .then((data) => {
-              setSaving(false);
-
-              Assist.showMessage(
-                "You have successfully updated your password!",
-                "success",
-              );
-
-              setStage(1);
-              setCurrentPassword("");
-              setConfirmPassword("");
-              setPassword("");
-              setCode("");
-            })
-            .catch((message) => {
-              setStage(1);
-              setSaving(false);
-              Assist.showMessage(message, "error");
-            });
-        }, Assist.DEV_DELAY);
-      } else {
-        Assist.showMessage(
-          `The specified code ${code} is not correct. Please try again.`,
-          "error",
+        return Assist.postPutData(
+          pageConfig.Title,
+          `users/update-password`,
+          formData,
+          1,
+          { "X-Email-Verification": verified.verified_token },
         );
-      }
-    }, Assist.DEV_DELAY);
+      })
+      .then(() => {
+        setSaving(false);
+
+        Assist.showMessage(
+          "You have successfully updated your password!",
+          "success",
+        );
+
+        setStage(1);
+        setCurrentPassword("");
+        setConfirmPassword("");
+        setPassword("");
+        setCode("");
+      })
+      .catch((message) => {
+        setSaving(false);
+        Assist.showMessage(message, "error");
+      });
   };
 
   return (
@@ -277,8 +259,8 @@ const Password = () => {
                       <Validator>
                         <RequiredRule message="OTP code required" />
                         <CustomRule
-                          validationCallback={(e) => e.value == OTP}
-                          message={`The specified code is not valid. Please try again`}
+                          validationCallback={(e) => /^\d{6}$/.test(e.value)}
+                          message={`The code is the 6 digits in the email`}
                         />
                       </Validator>
                     </TextBox>
@@ -290,7 +272,7 @@ const Password = () => {
                 <div className="form-group form-button">
                   <Button
                     width="100%"
-                    text="Login"
+                    text="Update Password"
                     type={saving ? "normal" : "default"}
                     disabled={saving}
                     useSubmitBehavior={true}
