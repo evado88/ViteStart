@@ -47,7 +47,7 @@ const MonthlyPostings = () => {
           setLoading(false);
 
           if (data.length === 0) {
-            setLoadingText("You have no savings");
+            setLoadingText("You have no social fund contributions");
           } else {
             setLoadingText("");
           }

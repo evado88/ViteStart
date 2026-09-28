@@ -95,7 +95,7 @@ const Statuses = () => {
               <Editing
                 mode="row"
                 allowUpdating={false}
-                allowDeleting={true}
+                allowDeleting={false}
                 allowAdding={false}
               />
               <Pager showPageSizeSelector={true} showInfo={true} />

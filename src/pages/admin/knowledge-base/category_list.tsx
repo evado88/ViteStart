@@ -70,7 +70,7 @@ const AdminKnowledgebaseCategories = () => {
   const addButtonOptions = useMemo(
     () => ({
       icon: "add",
-      text: "Refresh",
+      text: "New Category",
       onClick: () => navigate("/admin/knowledge-base/category/add"),
     }),
     [],
@@ -105,7 +105,7 @@ const AdminKnowledgebaseCategories = () => {
               <Editing
                 mode="row"
                 allowUpdating={false}
-                allowDeleting={true}
+                allowDeleting={false}
                 allowAdding={false}
               />
               <Pager showPageSizeSelector={true} showInfo={true} />

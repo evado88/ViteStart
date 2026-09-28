@@ -35,7 +35,7 @@ import DataGrid, {
   Toolbar,
   Item,
 } from "devextreme-react/data-grid";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { usePeriod } from "../context/PeriodContext.jsx";
 import SelectBox, { SelectBoxTypes } from "devextreme-react/select-box";
 
@@ -291,7 +291,7 @@ const MyDashboard = () => {
               dataSource={announcementsData}
               showColumnHeaders={false}
               keyExpr={"id"}
-              noDataText={"No accouncements added yet"}
+              noDataText={"No announcements yet"}
               showBorders={false}
               focusedRowEnabled={false}
               defaultFocusedRowIndex={0}
@@ -318,7 +318,7 @@ const MyDashboard = () => {
                 hidingPriority={2}
                 cellRender={(e) => {
                   return (
-                    <a href={`/announcements/view/id/${e.data.id}`}>{e.text}</a>
+                    <Link to={`/announcements/view/id/${e.data.id}`}>{e.text}</Link>
                   );
                 }}
               ></Column>
@@ -330,16 +330,19 @@ const MyDashboard = () => {
                 hidingPriority={1}
               ></Column>
             </DataGrid>
+            <p className="mt-3 mb-0">
+              <Link to="/announcements">View all announcements</Link>
+            </p>
           </Card>
         </Col>
         <Col sz={12} sm={12} lg={6}>
-          <Card title={"Knowledgebase"} showHeader={true}>
+          <Card title={"Knowledge Base"} showHeader={true}>
             <DataGrid
               className={"dx-card wide-card"}
               dataSource={articlesData}
               keyExpr={"id"}
               showColumnHeaders={false}
-              noDataText={`No How To's added yet`}
+              noDataText={`No knowledge base articles yet`}
               showBorders={false}
               focusedRowEnabled={false}
               defaultFocusedRowIndex={0}
@@ -367,9 +370,9 @@ const MyDashboard = () => {
                 hidingPriority={2}
                 cellRender={(e) => {
                   return (
-                    <a href={`/knowledge-base/article/view/id/${e.data.id}`}>
+                    <Link to={`/knowledge-base/article/view/id/${e.data.id}`}>
                       {e.text}
-                    </a>
+                    </Link>
                   );
                 }}
               ></Column>
@@ -381,6 +384,9 @@ const MyDashboard = () => {
                 hidingPriority={1}
               ></Column>
             </DataGrid>
+            <p className="mt-3 mb-0">
+              <Link to="/knowledge-base">View all articles</Link>
+            </p>
           </Card>
         </Col>
       </Row>

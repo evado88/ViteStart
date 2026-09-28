@@ -66,9 +66,9 @@ const AdminSessions = () => {
 
   const addButtonOptions = useMemo(
     () => ({
-      icon: "add",
+      icon: "refresh",
       text: "Refresh",
-      onClick: () => navigate("/admin/meetings/add"),
+      onClick: () => navigate(0),
     }),
     [],
   );
@@ -140,7 +140,7 @@ const AdminSessions = () => {
               ></Column>
               <Column
                 dataField="feature"
-                caption="Token"
+                caption="Page"
                 minWidth={120}
                 hidingPriority={2}
               ></Column>

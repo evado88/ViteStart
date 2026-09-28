@@ -51,7 +51,7 @@ const AdminUsers = () => {
         setLoading(false);
 
         if (res.length === 0) {
-          setLoadingText("No announcements added for now");
+          setLoadingText("No users added yet");
         } else {
           setLoadingText("");
         }
@@ -100,7 +100,7 @@ const AdminUsers = () => {
               <Editing
                 mode="row"
                 allowUpdating={false}
-                allowDeleting={true}
+                allowDeleting={false}
                 allowAdding={false}
               />
               <Pager showPageSizeSelector={true} showInfo={true} />

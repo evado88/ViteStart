@@ -205,7 +205,7 @@ const AdminPostingPeriod = ({ props }: any) => {
           setSaving(false);
 
           Assist.showMessage(
-            `You have successfully ${verb} the monthly posting!`,
+            `You have successfully ${verb} the posting period!`,
             "success"
           );
 

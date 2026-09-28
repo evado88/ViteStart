@@ -32,7 +32,7 @@ const MyGuarantorApprovals = () => {
   const hasRun = useRef(false);
 
   const pageConfig = new PageConfig(
-    "Guarantor Approvals",
+    "Guarantor Requests",
     `guarantors/email/${user.sub}/list`,
     "",
     "Guarantor",

@@ -168,11 +168,14 @@ const MemberSummary = () => {
   };
 
   const addButtonOptions = useMemo(
-    () => ({
-      icon: "add",
-      text: "New Monthly Posting",
-      onClick: () => navigate("/my/monthly-posting/post"),
-    }),
+    () =>
+      user.role == Assist.ROLE_MEMBER
+        ? {
+            icon: "add",
+            text: "New Monthly Posting",
+            onClick: () => navigate("/my/monthly-posting/post"),
+          }
+        : { icon: "refresh", text: "Refresh", onClick: () => navigate(0) },
     [],
   );
 

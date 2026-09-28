@@ -174,7 +174,7 @@ const KnowledgebaseArticleEdit = () => {
         ) {
           //unsubmit allowed
           Assist.showMessage(
-            `You have already submitted your mid-month posting. You can unsubit your monthly posting to make corrections `,
+            `You have already submitted your mid-month posting. You can unsubmit your monthly posting to make corrections `,
             "error",
           );
         } else {

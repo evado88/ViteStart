@@ -71,7 +71,7 @@ const AdminMeetings = () => {
   const addButtonOptions = useMemo(
     () => ({
       icon: "add",
-      text: "Refresh",
+      text: "New Meeting",
       onClick: () => navigate("/admin/meetings/add"),
     }),
     [],
@@ -106,7 +106,7 @@ const AdminMeetings = () => {
               <Editing
                 mode="row"
                 allowUpdating={false}
-                allowDeleting={true}
+                allowDeleting={false}
                 allowAdding={false}
               />
               <Pager showPageSizeSelector={true} showInfo={true} />

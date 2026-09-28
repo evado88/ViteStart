@@ -34,13 +34,13 @@ export const ArticleDetail = ({
           </div>
         </div>
         <div className="dx-fieldset">
-          <div className="dx-fieldset-header">Attendance List</div>
+          <div className="dx-fieldset-header">Attachment File</div>
           <div className="dx-field">
             <DataGrid
               className={"dx-card wide-card"}
               dataSource={[article.attachment]}
               keyExpr={"id"}
-              noDataText={"No attendance list uploaded"}
+              noDataText={"No attachment uploaded"}
               showBorders={false}
               focusedRowEnabled={false}
               defaultFocusedRowIndex={0}

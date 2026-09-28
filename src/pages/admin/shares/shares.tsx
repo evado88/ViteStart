@@ -103,14 +103,7 @@ const AdminShares = () => {
     );
   };
 
-  const addButtonOptions = useMemo(
-    () => ({
-      icon: "add",
-      text: "New Monthly Posting",
-      onClick: () => navigate("/my/monthly-posting/post"),
-    }),
-    [],
-  );
+  const addButtonOptions = null; //administrators do not make monthly postings
 
   return (
     <div className="page-content" style={{ minHeight: "862px" }}>

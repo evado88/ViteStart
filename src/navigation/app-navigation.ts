@@ -16,6 +16,22 @@ export const navigation: MenuItem[] = [
     items: [],
   },
   {
+    key: "announcements-read",
+    text: "Announcements",
+    icon: "fa fa-bullhorn",
+    path: "/announcements",
+    roles: [1],
+    items: [],
+  },
+  {
+    key: "knowledge-base-read",
+    text: "Knowledge Base",
+    icon: "fa fa-book",
+    path: "/knowledge-base",
+    roles: [1],
+    items: [],
+  },
+  {
     key: "approvals",
     text: "Approvals",
     icon: "fa fa-check-square-o",
@@ -48,7 +64,7 @@ export const navigation: MenuItem[] = [
       },
       {
         key: "my-monthly-posting-approve",
-        text: "Guarantor Approvals",
+        text: "Loans to Guarantee",
         icon: "",
         path: "/my/monthly-posting/approvals",
         roles: [1],
@@ -199,7 +215,7 @@ export const navigation: MenuItem[] = [
       },
       {
         key: "my-guarantors-approve",
-        text: "My Approvals",
+        text: "Guarantor Requests",
         icon: "",
         path: "/my/guarantors/approvals",
         roles: [1],
@@ -274,7 +290,7 @@ export const navigation: MenuItem[] = [
       },
       {
         key: "time-value",
-        text: "Time value",
+        text: "Time Value",
         icon: "",
         path: "/reports/time-value-summary",
         roles: [1, 2],
@@ -290,7 +306,7 @@ export const navigation: MenuItem[] = [
       },
       {
         key: "expense-earning-summary",
-        text: "Expense Earnings",
+        text: "Expenses & Earnings",
         icon: "",
         path: "/reports/expense-earnings-summary",
         roles: [1, 2],
@@ -300,7 +316,7 @@ export const navigation: MenuItem[] = [
   },
   {
     key: "audit",
-    text: "Adut Trails",
+    text: "Audit Trails",
     icon: "fa  fa-history",
     path: "#",
     roles: [2],
@@ -366,7 +382,7 @@ export const navigation: MenuItem[] = [
   },
   {
     key: "dictionairies",
-    text: "Dictionairies",
+    text: "Dictionaries",
     icon: "fa fa-cube",
     path: "#",
     roles: [2],
@@ -553,7 +569,7 @@ export const navigation: MenuItem[] = [
       },
       {
         key: "all-expense-earnings",
-        text: "All Expense & Earning",
+        text: "All Expenses & Earnings",
         icon: "",
         path: "/admin/expenses-earnings/list",
         roles: [2],

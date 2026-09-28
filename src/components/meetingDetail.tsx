@@ -75,7 +75,7 @@ export const MeetingDetail = ({
               ></Column>
               <Column
                 dataField="filetype"
-                caption="Type"
+                caption="File Type"
                 hidingPriority={5}
               ></Column>
             </DataGrid>
@@ -109,7 +109,7 @@ export const MeetingDetail = ({
               ></Column>
               <Column
                 dataField="type"
-                caption="Type"
+                caption="Attendance"
                 hidingPriority={4}
               ></Column>
               <Column

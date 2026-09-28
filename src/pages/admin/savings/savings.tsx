@@ -82,14 +82,7 @@ const AdminSavings = () => {
     loadData(periodYear);
   }, []);
 
-  const addButtonOptions = useMemo(
-    () => ({
-      icon: "add",
-      text: "New Monthly Posting",
-      onClick: () => navigate("/my/monthly-posting/post"),
-    }),
-    [],
-  );
+  const addButtonOptions = null; //administrators do not make monthly postings
   const changePostingYearPeriod = useCallback(
     (e: SelectBoxTypes.ValueChangedEvent) => {
       console.log("period year changed", e);

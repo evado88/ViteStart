@@ -361,7 +361,7 @@ const PostingPeriodEdit = () => {
                           }
                         } else {
                           Assist.showMessage(
-                            `Unable to upload meeting attendance list. Please try again`,
+                            `Unable to upload the attachment. Please try again`,
                             "error"
                           );
                         }
@@ -691,11 +691,11 @@ const PostingPeriodEdit = () => {
                     </NumberBox>
                   </div>
                   <div className="dx-field">
-                    <div className="dx-field-label">Loan Duraton (Months) </div>
+                    <div className="dx-field-label">Loan Duration (Months) </div>
                     <NumberBox
                       className="dx-field-value"
                       value={loanDuration!}
-                      placeholder="Loan Duraton (Months)"
+                      placeholder="Loan Duration (Months)"
                       disabled={error || saving}
                       onValueChange={(value) => setLoanDuration(value)}
                       min={0.0}

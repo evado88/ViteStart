@@ -112,6 +112,12 @@ import AttendanceTypes from "./pages/admin/dictionairies/attendance_types";
 import ReviewStages from "./pages/admin/dictionairies/review_stages";
 import AdminMonthlySubmittedPostings from "./pages/admin/monthly-posting/month_posting_submitted";
 import AdminApprovalsPage from "./pages/admin/approvals/approvals";
+import {
+  AnnouncementsPage,
+  AnnouncementViewPage,
+  KnowledgeBasePage,
+  ArticleViewPage,
+} from "./components/reading";
 import AdminMembersApproved from "./pages/admin/members/member_approved";
 import AdminMembersRejected from "./pages/admin/members/member_rejected";
 
@@ -205,7 +211,8 @@ function App() {
           <Route path="/admin/announcements/edit/:eId" element={<AdminAnnouncementEditPage/>} />
           <Route path="/admin/announcements/add" element={<AdminAnnouncementEditPage/>} />
           <Route path="/admin/announcements/view/:eId" element={<AdminAnnouncementPage/>} />
-          <Route path="/announcements/view/id/:eId" element={<AdminAnnouncementPage/>} />
+          <Route path="/announcements" element={<AnnouncementsPage/>} />
+          <Route path="/announcements/view/id/:eId" element={<AnnouncementViewPage/>} />
           {/* meetings */}
           <Route path="/admin/meetings/list" element={<AdminMeetingsPage/>} />
           <Route path="/admin/meetings/view/:eId" element={<AdminMeetingPage/>} />
@@ -229,7 +236,8 @@ function App() {
           <Route path="/admin/knowledge-base/article/edit/:eId" element={<AdminKnowledgebaseArticleEditPage/>} />
           <Route path="/admin/knowledge-base/article/view/:eId" element={<AdminKnowledgebaseArticlePage/>} />
           <Route path="/admin/knowledge-base/article/add" element={<AdminKnowledgebaseArticleEditPage/>} />
-          <Route path="/knowledge-base/article/view/id/:eId" element={<AdminKnowledgebaseArticlePage/>} />
+          <Route path="/knowledge-base" element={<KnowledgeBasePage/>} />
+          <Route path="/knowledge-base/article/view/id/:eId" element={<ArticleViewPage/>} />
           {/* MEMBER */}
           {/* My */}
           <Route path="/" element={<MemberDashboardPage></MemberDashboardPage>} />

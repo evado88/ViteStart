@@ -30,7 +30,7 @@ const MonthlyPostingApprovals = () => {
   const hasRun = useRef(false);
 
   const pageConfig = new PageConfig(
-    "Guarantor Approvals",
+    "Loans to Guarantee",
     `monthly-posting/guarantor-approvals/email/${encodeURI(user.sub)}`,
     "",
     "Monthly Posting",
@@ -59,7 +59,7 @@ const MonthlyPostingApprovals = () => {
 
           if (data.length === 0) {
             setLoadingText(
-              "You have no monthly posts that require your approval",
+              "There are no loans waiting for your approval as guarantor",
             );
           } else {
             setLoadingText("");

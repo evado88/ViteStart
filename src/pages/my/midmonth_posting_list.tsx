@@ -47,7 +47,7 @@ const MonthlyPostings = () => {
           setLoading(false);
 
           if (data.length === 0) {
-            setLoadingText("You have no monthly posts");
+            setLoadingText("You have no mid-month postings");
           } else {
             setLoadingText("");
           }
@@ -62,8 +62,8 @@ const MonthlyPostings = () => {
   const addButtonOptions = useMemo(
     () => ({
       icon: "add",
-      text: "New Monthly Posting",
-      onClick: () => navigate("/my/monthly-posting/post"),
+      text: "New Mid-Month Posting",
+      onClick: () => navigate("/my/mid-month-posting/post"),
     }),
     [],
   );

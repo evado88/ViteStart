@@ -56,7 +56,7 @@ const AdminLoans = () => {
           setLoading(false);
 
           if (data.length === 0) {
-            setLoadingText(`There are no laons for the ${year} period`);
+            setLoadingText(`There are no loans for the ${year} period`);
           } else {
             setLoadingText("");
           }
@@ -103,14 +103,7 @@ const AdminLoans = () => {
     );
   };
 
-  const addButtonOptions = useMemo(
-    () => ({
-      icon: "add",
-      text: "New Monthly Posting",
-      onClick: () => navigate("/my/monthly-posting/post"),
-    }),
-    [],
-  );
+  const addButtonOptions = null; //administrators do not make monthly postings
 
   return (
     <div className="page-content" style={{ minHeight: "862px" }}>

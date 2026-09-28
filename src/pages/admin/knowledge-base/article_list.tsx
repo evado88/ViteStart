@@ -71,7 +71,7 @@ const AdminKnowledgebaseArticles = () => {
   const addButtonOptions = useMemo(
     () => ({
       icon: "add",
-      text: "Refresh",
+      text: "New Article",
       onClick: () => navigate("/admin/knowledge-base/article/add"),
     }),
     [],
@@ -106,7 +106,7 @@ const AdminKnowledgebaseArticles = () => {
               <Editing
                 mode="row"
                 allowUpdating={false}
-                allowDeleting={true}
+                allowDeleting={false}
                 allowAdding={false}
               />
               <Pager showPageSizeSelector={true} showInfo={true} />

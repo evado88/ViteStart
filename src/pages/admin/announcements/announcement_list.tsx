@@ -29,10 +29,10 @@ const AdminAnnouncements = () => {
   const hasRun = useRef(false);
 
   const pageConfig = new PageConfig(
-    "Annoucements",
+    "Announcements",
     "announcements/list",
     "",
-    "Annoucements",
+    "Announcements",
     "",
     [Assist.ROLE_ADMIN],
   );
@@ -70,7 +70,7 @@ const AdminAnnouncements = () => {
   const addButtonOptions = useMemo(
     () => ({
       icon: "add",
-      text: "New Annoucement",
+      text: "New Announcement",
       onClick: () => navigate("/admin/announcements/add"),
     }),
     [],
@@ -105,7 +105,7 @@ const AdminAnnouncements = () => {
               <Editing
                 mode="row"
                 allowUpdating={false}
-                allowDeleting={true}
+                allowDeleting={false}
                 allowAdding={false}
               />
               <Pager showPageSizeSelector={true} showInfo={true} />

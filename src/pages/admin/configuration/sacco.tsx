@@ -278,9 +278,9 @@ const Configuration = () => {
                   </div>
                 </div>
                 <div className="dx-fieldset">
-                  <div className="dx-fieldset-header">Appprovals</div>
+                  <div className="dx-fieldset-header">Approvals</div>
                   <div className="dx-field">
-                    <div className="dx-field-label">Appproval level</div>
+                    <div className="dx-field-label">Approval levels</div>
                     <SelectBox
                       className="dx-field-value"
                       dataSource={[1, 2, 3]}
@@ -290,7 +290,7 @@ const Configuration = () => {
                       disabled={error}
                     >
                       <Validator>
-                        <RequiredRule message="Appproval level is required" />
+                        <RequiredRule message="Approval levels is required" />
                       </Validator>
                     </SelectBox>
                   </div>
@@ -410,11 +410,11 @@ const Configuration = () => {
                     </NumberBox>
                   </div>
                   <div className="dx-field">
-                    <div className="dx-field-label">Loan Duraton (Months) </div>
+                    <div className="dx-field-label">Loan Duration (Months) </div>
                     <NumberBox
                       className="dx-field-value"
                       value={loanDuration!}
-                      placeholder="Loan Duraton (Months)"
+                      placeholder="Loan Duration (Months)"
                       disabled={error || saving}
                       onValueChange={(value) => setLoanDuration(value)}
                       min={0.0}

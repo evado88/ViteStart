@@ -59,9 +59,9 @@ const AdminAudits = () => {
 
   const addButtonOptions = useMemo(
     () => ({
-      icon: "add",
+      icon: "refresh",
       text: "Refresh",
-      onClick: () => navigate("/admin/meetings/add"),
+      onClick: () => navigate(0),
     }),
     [],
   );
@@ -95,7 +95,7 @@ const AdminAudits = () => {
               <Editing
                 mode="row"
                 allowUpdating={false}
-                allowDeleting={true}
+                allowDeleting={false}
                 allowAdding={false}
               />
               <Pager showPageSizeSelector={true} showInfo={true} />
@@ -133,7 +133,7 @@ const AdminAudits = () => {
               ></Column>
               <Column
                 dataField="feature"
-                caption="Token"
+                caption="Page"
                 minWidth={120}
                 hidingPriority={2}
               ></Column>

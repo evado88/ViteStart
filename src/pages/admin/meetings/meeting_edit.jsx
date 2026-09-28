@@ -309,7 +309,7 @@ const MeetingEdit = () => {
                       ></Column>
                       <Column
                         dataField="filetype"
-                        caption="Type"
+                        caption="File Type"
                         hidingPriority={5}
                       ></Column>
                     </DataGrid>
@@ -343,7 +343,7 @@ const MeetingEdit = () => {
                       ></Column>
                       <Column
                         dataField="type"
-                        caption="Type"
+                        caption="Attendance"
                         hidingPriority={4}
                       ></Column>
                       <Column

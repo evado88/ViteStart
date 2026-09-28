@@ -193,7 +193,7 @@ export const TransactionList: React.FC<MonthlyPostArgs> = ({
         ></Column>
         <Column
           dataField="created_at"
-          caption="Date"
+          caption="Recorded"
           dataType="date"
           format="dd MMM yyy HH:MM"
           hidingPriority={1}

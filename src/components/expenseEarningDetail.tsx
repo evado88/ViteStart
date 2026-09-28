@@ -51,7 +51,7 @@ export const ExpenseEarningDetail = ({
             </div>
           </div>
           <div className="dx-field">
-            <div className="dx-field-label">Refereence</div>
+            <div className="dx-field-label">Reference</div>
             <div className="dx-field-value-static">
               <strong>{tran.reference}</strong>
             </div>

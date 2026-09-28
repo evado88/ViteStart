@@ -48,7 +48,7 @@ const MonthlyPostings = () => {
           setLoading(false);
 
           if (data.length === 0) {
-            setLoadingText("You have no savings");
+            setLoadingText("There are no rejected expenses or earnings");
           } else {
             setLoadingText("");
           }
@@ -63,8 +63,8 @@ const MonthlyPostings = () => {
   const addButtonOptions = useMemo(
     () => ({
       icon: "add",
-      text: "New Monthly Posting",
-      onClick: () => navigate("/my/monthly-posting/post"),
+      text: "Add Expense / Earning",
+      onClick: () => navigate("/admin/expenses-earnings/add"),
     }),
     [],
   );

@@ -236,7 +236,7 @@ const PostMonthly = () => {
     if (data.status.status_name == "Submitted") {
       setError(true);
       Assist.showMessage(
-        "This monthly posting has already been submitetd and cannt be edited",
+        "This monthly posting has already been submitted and cannot be edited",
         "error",
       );
     } else {
@@ -1236,7 +1236,7 @@ const PostMonthly = () => {
                     ></Column>
                     <Column
                       dataField="ptype.type_name"
-                      caption="Type"
+                      caption="Penalty Type"
                       format={",##0.###"}
                       hidingPriority={4}
                     ></Column>
