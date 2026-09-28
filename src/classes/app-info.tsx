@@ -1,9 +1,9 @@
 const AppInfo = {
   appName: "Control Panel",
   appCode: "Osawe",
-  apiUrl: "http://127.0.0.1:8800/api/",
-  onlineApiUrl: "https://osawe-api.api-zm.com/",
-  localApiUrl: "http://127.0.0.1:8800/api/",
+  apiUrl: "http://127.0.0.1:8153/api/",
+  onlineApiUrl: "http://127.0.0.1:8153/api/",
+  localApiUrl: "http://127.0.0.1:8153/api/",
   configApiUrl: "sacco-config/1",
   auditApiUrl: "audits/create",
   uploadUrl: "",
