@@ -323,7 +323,7 @@ export const navigation: MenuItem[] = [
     items: [
       {
         key: "all-sessions",
-        text: "All Sessions",
+        text: "Sign-ins",
         icon: "",
         path: "/admin/audit/sessions/list",
         roles: [2],
@@ -331,7 +331,7 @@ export const navigation: MenuItem[] = [
       },
       {
         key: "all-events",
-        text: "All Events",
+        text: "Audit Events",
         icon: "",
         path: "/admin/audit/events/list",
         roles: [2],

@@ -536,21 +536,20 @@ class Assist {
       created_by: userEmail,
     };
 
-    setTimeout(() => {
-      Assist.postPutData("Audit", url, postData, 0)
-        .then((data) => {
-          Assist.log(
-            `Success auditing feature '${featureId}' with action '${actionId} using url ${AppInfo.apiUrl}${url}`,
-            "log",
-          );
-        })
-        .catch((message) => {
-          Assist.log(
-            `Error auditing feature '${featureId}' with action '${actionId} using url ${AppInfo.apiUrl}${url}: ${message}`,
-            "error",
-          );
-        });
-    }, Assist.DEV_DELAY);
+    //returned so a sign-out can wait for it before removing the token
+    return Assist.postPutData("Audit", url, postData, 0)
+      .then((data) => {
+        Assist.log(
+          `Success auditing feature '${featureId}' with action '${actionId} using url ${AppInfo.apiUrl}${url}`,
+          "log",
+        );
+      })
+      .catch((message) => {
+        Assist.log(
+          `Error auditing feature '${featureId}' with action '${actionId} using url ${AppInfo.apiUrl}${url}: ${message}`,
+          "error",
+        );
+      });
   }
 
   /**

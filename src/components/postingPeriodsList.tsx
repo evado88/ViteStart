@@ -1,5 +1,7 @@
-import React from "react";
+import React, { useState } from "react";
 import { Link, Route } from "react-router-dom";
+import Button from "devextreme-react/button";
+import { confirm } from "devextreme/ui/dialog";
 import { Card } from "./card";
 import Assist from "../classes/assist";
 import DataGrid, {
@@ -30,6 +32,42 @@ export const PostingPeriodingsList = ({
   filterMonthComponent,
   isMember,
 }: PostingPeriodArgs) => {
+  //periods opened or closed on this page (overrides the loaded rows)
+  const [states, setStates] = useState<Record<string, any>>({});
+  const [busy, setBusy] = useState<string | null>(null);
+
+  const stateOf = (row: any) => states[row.id] ?? row;
+
+  const toggle = async (row: any) => {
+    const open = stateOf(row).posting_state == Assist.STATE_OPEN;
+    const ok = await confirm(
+      open
+        ? `Close ${row.name} for postings? Members will not be able to submit new postings; ones already submitted carry on through review.`
+        : `Open ${row.name} for postings? Members will be able to submit their monthly postings and will be emailed that postings are open.`,
+      open ? "Close postings" : "Open postings",
+    );
+    if (!ok) return;
+    setBusy(row.id);
+    Assist.postPutData(
+      "Posting Period",
+      `posting-periods/${open ? "close" : "open"}/${row.id}`,
+      {},
+      1,
+    )
+      .then((period: any) => {
+        setBusy(null);
+        setStates({ ...states, [row.id]: period });
+        Assist.showMessage(
+          `${row.name} is now ${open ? "closed" : "open"} for postings`,
+          "success",
+        );
+      })
+      .catch((message) => {
+        setBusy(null);
+        Assist.showMessage(message, "error");
+      });
+  };
+
   return (
     /* start title */
     <Card showHeader={false}>
@@ -90,6 +128,37 @@ export const PostingPeriodingsList = ({
             };
 
             return <a href={getLink()}>{e.text}</a>;
+          }}
+        ></Column>
+        <Column
+          dataField="posting_state"
+          caption="Member postings"
+          hidingPriority={12}
+          cellRender={(e) => {
+            const current = stateOf(e.data);
+            const open = current.posting_state == Assist.STATE_OPEN;
+            const since = current.posting_state_at
+              ? ` since ${new Date(current.posting_state_at).toLocaleDateString("en-GB", { day: "numeric", month: "short" })}`
+              : "";
+            return (
+              <div className="d-flex align-items-center" style={{ gap: 8 }}>
+                <span
+                  className={`badge ${open ? "badge-success" : "badge-secondary"}`}
+                  title={current.posting_state_by ? `by ${current.posting_state_by}${since}` : ""}
+                >
+                  {open ? "Open" : "Closed"}
+                </span>
+                {!isMember && (
+                  <Button
+                    text={open ? "Close" : "Open"}
+                    stylingMode="outlined"
+                    type={open ? "normal" : "success"}
+                    disabled={busy === e.data.id}
+                    onClick={() => toggle(e.data)}
+                  />
+                )}
+              </div>
+            );
           }}
         ></Column>
         <Column

@@ -12,7 +12,6 @@ export { default as ProfilePage } from './profile'
 //dahsboard
 //aduits
 export { default as AdminAuditsPage } from './admin/audits/audit_list'
-export { default as AdminAuditPage } from './admin/audits/audit'
 export { default as AdminSessionsPage } from './admin/audits/session_list'
 export { default as AdminSessionPage } from './admin/audits/session'
 //user

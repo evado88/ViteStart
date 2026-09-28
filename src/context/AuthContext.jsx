@@ -13,18 +13,8 @@ export function AuthProvider({ children }) {
     localStorage.setItem("token", JSON.stringify(token));
     const details = Assist.getTokenDetails(token);
 
+    //the sign-in itself is recorded by the server
     setUser(details);
-
-    Assist.auditAction(
-      details.userid,
-      details.sub,
-      details.jti,
-      "Session",
-      null,
-      "Start",
-      null,
-      details,
-    );
   };
 
   // Load user from localStorage on refresh
@@ -45,13 +35,17 @@ export function AuthProvider({ children }) {
   }, []);
 
   const logout = (details) => {
-    localStorage.removeItem("token");
     setUser(null);
-    endSession(details, 'Logout')
+    //the token is removed once the sign-out is recorded (it identifies the person)
+    const token = localStorage.getItem("token");
+    const forget = () => {
+      if (localStorage.getItem("token") === token) localStorage.removeItem("token");
+    };
+    endSession(details, 'Logout').then(forget, forget);
   };
 
   const endSession = (details, reason) => {
-    Assist.auditAction(
+    return Assist.auditAction(
       details.userid,
       details.sub,
       details.jti,

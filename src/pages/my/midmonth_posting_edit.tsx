@@ -158,7 +158,14 @@ const KnowledgebaseArticleEdit = () => {
       setCurrentLoanPaidAmount(data.totalLoanPaymentsAmount);
     }
 
-    if (data.monthlyPosting == null) {
+    if (data.config.posting_state != Assist.STATE_OPEN) {
+      //postings for this period have not been opened by the administrators
+      Assist.showMessage(
+        `Postings for ${data.config.period_name} are not open, so a mid-month posting cannot be made`,
+        "error",
+      );
+      setError(true);
+    } else if (data.monthlyPosting == null) {
       Assist.showMessage(
         "You must submit your Monthly posting before applying for a mid-month posting",
         "error",

@@ -645,6 +645,29 @@ const PostMonthly = () => {
     param != null &&
     (param.guarantors.length == 0 || param.paymentMethods.length == 0);
 
+  //the period has to be opened by an administrator first
+  if (pageConfig.Id == 0 && param != null && param.config.posting_state != Assist.STATE_OPEN) {
+    return (
+      <div id="pageRoot" className="page-content">
+        <Titlebar title={pageConfig.Title} section={""} icon={""} url="#"></Titlebar>
+        <Row>
+          <Col sz={12} sm={12} lg={7}>
+            <Card title={`Monthly posting for ${param.config.period_name}`} showHeader={true}>
+              <p className="mb-2">
+                <i className="fa fa-lock"></i> Monthly postings for{" "}
+                <strong>{param.config.period_name}</strong> are not open yet.
+              </p>
+              <p className="text-muted mb-0">
+                The administrators open postings each month. You will be emailed as
+                soon as you can make your posting.
+              </p>
+            </Card>
+          </Col>
+        </Row>
+      </div>
+    );
+  }
+
   if (missingPrerequisites) {
     return (
       <div id="pageRoot" className="page-content">
