@@ -291,6 +291,17 @@ export const MonthlyPostDetail = ({
               </strong>
             </div>
           </div>
+          {monthlyPosting.credit > 0 && (
+            <div className="dx-field">
+              <div className="dx-field-label">Credit Applied</div>
+              <div className="dx-field-value-static">
+                <strong className="text-success">
+                  {Assist.formatCurrency(monthlyPosting.credit)}
+                </strong>{" "}
+                <span className="text-muted">(overpayment credit)</span>
+              </div>
+            </div>
+          )}
           <div className="dx-field">
             <div className="dx-field-label">Deposit Total</div>
             <div className="dx-field-value-static">

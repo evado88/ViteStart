@@ -56,6 +56,8 @@ const PostMonthly = () => {
   const [postingShares, setPostingShares] = useState<number | null>(null);
   const [postingSocial, setPostingSocial] = useState<number | null>(null);
   const [postingPenalty, setPostingPenalty] = useState<number | null>(0);
+  //overpayment credit, deducted from what the member pays
+  const [creditAvailable, setCreditAvailable] = useState<number>(0);
 
   const [postingPayMethodData, setPostingPayMethodData] = useState<
     any[] | null
@@ -215,6 +217,7 @@ const PostMonthly = () => {
     postingLoanApplication,
     postingAttendanceType,
     postingDate,
+    creditAvailable,
     latePostingStartDate,
   ]);
 
@@ -292,6 +295,9 @@ const PostMonthly = () => {
 
     //use calculated penalty
     setPostingPenalty(data.totalPenaltiesAmount);
+
+    //credit from earlier overpayments
+    setCreditAvailable(data.totalCredit ?? 0);
 
     //check loans
     if (data.loan) {
@@ -390,6 +396,7 @@ const PostMonthly = () => {
       contribution_total: totalContributions,
       deposit_total: getDepositAmount(),
       receive_total: getReceiveAmount(),
+      credit: getCreditUsed(),
       payment_method_id: postingPayMethod,
       guarantor_id: postingGuarantor,
       stage_id: Assist.STAGE_SUBMITTED,
@@ -531,12 +538,15 @@ const PostMonthly = () => {
     return total;
   };
 
+  //the part of the credit used for this posting (the rest stays for later)
+  const getCreditUsed = () => Math.min(creditAvailable, Math.max(getContributions(), 0));
+
   const getLoanAmount = () => {
     return allowLoanApplication() ? postingLoanApplication! * -1 : 0;
   };
 
   const getDepositAmount = () => {
-    const contributions = getContributions();
+    const contributions = getContributions() - getCreditUsed();
     const loan = getLoanAmount();
 
     if (contributions >= Math.abs(loan)) {
@@ -547,7 +557,7 @@ const PostMonthly = () => {
   };
 
   const getReceiveAmount = () => {
-    const contributions = getContributions();
+    const contributions = getContributions() - getCreditUsed();
     const loan = getLoanAmount();
 
     if (contributions < Math.abs(loan)) {
@@ -636,6 +646,16 @@ const PostMonthly = () => {
       type: "Earning",
       amount: getLoanAmount(),
     });
+
+    //overpayment credit
+    if (getCreditUsed() > 0) {
+      summaryItems.push({
+        id: 20,
+        name: "Overpayment Credit",
+        type: "Earning",
+        amount: -getCreditUsed(),
+      });
+    }
 
     setSummaryData(summaryItems);
   };
@@ -1333,6 +1353,22 @@ const PostMonthly = () => {
                     </Summary>
                   </DataGrid>
                 </div>
+                {creditAvailable > 0 && (
+                  <div className="dx-field">
+                    <div className="dx-field-label">Credit Applied ZMW</div>
+                    <div className="dx-field-value-static">
+                      <strong className="text-success">
+                        {Assist.formatCurrency(getCreditUsed())}
+                      </strong>{" "}
+                      <span className="text-muted">
+                        from your overpayment credit of {Assist.formatCurrency(creditAvailable)}
+                        {creditAvailable > getCreditUsed()
+                          ? ` (${Assist.formatCurrency(creditAvailable - getCreditUsed())} is kept for your next posting)`
+                          : ""}
+                      </span>
+                    </div>
+                  </div>
+                )}
                 <div className="dx-field">
                   <div className="dx-field-label">Deposit Amount ZMW</div>
                   <div className="dx-field-value-static">
