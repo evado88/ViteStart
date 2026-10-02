@@ -1,7 +1,7 @@
 const AppInfo = {
   appName: "Control Panel",
   appCode: "Osawe",
-  apiUrl: "http://127.0.0.1:8900/api/",
+  apiUrl: "https://api.osawe.org/api/",
   onlineApiUrl: "https://api.osawe.org/api/",
   localApiUrl: "http://127.0.0.1:8153/api/",
   configApiUrl: "sacco-config/1",
