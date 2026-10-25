@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useRef } from "react";
 import { Link, Route } from "react-router-dom";
 import { Card } from "./card";
 import Assist from "../classes/assist";
@@ -30,10 +30,12 @@ export const MemberList = ({
   filterComponent,
   title
 }: MonthlyPostArgs) => {
+  const gridRef = useRef<any>(null);
   return (
     /* start title */
     <Card showHeader={false}>
       <DataGrid
+        ref={gridRef}
         className={"dx-card wide-card"}
         dataSource={data}
         keyExpr={"id"}
@@ -79,7 +81,12 @@ export const MemberList = ({
             options={{
               icon: "save",
               text: " Excel Export",
-              onClick: () => Assist.downloadExcel(title, data),
+              onClick: () =>
+                Assist.downloadExcel(
+                  title,
+                  data,
+                  gridRef.current?.instance.getVisibleColumns(),
+                ),
             }}
           />
         </Toolbar>

@@ -21,7 +21,6 @@ const storedToken = (): string | null => {
 axios.interceptors.request.use((config) => {
   const token = storedToken();
   if (token) {
-    config.headers = config.headers ?? {};
     config.headers["Authorization"] = `Bearer ${token}`;
   }
   return config;

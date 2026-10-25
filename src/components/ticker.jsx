@@ -2,7 +2,8 @@ import React from "react";
 import Assist from "../classes/assist";
 import './ticker.css'
 
-export const Ticker = ({ title, value, color, percent }) => {
+// icon: a Font Awesome class such as "fa fa-money" (optional)
+export const Ticker = ({ title, value, color, icon }) => {
 
   return (
     /* start ticker */
@@ -10,10 +11,15 @@ export const Ticker = ({ title, value, color, percent }) => {
       <div className="card-body">
         <div className="row align-items-center">
           <div className="col">
-            <div className="col mt-0">
+            <div className="ticker-head">
               <h4 className="info-box-title">{title}</h4>
+              {icon && (
+                <span className={`ticker-icon l-bg-${color}`} aria-hidden="true">
+                  <i className={icon}></i>
+                </span>
+              )}
             </div>
-            <h3 className={`mt-1 mb-3 info-box-title col-${color}`} title={value}>
+            <h3 className={`mt-1 mb-1 info-box-title col-${color}`} title={value}>
               {/* may break between the currency and the amount, never inside the amount */}
               {String(value).split(/[\s ]+/).map((part, i) => (
                 <React.Fragment key={i}>
@@ -22,12 +28,6 @@ export const Ticker = ({ title, value, color, percent }) => {
                 </React.Fragment>
               ))}
             </h3>
-            <div className="progress">
-              <div
-                className={`progress-bar l-bg-${color}`}
-                style={{ width: `${percent}%` }}
-              ></div>
-            </div>
           </div>
         </div>
       </div>

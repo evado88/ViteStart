@@ -38,27 +38,27 @@ export const MonthlyPostDetail = ({
             <strong>{monthlyPosting.period.period_name}</strong>
           </Field>
         </Fieldset>
-        <Fieldset title="Savings & Contributions">
-          <Field title="Savings - Monthly Post" staticContent={true}>
+        <Fieldset title="Shares & Contributions">
+          <Field title="Shares (Osawe) - Monthly Post" staticContent={true}>
             <strong>
               <strong>
                 {Assist.formatCurrency(monthlyPosting.saving_mon)}
               </strong>
             </strong>
           </Field>
-          <Field title="Savings - Mid-Month" staticContent={true}>
+          <Field title="Shares (Osawe) - Mid-Month" staticContent={true}>
             <strong>
               <strong>
                 {Assist.formatCurrency(monthlyPosting.saving_mid)}
               </strong>
             </strong>
           </Field>
-          <Field title="Savings -Total" staticContent={true}>
+          <Field title="Shares (Osawe) - Total" staticContent={true}>
             <strong>
               <strong>{Assist.formatCurrency(monthlyPosting.saving)}</strong>
             </strong>
           </Field>
-          <Field title="Shares" staticContent={true}>
+          <Field title="Shares (Osacco)" staticContent={true}>
             <strong>{Assist.formatCurrency(monthlyPosting.shares)}</strong>
           </Field>
           <Field title="Social Fund" staticContent={true}>

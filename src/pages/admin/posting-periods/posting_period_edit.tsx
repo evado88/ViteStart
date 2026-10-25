@@ -585,35 +585,35 @@ const PostingPeriodEdit = () => {
                 </div>
                 <div className="dx-fieldset">
                   <div className="dx-fieldset-header">
-                    Savings & Contributions Limits
+                    Shares & Contributions Limits
                   </div>
                   <div className="dx-field">
-                    <div className="dx-field-label">Savings Multiple</div>
+                    <div className="dx-field-label">Shares (Osawe) Multiple</div>
                     <NumberBox
                       className="dx-field-value"
                       value={savingsMultiple!}
-                      placeholder="Savings Multiple"
+                      placeholder="Shares (Osawe) Multiple"
                       disabled={error || saving}
                       onValueChange={(value) => setSavingsMultiple(value)}
                       min={0.0}
                     >
                       <Validator>
-                        <RequiredRule message="Savings multiple required" />
+                        <RequiredRule message="Shares (Osawe) multiple required" />
                       </Validator>
                     </NumberBox>
                   </div>
                   <div className="dx-field">
-                    <div className="dx-field-label">Shares Multiple</div>
+                    <div className="dx-field-label">Shares (Osacco) Multiple</div>
                     <NumberBox
                       className="dx-field-value"
                       value={sharesMultiple!}
-                      placeholder="Shares Multiple"
+                      placeholder="Shares (Osacco) Multiple"
                       disabled={error || saving}
                       onValueChange={(value) => setSharesMultiple(value)}
                       min={0.0}
                     >
                       <Validator>
-                        <RequiredRule message="Shares multiple required" />
+                        <RequiredRule message="Shares (Osacco) multiple required" />
                       </Validator>
                     </NumberBox>
                   </div>
@@ -676,11 +676,11 @@ const PostingPeriodEdit = () => {
                 <div className="dx-fieldset">
                   <div className="dx-fieldset-header">Loan Application</div>
                   <div className="dx-field">
-                    <div className="dx-field-label">Loan Savings Ratio </div>
+                    <div className="dx-field-label">Loan to Shares (Osawe) Ratio </div>
                     <NumberBox
                       className="dx-field-value"
                       value={loanSavingsRatio!}
-                      placeholder="Loan Savings Ratio"
+                      placeholder="Loan to Shares (Osawe) Ratio"
                       disabled={error || saving}
                       onValueChange={(value) => setLoanSavingsRatio(value)}
                       min={0.0}

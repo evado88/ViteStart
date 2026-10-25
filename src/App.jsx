@@ -200,10 +200,10 @@ function App() {
           {/* mid-month posting */}
 
           {/* transactions */}
-          <Route path="/admin/savings/approved" element={<AdminSavingsPage/>} />
+          <Route path="/admin/shares-osawe/approved" element={<AdminSavingsPage/>} />
           <Route path="/admin/social-fund/approved" element={<AdminSocialFundsPage/>} />
           <Route path="/admin/loans/approved" element={<AdminLoansPage/>} />
-          <Route path="/admin/shares/approved" element={<AdminSharesPage/>} />
+          <Route path="/admin/shares-osacco/approved" element={<AdminSharesPage/>} />
           <Route path="/admin/penalties/approved" element={<AdminPenaltiesPage/>} />
           {/*expense and earnings*/}
           <Route path="/admin/expense-earning/group/list" element={<AdminExpenseEarningGroupsPage/>} />

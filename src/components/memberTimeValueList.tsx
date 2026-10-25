@@ -114,7 +114,7 @@ export const MemberTimeValueList: React.FC<InterestSharingArgs> = ({
         ></Column>
         <Column
           dataField={`stotal`}
-          caption="Total Savings"
+          caption="Total Shares (Osawe)"
           format={",##0.##"}
           hidingPriority={1}
         ></Column>

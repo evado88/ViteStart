@@ -573,7 +573,7 @@ const PostMonthly = () => {
     //savings
     summaryItems.push({
       id: 1,
-      name: "Savings",
+      name: "Shares (Osawe)",
       type: "Contribution",
       amount: postingSavings ?? 0,
     });
@@ -581,7 +581,7 @@ const PostMonthly = () => {
     //shares
     summaryItems.push({
       id: 2,
-      name: "Shares",
+      name: "Shares (Osacco)",
       type: "Contribution",
       amount: postingShares ?? 0,
     });
@@ -731,7 +731,7 @@ const PostMonthly = () => {
           <Card title="Applicant" showHeader={false}>
             <MemberHeader
               title={user.name}
-              description="Current Cummulative Savings"
+              description="Current Cumulative Shares (Osawe)"
             />
             <h4 className="font-bold text-success">
               {Assist.formatCurrency(totalSavingsAmount!)}
@@ -789,19 +789,19 @@ const PostMonthly = () => {
               <div className="form">
                 <div className="dx-fieldset">
                   <div className="dx-fieldset-header">
-                    Savings & Contributions
+                    Shares & Contributions
                   </div>
                   <div className="dx-field">
-                    <div className="dx-field-label">Savings</div>
+                    <div className="dx-field-label">Shares (Osawe)</div>
                     <NumberBox
                       className="dx-field-value"
                       value={postingSavings!}
-                      placeholder="Savings"
+                      placeholder="Shares (Osawe)"
                       disabled={error || saving || saving}
                       onValueChange={(value) => setPostingSavings(value)}
                     >
                       <Validator>
-                        <RequiredRule message="Savings amount required" />
+                        <RequiredRule message="Shares (Osawe) amount required" />
                         <CustomRule
                           validationCallback={(e) => {
                             if (
@@ -813,23 +813,23 @@ const PostMonthly = () => {
                               return false;
                             }
                           }}
-                          message={`Savings amount must be in mutiples of ${savingsMultiple}`}
+                          message={`Shares (Osawe) amount must be in multiples of ${savingsMultiple}`}
                         />
                       </Validator>
                     </NumberBox>
                   </div>
                   <div className="dx-field">
-                    <div className="dx-field-label">Shares</div>
+                    <div className="dx-field-label">Shares (Osacco)</div>
                     <NumberBox
                       className="dx-field-value"
                       value={postingShares!}
-                      placeholder="Shares"
+                      placeholder="Shares (Osacco)"
                       disabled={error || saving || saving}
                       onValueChange={(value) => setPostingShares(value)}
                       min={0.0}
                     >
                       <Validator>
-                        <RequiredRule message="Shares amount required" />
+                        <RequiredRule message="Shares (Osacco) amount required" />
                         <CustomRule
                           validationCallback={(e) => {
                             if (
@@ -841,7 +841,7 @@ const PostMonthly = () => {
                               return false;
                             }
                           }}
-                          message={`Share amount must be in mutiples of ${sharesMultiple}`}
+                          message={`Shares (Osacco) amount must be in multiples of ${sharesMultiple}`}
                         />
                       </Validator>
                     </NumberBox>
@@ -1054,7 +1054,7 @@ const PostMonthly = () => {
                   <div className="dx-fieldset-header">Loan Application</div>
                   <div className="dx-field">
                     <div className="dx-field-label">
-                      Max Loan Amount ({loanSavingsRatio} Savings)
+                      Max Loan Amount ({loanSavingsRatio}X Shares (Osawe))
                     </div>
                     <div className="dx-field-value-static">
                       <strong className="text-success">

@@ -49,12 +49,13 @@ const MyDashboard = () => {
 
   const { user } = useAuth();
   const navigate = useNavigate();
-  const [savings, setSavings] = useState(0);
+  const isAdmin = user.role == 2;
+  const [sharesOsawe, setSharesOsawe] = useState(0);
   const [social, setSocial] = useState(0);
   const [share, setShare] = useState(0);
   const [interest, setInterest] = useState(0);
   const [penalty, setPenalty] = useState(0);
-  const [loan, setLoan] = useState(0);
+  const [loanBalance, setLoanBalance] = useState(0);
 
   const [loading, setLoading] = useState(false);
 
@@ -66,7 +67,7 @@ const MyDashboard = () => {
   const [loadingText, setLoadingText] = useState("Loading data...");
   const hasRun = useRef(false);
 
-  const pageConfig = new PageConfig(`Dashboard`, "", "", "User", ``);
+  const pageConfig = new PageConfig(user.role == 2 ? `Group Dashboard` : `My Dashboard`, "", "", "User", ``);
 
   const loadData = (year: number) => {
     setLoading(true);
@@ -152,7 +153,7 @@ const MyDashboard = () => {
       (item: any) => item.id == Assist.TRANSACTION_SAVINGS,
     );
 
-    setSavings(savingItem.amount);
+    setSharesOsawe(savingItem.amount);
 
     const socialItem = data.find(
       (item: any) => item.id == Assist.TRANSACTION_SOCIAL_FUND,
@@ -172,11 +173,16 @@ const MyDashboard = () => {
 
     setInterest(interestItem.amount);
 
-    const loanItem = data.find(
-      (item: any) => item.id == Assist.TRANSACTION_LOAN,
-    );
+    // loan balance = loans + interest charged - (loan payments + interest paid)
+    const amountOf = (typeId: number) =>
+      Number(data.find((item: any) => item.id == typeId)?.amount ?? 0);
 
-    setLoan(loanItem.amount);
+    setLoanBalance(
+      amountOf(Assist.TRANSACTION_LOAN) +
+        amountOf(Assist.TRANSACTION_INTEREST_CHARGED) -
+        amountOf(Assist.TRANSACTION_LOAN_PAYMENT) -
+        amountOf(Assist.TRANSACTION_INTEREST_PAID),
+    );
 
     const penaltyItem = data.find(
       (item: any) => item.id == Assist.TRANSACTION_PENALTY_CHARGED,
@@ -198,7 +204,7 @@ const MyDashboard = () => {
         hideOnOutsideClick={false}
       />
       <Titlebar
-        title={pageConfig.Title}
+        title={`${user.name} - ${pageConfig.Title}`}
         section={"Home"}
         icon={"home"}
         url={""}
@@ -207,50 +213,50 @@ const MyDashboard = () => {
       <Row>
         <Col xl={2} lg={2}>
           <Ticker
-            title={"Savings"}
-            value={Assist.formatCurrency(savings)}
+            title={"Shares (Osawe)"}
+            value={Assist.formatCurrency(sharesOsawe)}
             color={"green"}
-            percent={80}
+            icon={"fa fa-life-saver"}
           ></Ticker>
         </Col>
         <Col xl={2} lg={2}>
           <Ticker
-            title={"Loans"}
-            value={Assist.formatCurrency(loan)}
+            title={isAdmin ? "Loans Outstanding" : "Loan Balance"}
+            value={Assist.formatCurrency(loanBalance)}
             color={"red"}
-            percent={40}
+            icon={"fa fa-credit-card"}
           ></Ticker>
         </Col>
         <Col xl={2} lg={2}>
           <Ticker
-            title={"Interest"}
+            title={isAdmin ? "Interest Earned" : "Interest Charged"}
             value={Assist.formatCurrency(interest)}
             color={"orange"}
-            percent={70}
+            icon={"fa fa-percent"}
           ></Ticker>
         </Col>
         <Col xl={2} lg={2}>
           <Ticker
-            title={"Penalty"}
+            title={"Penalties"}
             value={Assist.formatCurrency(penalty)}
             color={"red"}
-            percent={90}
+            icon={"fa fa-exclamation-circle"}
           ></Ticker>
         </Col>
         <Col xl={2} lg={2}>
           <Ticker
-            title={"Share"}
+            title={"Shares (Osacco)"}
             value={Assist.formatCurrency(share)}
             color={"blue"}
-            percent={90}
+            icon={"fa fa-money"}
           ></Ticker>
         </Col>
         <Col xl={2} lg={2}>
           <Ticker
-            title={"Social"}
+            title={"Social Fund"}
             value={Assist.formatCurrency(social)}
             color={"green"}
-            percent={90}
+            icon={"fa fa-users"}
           ></Ticker>
         </Col>
       </Row>

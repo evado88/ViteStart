@@ -97,7 +97,7 @@ export const PostingPeriodDetail = ({
             </div>
           </div>
           <div className="dx-field">
-            <div className="dx-field-label">Savings Multiple</div>
+            <div className="dx-field-label">Shares (Osawe) Multiple</div>
             <div className="dx-field-value-static">
               <strong>
                 {Assist.formatCurrency(postingPeriod.saving_multiple)}
@@ -105,7 +105,7 @@ export const PostingPeriodDetail = ({
             </div>
           </div>
           <div className="dx-field">
-            <div className="dx-field-label">Shares Multiple</div>
+            <div className="dx-field-label">Shares (Osacco) Multiple</div>
             <div className="dx-field-value-static">
               <strong>
                 {Assist.formatCurrency(postingPeriod.shares_multiple)}
@@ -131,7 +131,7 @@ export const PostingPeriodDetail = ({
             </div>
           </div>
           <div className="dx-field">
-            <div className="dx-field-label">Loan Savings Ratio</div>
+            <div className="dx-field-label">Loan to Shares (Osawe) Ratio</div>
             <div className="dx-field-value-static">
               <strong>{postingPeriod.loan_saving_ratio}</strong>
             </div>

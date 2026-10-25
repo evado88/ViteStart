@@ -121,7 +121,7 @@ const MyDashboard = () => {
       <Row>
         <Col xl={2} lg={6}>
           <Ticker
-            title={"Savings"}
+            title={"Shares (Osawe)"}
             value={savings}
             color={"green"}
             percent={80}

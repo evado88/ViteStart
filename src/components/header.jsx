@@ -82,8 +82,7 @@ export const Header = ({ toggleSidebar }) => {
                 data-close-others="true"
                 onClick={toggle}
               >
-                <img alt="" className="img-circle" src="./images/dp.jpg" />
-                <span className="username username-hide-on-mobile">
+                <span className="username">
                   {user.name}
                 </span>
               </a>

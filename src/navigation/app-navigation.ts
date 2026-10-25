@@ -99,14 +99,14 @@ export const navigation: MenuItem[] = [
   },
   {
     key: "savings",
-    text: "Savings",
+    text: "Shares (Osawe)",
     icon: "fa fa-life-saver",
     path: "#",
     roles: [1],
     items: [
       {
         key: "my-savings",
-        text: "My Savings",
+        text: "My Shares (Osawe)",
         icon: "",
         path: "/my/savings/list",
         roles: [1],
@@ -141,14 +141,14 @@ export const navigation: MenuItem[] = [
   },
   {
     key: "shares",
-    text: "Shares",
+    text: "Shares (Osacco)",
     icon: "fa fa-money",
     path: "#",
     roles: [1],
     items: [
       {
         key: "my-shares",
-        text: "My Shares",
+        text: "My Shares (Osacco)",
         icon: "",
         path: "/my/shares/list",
         roles: [1],
@@ -603,24 +603,42 @@ export const navigation: MenuItem[] = [
   },
   {
     key: "admin-savings",
-    text: "Savings",
+    text: "Shares (Osawe)",
     icon: "fa fa-life-saver",
     path: "#",
     roles: [2],
     items: [
       {
-        key: "savings-approved-list",
-        text: "Approved Savings",
+        key: "shares-osawe-approved-list",
+        text: "Approved Shares",
         icon: "",
-        path: "/admin/savings/approved",
+        path: "/admin/shares-osawe/approved",
         roles: [2],
         items: [],
       },
       {
         key: "social-approved-list",
-        text: "Approved Shares",
+        text: "Approved Social Fund",
         icon: "",
         path: "/admin/social-fund/approved",
+        roles: [2],
+        items: [],
+      },
+    ],
+  },
+
+  {
+    key: "admin-shares",
+    text: "Shares (Osacco)",
+    icon: "fa fa-money",
+    path: "#",
+    roles: [2],
+    items: [
+      {
+        key: "shares-osacco-approved-list",
+        text: "Approved",
+        icon: "",
+        path: "/admin/shares-osacco/approved",
         roles: [2],
         items: [],
       },
@@ -638,23 +656,6 @@ export const navigation: MenuItem[] = [
         text: "Approved",
         icon: "",
         path: "/admin/loans/approved",
-        roles: [2],
-        items: [],
-      },
-    ],
-  },
-  {
-    key: "admin-shares",
-    text: "Shares",
-    icon: "fa fa-money",
-    path: "#",
-    roles: [2],
-    items: [
-      {
-        key: "shares-approved-list",
-        text: "Approved",
-        icon: "",
-        path: "/admin/shares/approved",
         roles: [2],
         items: [],
       },

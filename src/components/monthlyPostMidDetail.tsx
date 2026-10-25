@@ -33,13 +33,13 @@ export const MonthlyPostMidDetail = ({
             <strong>{monthlyPosting.period.period_name}</strong>
           </Field>
         </Fieldset>
-        <Fieldset title="Savings & Contributions">
-          <Field title="Savings" staticContent={true}>
+        <Fieldset title="Shares & Contributions">
+          <Field title="Shares (Osawe)" staticContent={true}>
             <strong>
               <strong>{Assist.formatCurrency(monthlyPosting.saving)}</strong>
             </strong>
           </Field>
-          <Field title="Shares" staticContent={true}>
+          <Field title="Shares (Osacco)" staticContent={true}>
             <strong>{Assist.formatCurrency(monthlyPosting.shares)}</strong>
           </Field>
           <Field title="Social Fund" staticContent={true}>

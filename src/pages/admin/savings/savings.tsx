@@ -23,10 +23,10 @@ const AdminSavings = () => {
   const hasRun = useRef(false);
 
   const pageConfig = new PageConfig(
-    "Administration - Approved Savings",
+    "Administration - Approved Shares (Osawe)",
     `transactions/type/${Assist.TRANSACTION_SAVINGS}/status/${Assist.STATUS_APPROVED}`,
     "",
-    "Saving",
+    "Shares (Osawe)",
     "",
     [Assist.ROLE_ADMIN],
   );

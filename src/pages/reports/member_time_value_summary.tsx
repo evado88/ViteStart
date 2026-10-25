@@ -160,10 +160,10 @@ const MemberTimeValueSummary = () => {
       <Row>
         <Col xl={2} lg={2}>
           <Ticker
-            title={"Savings"}
+            title={"Shares (Osawe)"}
             value={Assist.formatCurrency(savingsTotal)}
             color={"green"}
-            percent={80}
+            icon={"fa fa-life-saver"}
           ></Ticker>
         </Col>
         <Col xl={2} lg={2}>
@@ -171,7 +171,7 @@ const MemberTimeValueSummary = () => {
             title={"Loan Balance"}
             value={Assist.formatCurrency(loanBalance)}
             color={"red"}
-            percent={40}
+            icon={"fa fa-credit-card"}
           ></Ticker>
         </Col>
         <Col xl={2} lg={2}>
@@ -179,7 +179,7 @@ const MemberTimeValueSummary = () => {
             title={"Proportional Share"}
             value={Assist.formatCurrency(proportionalFinalShare)}
             color={"orange"}
-            percent={70}
+            icon={"fa fa-pie-chart"}
           ></Ticker>
         </Col>
         <Col xl={2} lg={2}>
@@ -187,7 +187,7 @@ const MemberTimeValueSummary = () => {
             title={"Payout Balance"}
             value={Assist.formatCurrency(payoutBalance)}
             color={"red"}
-            percent={90}
+            icon={"fa fa-handshake-o"}
           ></Ticker>
         </Col>
         <Col xl={2} lg={2}>
@@ -195,7 +195,7 @@ const MemberTimeValueSummary = () => {
             title={"Growth Amount"}
             value={Assist.formatCurrency(growthAmount)}
             color={"blue"}
-            percent={90}
+            icon={"fa fa-line-chart"}
           ></Ticker>
         </Col>
         <Col xl={2} lg={2}>
@@ -203,7 +203,7 @@ const MemberTimeValueSummary = () => {
             title={"Growth Percent (%)"}
             value={growthPercent}
             color={"green"}
-            percent={90}
+            icon={"fa fa-arrow-circle-up"}
           ></Ticker>
         </Col>
       </Row>

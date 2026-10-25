@@ -67,6 +67,13 @@ const MemberSummary = () => {
   const [loadingText, setLoadingText] = useState("Loading data...");
   const hasRun = useRef(false);
 
+  //members can narrow the table to their own row (each row's id is the user id)
+  const [mineOnly, setMineOnly] = useState(false);
+  const rows = useMemo(
+    () => (mineOnly ? data.filter((r: any) => r.id == user.userid) : data),
+    [data, mineOnly],
+  );
+
   const pageConfig = new PageConfig(
     "Member Summary",
     user.role == 2
@@ -204,50 +211,50 @@ const MemberSummary = () => {
       <Row>
         <Col xl={2} lg={2}>
           <Ticker
-            title={"Savings"}
+            title={"Shares (Osawe)"}
             value={Assist.formatCurrency(savings)}
             color={"green"}
-            percent={80}
+            icon={"fa fa-life-saver"}
           ></Ticker>
         </Col>
         <Col xl={2} lg={2}>
           <Ticker
-            title={"Loans"}
+            title={"Loans Issued"}
             value={Assist.formatCurrency(loan)}
             color={"red"}
-            percent={40}
+            icon={"fa fa-credit-card"}
           ></Ticker>
         </Col>
         <Col xl={2} lg={2}>
           <Ticker
-            title={"Interest"}
+            title={"Interest Charged"}
             value={Assist.formatCurrency(interest)}
             color={"orange"}
-            percent={70}
+            icon={"fa fa-percent"}
           ></Ticker>
         </Col>
         <Col xl={2} lg={2}>
           <Ticker
-            title={"Penalty"}
+            title={"Penalties"}
             value={Assist.formatCurrency(penalty)}
             color={"red"}
-            percent={90}
+            icon={"fa fa-exclamation-circle"}
           ></Ticker>
         </Col>
         <Col xl={2} lg={2}>
           <Ticker
-            title={"Share"}
+            title={"Shares (Osacco)"}
             value={Assist.formatCurrency(share)}
             color={"blue"}
-            percent={90}
+            icon={"fa fa-money"}
           ></Ticker>
         </Col>
         <Col xl={2} lg={2}>
           <Ticker
-            title={"Social"}
+            title={"Social Fund"}
             value={Assist.formatCurrency(social)}
             color={"green"}
-            percent={90}
+            icon={"fa fa-users"}
           ></Ticker>
         </Col>
       </Row>
@@ -287,7 +294,7 @@ const MemberSummary = () => {
               <DataGrid
                 ref={gridRef}
                 className={"dx-card wide-card"}
-                dataSource={data}
+                dataSource={rows}
                 keyExpr={"id"}
                 noDataText={loadingText}
                 showBorders={false}
@@ -313,6 +320,18 @@ const MemberSummary = () => {
                     widget="dxButton"
                     options={addButtonOptions}
                   />
+                  {user.role == Assist.ROLE_MEMBER && (
+                    <Item
+                      location="before"
+                      locateInMenu="auto"
+                      widget="dxCheckBox"
+                      options={{
+                        text: "My details only",
+                        value: mineOnly,
+                        onValueChanged: (e: any) => setMineOnly(e.value),
+                      }}
+                    />
+                  )}
                   <Item name="columnChooserButton" />
                   <Item
                     location="after"
@@ -325,7 +344,7 @@ const MemberSummary = () => {
                       onClick: () =>
                         Assist.downloadExcel(
                           pageConfig.Title,
-                          data,
+                          rows,
                           gridRef.current?.instance.getVisibleColumns(),
                         ),
                     }}
@@ -350,12 +369,12 @@ const MemberSummary = () => {
                 ></Column>
                 <Column
                   dataField={`tid${Assist.TRANSACTION_SAVINGS}`}
-                  caption="Savings"
+                  caption="Shares (Osawe)"
                   format={",##0.###"}
                 ></Column>
                 <Column
                   dataField={`tid${Assist.TRANSACTION_SHARE}`}
-                  caption="Shares"
+                  caption="Shares (Osacco)"
                   format={",##0.###"}
                 ></Column>
                 <Column

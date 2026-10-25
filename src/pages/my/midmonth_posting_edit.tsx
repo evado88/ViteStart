@@ -376,21 +376,21 @@ const KnowledgebaseArticleEdit = () => {
                 </div>
                 <div className="dx-fieldset">
                   <div className="dx-fieldset-header">
-                    Savings & Contribution
+                    Shares & Contributions
                   </div>
                   <div className="dx-field">
-                    <div className="dx-field-label">Savings</div>
+                    <div className="dx-field-label">Shares (Osawe)</div>
                     <NumberBox
                       className="dx-field-value"
                       value={midPostingSavings!}
-                      placeholder="Savings"
+                      placeholder="Shares (Osawe)"
                       disabled={error || saving || saving}
                       onValueChange={(value) => {
                         setMidPostingSavings(value);
                       }}
                     >
                       <Validator>
-                        <RequiredRule message="Savings amount required" />
+                        <RequiredRule message="Shares (Osawe) amount required" />
                         <CustomRule
                           validationCallback={(e) => {
                             if (
@@ -402,14 +402,14 @@ const KnowledgebaseArticleEdit = () => {
                               return false;
                             }
                           }}
-                          message={`Savings amount must be in mutiples of ${savingsMultiple}`}
+                          message={`Shares (Osawe) amount must be in multiples of ${savingsMultiple}`}
                         />
                       </Validator>
                     </NumberBox>
                   </div>
                   <div className="dx-field">
                     <div className="dx-field-label">
-                      Total Savings (Monthly + Mid-month Posting)
+                      Total Shares (Osawe) (Monthly + Mid-month Posting)
                     </div>
                     <div className="dx-field-value-static">
                       <strong>
@@ -424,7 +424,7 @@ const KnowledgebaseArticleEdit = () => {
                   <div className="dx-fieldset-header">Loan Application</div>
                   <div className="dx-field">
                     <div className="dx-field-label">
-                      Max Loan Amount ({loanSavingsRatio}X Savings)
+                      Max Loan Amount ({loanSavingsRatio}X Shares (Osawe))
                     </div>
                     <div className="dx-field-value-static">
                       <strong className="text-success">

@@ -215,8 +215,8 @@ const Approvals = () => {
               <Column dataField="stage" caption="Step" groupIndex={0} />
               <Column dataField="member" caption="Member" width={170} />
               <Column dataField="period" caption="Period" />
-              <Column dataField="saving" caption="Savings" format=",##0.##" />
-              <Column dataField="shares" caption="Shares" format=",##0.##" />
+              <Column dataField="saving" caption="Shares (Osawe)" format=",##0.##" />
+              <Column dataField="shares" caption="Shares (Osacco)" format=",##0.##" />
               <Column
                 dataField="penalty"
                 caption="Penalties & fees"

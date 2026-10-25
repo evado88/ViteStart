@@ -259,7 +259,7 @@ const Password = () => {
                       <Validator>
                         <RequiredRule message="OTP code required" />
                         <CustomRule
-                          validationCallback={(e) => /^\d{6}$/.test(e.value)}
+                          validationCallback={(e) => /^\d{6}$/.test(String(e.value))}
                           message={`The code is the 6 digits in the email`}
                         />
                       </Validator>

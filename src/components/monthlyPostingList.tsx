@@ -164,13 +164,13 @@ export const MonthlyPostingsList: React.FC<MonthlyPostArgs> = ({
         ></Column>
         <Column
           dataField="saving"
-          caption="Saving"
+          caption="Shares (Osawe)"
           format={",##0.###"}
           hidingPriority={11}
         ></Column>
         <Column
           dataField="shares"
-          caption="Shares"
+          caption="Shares (Osacco)"
           format={",##0.###"}
           hidingPriority={10}
         ></Column>

@@ -23,10 +23,10 @@ const AdminShares = () => {
   const hasRun = useRef(false);
 
   const pageConfig = new PageConfig(
-    "Administration - Approved Shares",
+    "Administration - Approved Shares (Osacco)",
     `transactions/type/${Assist.TRANSACTION_SHARE}/status/${Assist.STATUS_APPROVED}`,
     "",
-    "Share",
+    "Shares (Osacco)",
     "",
     [Assist.ROLE_ADMIN],
   );

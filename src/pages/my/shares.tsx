@@ -19,10 +19,10 @@ const MonthlyPostings = () => {
   const hasRun = useRef(false);
 
   const pageConfig = new PageConfig(
-    "My Shares",
+    "My Shares (Osacco)",
     `transactions/user/${user.userid}/type/${Assist.TRANSACTION_SHARE}/status/${Assist.STATUS_APPROVED}`,
     "",
-    "My Shares",
+    "My Shares (Osacco)",
     "",
     [Assist.ROLE_MEMBER],
   );

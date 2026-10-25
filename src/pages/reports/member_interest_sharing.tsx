@@ -45,11 +45,11 @@ const employees = [
   },
   {
     id: 1,
-    text: "Monthly Savings",
+    text: "Monthly Shares (Osawe)",
   },
   {
     id: 2,
-    text: "Total Monthly Savings",
+    text: "Total Monthly Shares (Osawe)",
   },
   {
     id: 3,
@@ -61,7 +61,7 @@ const employees = [
   },
   {
     id: 5,
-    text: "Monthly Saving Loan Proportion",
+    text: "Monthly Shares (Osawe) Loan Proportion",
   },
   {
     id: 6,
@@ -255,50 +255,50 @@ const MemberInterestSharing = () => {
       <Row>
         <Col xl={2} lg={2}>
           <Ticker
-            title={"Savings"}
+            title={"Shares (Osawe)"}
             value={Assist.formatCurrency(savings)}
             color={"green"}
-            percent={80}
+            icon={"fa fa-life-saver"}
           ></Ticker>
         </Col>
         <Col xl={2} lg={2}>
           <Ticker
-            title={"Loans"}
+            title={"Loans Issued"}
             value={Assist.formatCurrency(loan)}
             color={"red"}
-            percent={40}
+            icon={"fa fa-credit-card"}
           ></Ticker>
         </Col>
         <Col xl={2} lg={2}>
           <Ticker
-            title={"Interest"}
+            title={"Interest Charged"}
             value={Assist.formatCurrency(interest)}
             color={"orange"}
-            percent={70}
+            icon={"fa fa-percent"}
           ></Ticker>
         </Col>
         <Col xl={2} lg={2}>
           <Ticker
-            title={"Penalty"}
+            title={"Penalties"}
             value={Assist.formatCurrency(penalty)}
             color={"red"}
-            percent={90}
+            icon={"fa fa-exclamation-circle"}
           ></Ticker>
         </Col>
         <Col xl={2} lg={2}>
           <Ticker
-            title={"Share"}
+            title={"Shares (Osacco)"}
             value={Assist.formatCurrency(share)}
             color={"blue"}
-            percent={90}
+            icon={"fa fa-money"}
           ></Ticker>
         </Col>
         <Col xl={2} lg={2}>
           <Ticker
-            title={"Social"}
+            title={"Social Fund"}
             value={Assist.formatCurrency(social)}
             color={"green"}
-            percent={90}
+            icon={"fa fa-users"}
           ></Ticker>
         </Col>
       </Row>

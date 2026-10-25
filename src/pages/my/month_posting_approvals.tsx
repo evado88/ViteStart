@@ -157,13 +157,13 @@ const MonthlyPostingApprovals = () => {
               ></Column>
               <Column
                 dataField="saving"
-                caption="Saving"
+                caption="Shares (Osawe)"
                 format={",##0.###"}
                 hidingPriority={10}
               ></Column>
               <Column
                 dataField="shares"
-                caption="Shares"
+                caption="Shares (Osacco)"
                 format={",##0.###"}
                 hidingPriority={9}
               ></Column>

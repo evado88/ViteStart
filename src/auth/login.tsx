@@ -271,7 +271,7 @@ const Login = () => {
                 <Validator>
                   <RequiredRule message="Please enter the code" />
                   <CustomRule
-                    validationCallback={(e) => /^\d{6}$/.test(e.value)}
+                    validationCallback={(e) => /^\d{6}$/.test(String(e.value))}
                     message={`The code is the 6 digits sent to your WhatsApp and email`}
                   />
                 </Validator>
