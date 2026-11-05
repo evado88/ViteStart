@@ -37,25 +37,37 @@ const ScheduleDetail = ({ data }: { data: any }) => (
   </DataGrid>
 );
 
-//open loans with their schedules, repayments and arrears (administrators)
-export const LoanScheduleList = () => {
+//open loans with their schedules, repayments and arrears: every member's
+//(administrators), or only the given member's own loan (members)
+export const LoanScheduleList = ({ userId }: { userId?: number }) => {
   const [data, setData] = useState<any[]>([]);
   const [loadingText, setLoadingText] = useState("Loading loans...");
+  const own = userId != null;
 
   useEffect(() => {
-    Assist.loadData("Loan Schedules", "monthly-posting/loan-schedules")
-      .then((rows: any) => {
+    const url = own
+      ? `monthly-posting/loan-schedule/user/${userId}`
+      : "monthly-posting/loan-schedules";
+    Assist.loadData("Loan Schedules", url)
+      .then((result: any) => {
+        //a member has at most one open loan: the API returns it, or nothing
+        const rows = own ? (result ? [result] : []) : result;
         setData(rows);
-        setLoadingText(rows.length === 0 ? "There are no open loans" : "");
+        setLoadingText(
+          rows.length === 0 ? (own ? "You have no open loan" : "There are no open loans") : "",
+        );
       })
       .catch((message) => {
         Assist.showMessage(message, "error");
         setLoadingText("Could not load the loan schedules");
       });
-  }, []);
+  }, [userId]);
 
   return (
-    <Card title="Open Loans - Repayment Schedules & Arrears" showHeader={true}>
+    <Card
+      title={own ? "My Open Loan - Repayment Schedule & Arrears" : "Open Loans - Repayment Schedules & Arrears"}
+      showHeader={true}
+    >
       <DataGrid
         className={"dx-card wide-card"}
         dataSource={data}
@@ -65,11 +77,11 @@ export const LoanScheduleList = () => {
         columnAutoWidth={true}
         columnHidingEnabled={true}
       >
-        <SearchPanel visible={true} />
+        <SearchPanel visible={!own} />
         <Paging defaultPageSize={10} />
-        <Pager showPageSizeSelector={true} showInfo={true} />
-        <Column dataField="name" caption="Member" hidingPriority={10} />
-        <Column dataField="email" caption="Email" hidingPriority={2} />
+        <Pager showPageSizeSelector={!own} showInfo={!own} />
+        {!own && <Column dataField="name" caption="Member" hidingPriority={10} />}
+        {!own && <Column dataField="email" caption="Email" hidingPriority={2} />}
         <Column dataField="amount" caption="Loan ZMW" format={",##0.##"} hidingPriority={9} />
         <Column dataField="interest_rate" caption="Interest %" hidingPriority={4} />
         <Column
