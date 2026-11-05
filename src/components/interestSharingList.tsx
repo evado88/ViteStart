@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React, { useMemo, useRef, useState } from "react";
 import { Link, Route } from "react-router-dom";
 import { Card } from "./card";
 import Assist from "../classes/assist";
@@ -19,6 +19,8 @@ import SelectBox, { type SelectBoxTypes } from "devextreme-react/select-box";
 
 interface InterestSharingArgs {
   data: any;
+  //set for members: shows the "My details only" option (rows are keyed by user id)
+  myUserId?: number | string;
   loadingText: string;
   showSavings?: boolean;
   title: string;
@@ -26,9 +28,15 @@ interface InterestSharingArgs {
 export const InterestSharingList: React.FC<InterestSharingArgs> = ({
   data,
   loadingText,
+  myUserId,
   title,
 }: InterestSharingArgs) => {
   const gridRef = useRef<any>(null);
+  const [mineOnly, setMineOnly] = useState(false);
+  const rows = useMemo(
+    () => (mineOnly ? (data ?? []).filter((r: any) => r.id == myUserId) : data),
+    [data, mineOnly, myUserId],
+  );
   return (
     /* start title */
 
@@ -36,7 +44,7 @@ export const InterestSharingList: React.FC<InterestSharingArgs> = ({
       <DataGrid
         ref={gridRef}
         className={"dx-card wide-card"}
-        dataSource={data}
+        dataSource={rows}
         keyExpr={"id"}
         noDataText={loadingText}
         showBorders={false}
@@ -56,6 +64,18 @@ export const InterestSharingList: React.FC<InterestSharingArgs> = ({
         <FilterRow visible={true} />
         <ColumnChooser enabled={true} mode="select"></ColumnChooser>
         <Toolbar>
+          {myUserId != null && (
+            <Item
+              location="before"
+              locateInMenu="auto"
+              widget="dxCheckBox"
+              options={{
+                text: "My details only",
+                value: mineOnly,
+                onValueChanged: (e: any) => setMineOnly(e.value),
+              }}
+            />
+          )}
           <Item name="columnChooserButton" />
           <Item
             location="after"
@@ -65,7 +85,7 @@ export const InterestSharingList: React.FC<InterestSharingArgs> = ({
             options={{
               icon: "save",
               text: " Excel Export",
-              onClick: () => Assist.downloadExcel(title, data,
+              onClick: () => Assist.downloadExcel(title, rows,
                   gridRef.current?.instance.getVisibleColumns(),),
             }}
           />

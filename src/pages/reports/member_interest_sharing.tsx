@@ -342,6 +342,7 @@ const MemberInterestSharing = () => {
           {selectedItem.id == 0 && (
             <InterestSharingList
               data={data}
+              myUserId={user.role == Assist.ROLE_MEMBER ? user.userid : undefined}
               loadingText={loadingText}
               title={selectedItem.text}
             />
@@ -349,6 +350,7 @@ const MemberInterestSharing = () => {
           {selectedItem.id == 1 && (
             <MemberMonthlySavingsList
               data={data}
+              myUserId={user.role == Assist.ROLE_MEMBER ? user.userid : undefined}
               loadingText={loadingText}
               title={selectedItem.text}
             />

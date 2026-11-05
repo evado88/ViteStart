@@ -241,6 +241,7 @@ const MemberPayoutSummary = () => {
         <Col sz={12} sm={12} lg={12}>
           <MemberTimeValueList
             data={data}
+            myUserId={user.role == Assist.ROLE_MEMBER ? user.userid : undefined}
             loadingText={loadingText}
             title={pageConfig.Title}
           />

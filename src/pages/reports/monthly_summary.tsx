@@ -37,6 +37,7 @@ import {
 import PivotGridDataSource from "devextreme/ui/pivot_grid/data_source";
 import { usePeriod } from "../../context/PeriodContext.jsx";
 import SelectBox from "devextreme-react/select-box.js";
+import CheckBox from "devextreme-react/check-box";
 
 const MonthlySummary = () => {
   //user
@@ -54,6 +55,15 @@ const MonthlySummary = () => {
   const [data, setData] = useState([]);
   const [loadingText, setLoadingText] = useState("Loading data...");
   const hasRun = useRef(false);
+
+  //members can narrow the table to their own rows (rows are transactions, so
+  //they are matched on the member's email, which is the token's subject)
+  const [mineOnly, setMineOnly] = useState(false);
+  const rows = useMemo(() => {
+    if (!mineOnly) return data;
+    const me = String(user.sub ?? "").toLowerCase();
+    return data.filter((r: any) => String(r.email ?? "").toLowerCase() == me);
+  }, [data, mineOnly]);
 
   const pageConfig = new PageConfig(
     "Monthly Summary",
@@ -186,8 +196,8 @@ const MonthlySummary = () => {
         area: "data",
       },
     ],
-    store: data,
-  }), [data]);
+    store: rows,
+  }), [rows]);
 
   return (
     <div className="page-content" style={{ minHeight: "862px" }}>
@@ -284,6 +294,21 @@ const MonthlySummary = () => {
                   </div>
                 </div>
               </Col>
+              {user.role == Assist.ROLE_MEMBER && (
+                <Col sz={12} sm={12} lg={2}>
+                  <div className="form">
+                    <div className="dx-fieldset">
+                      <div className="dx-field">
+                        <CheckBox
+                          text="My details only"
+                          value={mineOnly}
+                          onValueChanged={(e: any) => setMineOnly(e.value)}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </Col>
+              )}
             </Row>
           </Card>
         </Col>
