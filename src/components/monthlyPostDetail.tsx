@@ -117,6 +117,23 @@ export const MonthlyPostDetail = ({
               </strong>
             </div>
           </div>
+          {monthlyPosting.loan_refinance == Assist.LOAN_REFINANCE_ROLLOVER && (
+            <div className="dx-field">
+              <div className="dx-field-label">Rollover - Carried From Current Loan</div>
+              <div className="dx-field-value-static">
+                <strong className="text-danger">
+                  {Assist.formatCurrency(monthlyPosting.loan_carried)}
+                </strong>{" "}
+                <span className="text-muted">
+                  the new loan will be{" "}
+                  {Assist.formatCurrency(
+                    monthlyPosting.loan_application + monthlyPosting.loan_carried,
+                  )}{" "}
+                  in all (interest on the new money only)
+                </span>
+              </div>
+            </div>
+          )}
           <div className="dx-field">
             <div className="dx-field-label">Require Guarantor Approval</div>
             <div className="dx-field-value-static">

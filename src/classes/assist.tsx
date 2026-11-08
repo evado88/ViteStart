@@ -46,6 +46,8 @@ class Assist {
   static LOAN_REFINANCE_NOLOAN = 1;
   static LOAN_REFINANCE_YES = 2;
   static LOAN_REFINANCE_NO = 3;
+  //a new loan over a balance that is not cleared: the balance is carried into it
+  static LOAN_REFINANCE_ROLLOVER = 4;
 
   static POSTING_MONTHLY = 1;
   static POSTING_MIDMONTH = 2;

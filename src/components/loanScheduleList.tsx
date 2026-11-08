@@ -83,6 +83,12 @@ export const LoanScheduleList = ({ userId }: { userId?: number }) => {
         {!own && <Column dataField="name" caption="Member" hidingPriority={10} />}
         {!own && <Column dataField="email" caption="Email" hidingPriority={2} />}
         <Column dataField="amount" caption="Loan ZMW" format={",##0.##"} hidingPriority={9} />
+        <Column
+          dataField="carried_amount"
+          caption="Carried In ZMW"
+          format={",##0.##"}
+          hidingPriority={1}
+        />
         <Column dataField="interest_rate" caption="Interest %" hidingPriority={4} />
         <Column
           caption="Month"

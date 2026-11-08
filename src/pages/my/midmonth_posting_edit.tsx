@@ -154,7 +154,8 @@ const KnowledgebaseArticleEdit = () => {
 
     if (data.loan != null) {
       setCurrentLoan(data.loan);
-      setCurrentLoanAmount(data.loan.amount);
+      //the whole loan: the new money plus any balance carried into it
+      setCurrentLoanAmount(data.loanSchedule?.amount ?? data.loan.amount);
       setCurrentLoanPaidAmount(data.totalLoanPaymentsAmount);
     }
 
@@ -219,21 +220,13 @@ const KnowledgebaseArticleEdit = () => {
     setPostingComments(data.comments_mid);
   };
 
-  const allowLoanApplication = () => {
-    //check if there is a loan
-    if (currentLoan == null) {
-      //no loan
-      return true;
-    } else {
-      if (postingLoanRefinance == Assist.LOAN_REFINANCE_YES) {
-        //loan repaid, allow
-        return true;
-      } else {
-        //dont allow
-        return false;
-      }
-    }
-  };
+  //a loan can always be asked for: over a balance this posting does not clear,
+  //the balance is carried into the new loan (a rollover)
+  const allowLoanApplication = () => true;
+
+  //a mid-month loan would carry the open balance into it
+  const carriesBalance = () =>
+    currentLoan != null && postingLoanRefinance != Assist.LOAN_REFINANCE_YES;
   const requireGuarantor = () => {
     //check if loan requires guarantor
     return (
@@ -473,17 +466,7 @@ const KnowledgebaseArticleEdit = () => {
                       </div>
                     )}
                   </div>
-                  {!allowLoanApplication() && currentLoan != null && (
-                    <div className="dx-field">
-                      <div className="dx-field-label">Current Loan Amount</div>
-                      <div className="dx-field-value-static">
-                        <strong>
-                          {Assist.formatCurrency(currentLoanAmount!)}
-                        </strong>
-                      </div>
-                    </div>
-                  )}
-                  {!allowLoanApplication() && currentLoan != null && (
+                  {carriesBalance() && (
                     <div className="dx-field">
                       <div className="dx-field-label">Current Loan Balance</div>
                       <div className="dx-field-value-static">
@@ -491,7 +474,10 @@ const KnowledgebaseArticleEdit = () => {
                           {Assist.formatCurrency(
                             currentLoanAmount! - currentLoanPaidAmount,
                           )}
-                        </strong>
+                        </strong>{" "}
+                        <span className="text-muted">
+                          what this posting does not repay is carried into a new loan
+                        </span>
                       </div>
                     </div>
                   )}

@@ -309,6 +309,8 @@ const PostMonthly = () => {
 
       const loan = {
         ...data.loan,
+        //the whole loan: the new money plus any balance carried into it
+        amount: schedule.amount,
         totalLoanPaymentsAmount: data.totalLoanPaymentsAmount,
         totalLoanPaymentsNo: data.totalLoanPaymentsNo,
         balanceAmount: balance,
@@ -340,6 +342,12 @@ const PostMonthly = () => {
       }
     }
   };
+
+  useEffect(() => {
+    if (loanSchedule && !isRollover()) {
+      setPostingLoanInterestPayment(loanSchedule.interest_due);
+    }
+  }, [postingLoanApplication, postingLoanMonthPayment]);
 
   const onFormSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -385,6 +393,7 @@ const PostMonthly = () => {
       loan_application_mid: 0,
       loan_application: postingLoanApplication,
       loan_refinance: getLoanRefinanceState(),
+      loan_carried: getCarriedAmount(),
       guarantor_required: requireGuarantor()
         ? Assist.RESPONSE_YES
         : Assist.RESPONSE_NO,
@@ -457,22 +466,42 @@ const PostMonthly = () => {
     return currentLoan != null;
   };
 
-  const allowLoanApplication = () => {
-    //check if there is a loan
-    if (currentLoan == null) {
-      return true;
-    } else {
-      return postingLoanMonthPayment! >= loanBalance;
-    }
+  //a loan can always be asked for: over a balance this posting does not clear,
+  //the balance is carried into the new loan (a rollover, the group's way)
+  const allowLoanApplication = () => true;
+
+  const isRollover = () =>
+    currentLoan != null &&
+    (postingLoanApplication ?? 0) > 0 &&
+    (postingLoanMonthPayment ?? 0) < loanBalance;
+
+  //what goes into the new loan: the balance not repaid now, and the interest
+  //when it is not paid now
+  const getCarriedAmount = () => {
+    if (!isRollover()) return 0;
+    const unpaidInterest =
+      (postingLoanInterestPayment ?? 0) > 0 ? 0 : loanSchedule?.interest_due ?? 0;
+    return loanBalance - (postingLoanMonthPayment ?? 0) + unpaidInterest;
   };
 
   const getLoanRefinanceState = () => {
     if (currentLoan == null) {
       return Assist.LOAN_REFINANCE_NOLOAN;
+    } else if ((postingLoanMonthPayment ?? 0) >= loanBalance) {
+      return Assist.LOAN_REFINANCE_YES;
     } else {
-      return postingLoanMonthPayment! >= loanBalance
-        ? Assist.LOAN_REFINANCE_YES
-        : Assist.LOAN_REFINANCE_NO;
+      return isRollover() ? Assist.LOAN_REFINANCE_ROLLOVER : Assist.LOAN_REFINANCE_NO;
+    }
+  };
+
+  const loanRefinanceText = () => {
+    switch (getLoanRefinanceState()) {
+      case Assist.LOAN_REFINANCE_YES:
+        return "Yes - this posting clears the loan";
+      case Assist.LOAN_REFINANCE_ROLLOVER:
+        return "Rollover - the balance is carried into the new loan";
+      default:
+        return "No";
     }
   };
 
@@ -940,12 +969,7 @@ const PostMonthly = () => {
                         className="dx-field-value"
                         value={postingLoanInterestPayment!}
                         placeholder={loanInterestLabel()}
-                        disabled={
-                          error ||
-                          saving ||
-                          saving ||
-                          allowLoanInterestPayment()
-                        }
+                        disabled={error || saving || !isRollover()}
                         onValueChange={(value) =>
                           setPostingLoanInterestPayment(value)
                         }
@@ -954,8 +978,24 @@ const PostMonthly = () => {
                           <RequiredRule
                             message={`${currentLoan.interest_rate}% Loan interest amount required`}
                           />
+                          <CustomRule
+                            validationCallback={(e) =>
+                              isRollover()
+                                ? Number(e.value) == 0 ||
+                                  Number(e.value) == loanSchedule?.interest_due
+                                : Number(e.value) == loanSchedule?.interest_due
+                            }
+                            message={`Pay the interest of ${Assist.formatCurrency(
+                              loanSchedule?.interest_due,
+                            )}${isRollover() ? ", or 0 to carry it into the new loan" : ""}`}
+                          />
                         </Validator>
                       </NumberBox>
+                    )}
+                    {allowLoanInterestPayment() && isRollover() && (
+                      <div className="dx-field-value-static text-muted">
+                        Rolling over: pay the interest now, or enter 0 to carry it into the new loan
+                      </div>
                     )}
                     {!allowLoanInterestPayment() && (
                       <div className="dx-field-value-static">
@@ -1021,11 +1061,13 @@ const PostMonthly = () => {
                           />
                           <CustomRule
                             validationCallback={(e) =>
-                              Number(e.value) >= minPostingLoanMonthPayment
+                              //rolling over: any amount, the rest is carried into the new loan
+                              Number(e.value) >=
+                              (isRollover() ? 0 : minPostingLoanMonthPayment)
                             }
                             message={`Loan repayment must be >= ${Assist.formatCurrency(
                               minPostingLoanMonthPayment,
-                            )}`}
+                            )}, unless you take a new loan (the balance is then carried into it)`}
                           />
                         </Validator>
                       </NumberBox>
@@ -1041,11 +1083,7 @@ const PostMonthly = () => {
                     <div className="dx-field">
                       <div className="dx-field-label">Loan Refinance</div>
                       <div className="dx-field-value-static">
-                        <strong>
-                          {getLoanRefinanceState() == Assist.LOAN_REFINANCE_YES
-                            ? "Yes"
-                            : "No"}
-                        </strong>
+                        <strong>{loanRefinanceText()}</strong>
                       </div>
                     </div>
                   )}
@@ -1091,14 +1129,32 @@ const PostMonthly = () => {
                         </Validator>
                       </NumberBox>
                     )}
-                    {!allowLoanApplication() && (
+                  </div>
+                  {isRollover() && (
+                    <div className="dx-field">
+                      <div className="dx-field-label">Carried From Current Loan</div>
                       <div className="dx-field-value-static">
                         <strong className="text-danger">
-                          You already have an active loan
+                          {Assist.formatCurrency(getCarriedAmount())}
                         </strong>
                       </div>
-                    )}
-                  </div>
+                    </div>
+                  )}
+                  {isRollover() && (
+                    <div className="dx-field">
+                      <div className="dx-field-label">New Loan In All</div>
+                      <div className="dx-field-value-static">
+                        <strong>
+                          {Assist.formatCurrency(
+                            (postingLoanApplication ?? 0) + getCarriedAmount(),
+                          )}
+                        </strong>{" "}
+                        <span className="text-muted">
+                          interest is charged on the new money only
+                        </span>
+                      </div>
+                    </div>
+                  )}
                   <div className="dx-field">
                     <div className="dx-field-label">
                       Require Guarantor Approval
