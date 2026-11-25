@@ -9,7 +9,7 @@ import {
 import ValidationSummary from "devextreme-react/validation-summary";
 import { LoadIndicator } from "devextreme-react/load-indicator";
 import { useAuth } from "../context/AuthContext";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import Assist from "../classes/assist";
 import { LoadPanel } from "devextreme-react/load-panel";
 
@@ -236,6 +236,10 @@ const Login = () => {
 
               <p className="auth-help">
                 Forgotten your password? Please contact the secretariat.
+              </p>
+              <p className="auth-help">
+                New to the app?{" "}
+                <Link to="/tutorials">Watch the video tutorials</Link>
               </p>
             </form>
           )}

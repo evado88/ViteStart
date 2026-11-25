@@ -8,6 +8,7 @@ export { default as LoginPage } from '../auth/login'
 //All users
 export { default as PasswordPage } from './password'
 export { default as ProfilePage } from './profile'
+export { default as TutorialsPage } from './tutorials'
 //ADMIN
 //dahsboard
 //aduits

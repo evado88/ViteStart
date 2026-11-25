@@ -16,6 +16,14 @@ export const navigation: MenuItem[] = [
     items: [],
   },
   {
+    key: "help-tutorials",
+    text: "Video Tutorials",
+    icon: "fa fa-play-circle",
+    path: "/help/tutorials",
+    roles: [1, 2],
+    items: [],
+  },
+  {
     key: "app-reports",
     text: "Reports",
     icon: "fa fa-bar-chart-o",

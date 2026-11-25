@@ -104,6 +104,7 @@ import {
   MemberMeetingPage,
   AdminSessionsPage,
   AdminAuditsPage,
+  TutorialsPage,
 
 } from "./pages";
 import { BrowserRouter } from "react-router-dom";
@@ -143,6 +144,7 @@ function App() {
           {/* ALL */}
           <Route path="/account/profile" element={<ProfilePage/>} />
           <Route path="/account/security" element={<PasswordPage/>} />
+          <Route path="/help/tutorials" element={<TutorialsPage/>} />
           {/* ADMIN */}
           {/* users */}
           <Route path="/admin/audit/sessions/list" element={<AdminSessionsPage/>} />
@@ -303,6 +305,8 @@ function App() {
         <Route element={<AuthLayout />}>
           <Route path="/login" element={<LoginPage></LoginPage>} />
         </Route>
+        {/* public help: reachable without signing in (linked from the login page) */}
+        <Route path="/tutorials" element={<TutorialsPage publicView />} />
       </Routes>
     </BrowserRouter>
   );
