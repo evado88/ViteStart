@@ -54,6 +54,7 @@ const MyMonthlyPosting = ({ props }: any) => {
     "",
     "Monthly Posting",
     `monthly-posting/review-update/${eId}`,
+    [Assist.ROLE_MEMBER],
   );
 
   pageConfig.Id = eId == undefined ? 0 : Number(eId);
@@ -154,7 +155,7 @@ const MyMonthlyPosting = ({ props }: any) => {
             "success",
           );
 
-          navigate(`/admin/monthly-postings/list`);
+          navigate(`/my/monthly-posting/list`);
         })
         .catch((message) => {
           setSaving(false);
